@@ -1,0 +1,6 @@
+/node_modules
+/alexandria/node_modules
+/coverage
+.env
+npm-debug.log
+/uploads
