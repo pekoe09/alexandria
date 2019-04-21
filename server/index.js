@@ -10,14 +10,22 @@ const mongo = require('./mongo')
 const { tokenExtractor } = require('./utils/tokenExtractor')
 const { userExtractor } = require('./utils/userExtractor')
 
-//const countryRouter = require('./controllers/countryController')
+const authorRouter = require('./controllers/authorController')
+const bookRouter = require('./controllers/bookController')
+const categoryCRouter = require('./controllers/categoryController')
+const locationRouter = require('./controllers/locationController')
+const publisherRouter = require('./controllers/publisherController')
 
 app.use(cors())
 app.use(bodyparser.json())
 app.use(tokenExtractor)
 app.use(userExtractor)
 
-//app.use('/api/countries', countryRouter)
+app.use('/api/authors', authorRouter)
+app.use('/api/books', bookRouter)
+app.use('/api/categories', categoryCRouter)
+app.use('/api/locations', locationRouter)
+app.use('/api/publishers', publisherRouter)
 
 app.use(express.static(path.resolve(__dirname, '../alexandria/build')))
 
