@@ -6,24 +6,12 @@ const bookSchema = new mongoose.Schema({
     required: true
   },
   author: {
-    _id: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true
-    },
-    fullNameReversed: {
-      type: String,
-      required: true
-    }
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Author'
   },
   publisher: {
-    _id: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true
-    },
-    name: {
-      type: String,
-      required: true
-    }
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Publisher'
   },
   publishingYear: {
     type: Number
@@ -32,32 +20,12 @@ const bookSchema = new mongoose.Schema({
     type: String
   },
   categories: [{
-    _id: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true
-    },
-    name: {
-      type: String,
-      required: true
-    },
-    level: {
-      type: Number,
-      required: true
-    },
-    number: {
-      type: Number,
-      required: true
-    }
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category'
   }],
   location: {
-    _id: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true
-    },
-    fullName: {
-      type: String,
-      required: true
-    }
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Location
   },
   serialNumber: {
     type: Number

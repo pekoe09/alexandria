@@ -15,14 +15,8 @@ const authorSchema = new mongoose.Schema({
     type: Date
   },
   books: [{
-    _id: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true
-    },
-    title: {
-      type: String,
-      required: true
-    }
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Book'
   }]
 })
 
