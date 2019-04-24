@@ -25,7 +25,7 @@ const bookSchema = new mongoose.Schema({
   }],
   location: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: Location
+    ref: 'Location'
   },
   serialNumber: {
     type: Number
