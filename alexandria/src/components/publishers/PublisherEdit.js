@@ -2,7 +2,7 @@ import React from 'react'
 import propTypes from 'prop-types'
 import { StyledForm } from '../common/alexandriaComponents'
 import FormButtons from '../common/FormButtons'
-import { ControlLabel, FormControl, FormGroup, Modal } from 'react-bootstrap'
+import { Modal } from 'react-bootstrap'
 
 class PublisherEdit extends React.Component {
   constructor(props) {
@@ -55,6 +55,10 @@ class PublisherEdit extends React.Component {
       name: this.state.name
     }
     await this.props.handleSave(publisher)
+    console.log('Error', this.props.modalError)
+    if (!this.props.modalError) {
+      this.handleExit()
+    }
   }
 
   handleCancel = () => {
@@ -84,22 +88,26 @@ class PublisherEdit extends React.Component {
         show={this.props.modalIsOpen}
         onEnter={this.handleEnter}
         onExit={this.handleExit}
+        onHide={this.props.closeModal}
+        animation={false}
       >
         <Modal.Header closeButton>
           <Modal.Title>Add/edit publisher</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <StyledForm>
-            <FormGroup validationState={this.getValidationState(errors, 'name')}>
-              <ControlLabel>Name</ControlLabel>
-              <FormControl
+            <StyledForm.Group controlId='name'>
+              <StyledForm.Label>Name</StyledForm.Label>
+              <StyledForm.Control
                 type='text'
                 name='name'
                 value={this.state.name}
                 onChange={this.handleChange}
                 onBlur={this.handleBlur}
+                isInvalid={this.getValidationState(errors, 'name')}
               />
-            </FormGroup>
+
+            </StyledForm.Group>
           </StyledForm>
         </Modal.Body>
         <Modal.Footer>

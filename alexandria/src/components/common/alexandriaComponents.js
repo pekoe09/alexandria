@@ -46,5 +46,9 @@ const ViewHeader = ({ text }) => {
 export {
   LinkButton,
   ListTable,
-  ViewHeader
+  ViewHeader,
+  StyledButton,
+  StyledForm,
+  StyledLink,
+  StyledVerticalLink
 } 

@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import {
   ListTable,
-  StyledButton,
   ViewHeader
 } from '../common/alexandriaComponents'
 import {
@@ -13,6 +12,7 @@ import {
   deletePublisher
 } from '../../actions/publisherActions'
 import { Button } from 'react-bootstrap';
+import PublisherEdit from './PublisherEdit'
 
 class PublisherList extends React.Component {
   constructor(props) {
@@ -31,12 +31,17 @@ class PublisherList extends React.Component {
   toggleEditModalOpen = () => {
     this.setState({
       modalError: '',
-      openEditModal: !this.state.openEditModal
+      openEditModal: !this.state.openEditModal,
+      rowToEdit: null
     })
   }
 
   handleSave = async (publisher) => {
-
+    console.log('Saving', publisher)
+    await this.props.addPublisher(publisher)
+    if (this.props.error) {
+      this.setState({ modalError: 'Could not save the publisher' })
+    }
   }
 
   handleRowClick = (state, rowInfo) => {
@@ -87,10 +92,10 @@ class PublisherList extends React.Component {
 
   render() {
     return (
-      <div>
+      <React.Fragment>
         <ViewHeader text='Publishers' />
         <Button
-          bsStyle='primary'
+          bsstyle='primary'
           onClick={this.toggleEditModalOpen}
         >
           Add publisher
@@ -102,7 +107,14 @@ class PublisherList extends React.Component {
           defaultPageSize={20}
           minRows={1}
         />
-      </div>
+        <PublisherEdit
+
+          modalIsOpen={this.state.openEditModal}
+          closeModal={this.toggleEditModalOpen}
+          handleSave={this.handleSave}
+          modalError={this.state.modalError}
+        />
+      </React.Fragment>
     )
   }
 }

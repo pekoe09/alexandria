@@ -2,21 +2,21 @@ import React from 'react'
 import { Button } from 'react-bootstrap'
 import PropTypes from 'prop-types'
 
-const FormButtons = () => {
+const FormButtons = ({ handleSave, handleCancel, saveIsDisabled }) => {
   return (
     <React.Fragment>
       <Button
-        bsStyle='primary'
+        bsstyle='primary'
         type='submit'
-        onClick={this.props.handleSave}
-        disabled={this.props.saveIsDisabled ? this.props.saveIsDisabled : false}
+        onClick={handleSave}
+        disabled={saveIsDisabled ? saveIsDisabled : false}
         style={{ marginRight: 5 }}
       >
         Save
       </Button>
       <Button
-        bsStyle='default'
-        onClick={this.handleCancel}
+        bsstyle='default'
+        onClick={handleCancel}
       >
         Cancel
       </Button>

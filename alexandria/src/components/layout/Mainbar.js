@@ -40,8 +40,6 @@ const LoggedInItems = () => {
 const Mainbar = ({ currentUser }) => {
   return (
     <StyledNavbar
-      fixedTop
-      fluid
     >
       <Navbar.Brand>
         <NavLink to='/'>
