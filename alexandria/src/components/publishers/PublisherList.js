@@ -19,6 +19,7 @@ class PublisherList extends React.Component {
     super(props)
     this.state = {
       openEditModal: false,
+      rowToEdit: null,
       modalError: ''
     }
   }
@@ -38,8 +39,17 @@ class PublisherList extends React.Component {
 
   }
 
-  handleRowClick = (rowInfo) => {
-
+  handleRowClick = (state, rowInfo) => {
+    return {
+      onClick: (e) => {
+        console.log('Row clicked', rowInfo)
+        this.setState({
+          openEditModal: true,
+          rowToEdit: rowInfo.original,
+          modalError: ''
+        })
+      }
+    }
   }
 
   handleDelete = (row, e) => {

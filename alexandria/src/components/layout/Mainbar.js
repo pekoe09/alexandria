@@ -24,11 +24,11 @@ const LoggedInItems = () => {
   return (
     <React.Fragment>
       <Nav>
-        <Nav.Link to='/publishers'>
+        <NavLink to='/publishers'>
           <NavItem>
             Publishers
-        </NavItem>
-        </Nav.Link>
+          </NavItem>
+        </NavLink>
       </Nav>
       <Nav>
         <Logout />

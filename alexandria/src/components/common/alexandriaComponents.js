@@ -2,7 +2,8 @@ import React from 'react'
 import styled, { css } from 'styled-components'
 import ReactTable from 'react-table'
 import { Button } from 'react-bootstrap'
-import { Form, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { Form } from 'react-bootstrap'
 
 const ListTable = styled(ReactTable)`
   margin: 10px;
