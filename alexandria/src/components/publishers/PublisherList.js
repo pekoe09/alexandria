@@ -39,7 +39,11 @@ class PublisherList extends React.Component {
 
   handleSave = async (publisher) => {
     console.log('Saving', publisher)
-    await this.props.addPublisher(publisher)
+    if (publisher._id) {
+      await this.props.updatePublisher(publisher)
+    } else {
+      await this.props.addPublisher(publisher)
+    }
     if (this.props.error) {
       this.setState({ modalError: 'Could not save the publisher' })
     }
@@ -59,7 +63,7 @@ class PublisherList extends React.Component {
   }
 
   handleDelete = (row, e) => {
-
+    e.stopPropagation()
   }
 
   handleDeleteConfirmation = async (isConfirmed) => {
@@ -110,7 +114,7 @@ class PublisherList extends React.Component {
           minRows={1}
         />
         <PublisherEdit
-
+          publisher={this.state.rowToEdit}
           modalIsOpen={this.state.openEditModal}
           closeModal={this.toggleEditModalOpen}
           handleSave={this.handleSave}

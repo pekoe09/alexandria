@@ -17,6 +17,7 @@ class PublisherEdit extends React.Component {
   }
 
   handleEnter = () => {
+    console.log('Publisher', this.state.publisher)
     if (this.props.publisher) {
       this.setState({
         _id: this.props.publisher._id,
@@ -58,10 +59,15 @@ class PublisherEdit extends React.Component {
     console.log('Error', this.props.modalError)
     if (!this.props.modalError) {
       this.handleExit()
+      this.props.closeModal()
     }
   }
 
   handleCancel = () => {
+    this.setState({
+      _id: '',
+      name: ''
+    })
     this.props.closeModal()
   }
 
@@ -87,6 +93,7 @@ class PublisherEdit extends React.Component {
       <Modal
         show={this.props.modalIsOpen}
         onEnter={this.handleEnter}
+        onShow={this.handleEnter}
         onExit={this.handleExit}
         onHide={this.props.closeModal}
         animation={false}
