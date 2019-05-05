@@ -5,13 +5,14 @@ import {
   ListTable,
   ViewHeader
 } from '../common/alexandriaComponents'
+import '../common/alexandria-react-table.css'
 import {
   getAllPublishers,
   addPublisher,
   updatePublisher,
   deletePublisher
 } from '../../actions/publisherActions'
-import { Button } from 'react-bootstrap';
+import { StyledButton } from '../common/alexandriaComponents';
 import PublisherEdit from './PublisherEdit'
 
 class PublisherList extends React.Component {
@@ -74,12 +75,12 @@ class PublisherList extends React.Component {
       Header: '',
       accessor: 'delete',
       Cell: (row) => (
-        <Button
+        <StyledButton
           onClick={(e) => this.handleDelete(row.original, e)}
-          bsStyle='danger'
+          bsstyle='rowdanger'
         >
           Delete
-        </Button>
+        </StyledButton>
       ),
       style: {
         textAlign: 'center'
@@ -94,12 +95,13 @@ class PublisherList extends React.Component {
     return (
       <React.Fragment>
         <ViewHeader text='Publishers' />
-        <Button
+        <StyledButton
           bsstyle='primary'
           onClick={this.toggleEditModalOpen}
+          style={{ marginLeft: 10 }}
         >
           Add publisher
-        </Button>
+        </StyledButton>
         <ListTable
           data={this.props.publishers}
           columns={this.columns}

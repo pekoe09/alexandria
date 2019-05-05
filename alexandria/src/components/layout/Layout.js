@@ -3,9 +3,9 @@ import Mainbar from './Mainbar'
 
 const layoutStyle = {
   display: 'flex',
-  height: 'fit-content',
+  height: '100vh',
   fontFamily: 'Open sans',
-  paddingTop: 50
+  backgroundColor: '#3B8487'
 }
 
 const Layout = (props) => {

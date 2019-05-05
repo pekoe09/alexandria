@@ -5,9 +5,12 @@ import { Navbar, Nav, NavItem } from 'react-bootstrap'
 import styled from 'styled-components'
 import Login from '../users/Login'
 import Logout from '../users/Logout'
+import { StyledNav, StyledNavItem } from '../common/alexandriaComponents'
 
 const StyledNavbar = styled(Navbar)`
-  marginBottom: 0;
+  margin-bottom: 0;
+  background-color: #024447;
+  border-radius: 0;
 `
 
 const AnonymousItems = () => {
@@ -25,9 +28,9 @@ const LoggedInItems = () => {
     <React.Fragment>
       <Nav>
         <NavLink to='/publishers'>
-          <NavItem>
+          <StyledNavItem>
             Publishers
-          </NavItem>
+          </StyledNavItem>
         </NavLink>
       </Nav>
       <Nav>
@@ -40,6 +43,7 @@ const LoggedInItems = () => {
 const Mainbar = ({ currentUser }) => {
   return (
     <StyledNavbar
+      fixed='top'
     >
       <Navbar.Brand>
         <NavLink to='/'>

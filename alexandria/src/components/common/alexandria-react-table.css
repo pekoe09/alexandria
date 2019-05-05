@@ -1,0 +1,16 @@
+.rt-thead .rt-tr {
+  min-width: 180px;
+  background-color: #125D60;
+  color: white;
+  font-weight: 700;
+  font-family: sans-serif;
+}
+
+.rt-tr {
+  background-color: #62A1A4;
+  color: white;
+}
+
+.ReactTable .-pagination .-btn {
+  background-color: #FF9B98;
+}
