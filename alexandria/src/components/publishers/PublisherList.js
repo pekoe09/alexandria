@@ -14,14 +14,18 @@ import {
 } from '../../actions/publisherActions'
 import { StyledButton } from '../common/alexandriaComponents';
 import PublisherEdit from './PublisherEdit'
+import DeletionConfirmation from '../common/DeletionConfirmation'
 
 class PublisherList extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      openEditModal: false,
+      editModalIsOpen: false,
       rowToEdit: null,
-      modalError: ''
+      modalError: '',
+      deletionTargetId: '',
+      deletionTargetName: '',
+      deletionConfirmationIsOpen: false
     }
   }
 
@@ -32,7 +36,7 @@ class PublisherList extends React.Component {
   toggleEditModalOpen = () => {
     this.setState({
       modalError: '',
-      openEditModal: !this.state.openEditModal,
+      editModalIsOpen: !this.state.editModalIsOpen,
       rowToEdit: null
     })
   }
@@ -54,7 +58,7 @@ class PublisherList extends React.Component {
       onClick: (e) => {
         console.log('Row clicked', rowInfo)
         this.setState({
-          openEditModal: true,
+          editModalIsOpen: true,
           rowToEdit: rowInfo.original,
           modalError: ''
         })
@@ -62,12 +66,24 @@ class PublisherList extends React.Component {
     }
   }
 
-  handleDelete = (row, e) => {
+  handleDeleteRequest = (item, e) => {
     e.stopPropagation()
+    this.setState({
+      deletionTargetId: item._id,
+      deletionTargetName: item.name,
+      deletionConfirmationIsOpen: true
+    })
   }
 
   handleDeleteConfirmation = async (isConfirmed) => {
-
+    if (isConfirmed) {
+      await this.props.deletePublisher(this.state.deletionTargetId)
+    }
+    this.setState({
+      deletionConfirmationIsOpen: false,
+      deletionTargetId: '',
+      deletionTargetName: ''
+    })
   }
 
   columns = [
@@ -80,7 +96,7 @@ class PublisherList extends React.Component {
       accessor: 'delete',
       Cell: (row) => (
         <StyledButton
-          onClick={(e) => this.handleDelete(row.original, e)}
+          onClick={(e) => this.handleDeleteRequest(row.original, e)}
           bsstyle='rowdanger'
         >
           Delete
@@ -115,10 +131,16 @@ class PublisherList extends React.Component {
         />
         <PublisherEdit
           publisher={this.state.rowToEdit}
-          modalIsOpen={this.state.openEditModal}
+          modalIsOpen={this.state.editModalIsOpen}
           closeModal={this.toggleEditModalOpen}
           handleSave={this.handleSave}
           modalError={this.state.modalError}
+        />
+        <DeletionConfirmation
+          headerText={`Deleting ${this.state.deletionTargetName}`}
+          bodyText='Are you sure you want to go ahead and delete this?'
+          modalIsOpen={this.state.deletionConfirmationIsOpen}
+          closeModal={this.handleDeleteConfirmation}
         />
       </React.Fragment>
     )
