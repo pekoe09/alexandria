@@ -34,6 +34,13 @@ const LoggedInItems = () => {
         </NavLink>
       </Nav>
       <Nav>
+        <NavLink to='/authors'>
+          <StyledNavItem>
+            Authors
+          </StyledNavItem>
+        </NavLink>
+      </Nav>
+      <Nav>
         <Logout />
       </Nav>
     </React.Fragment>

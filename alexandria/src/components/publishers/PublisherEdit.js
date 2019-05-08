@@ -10,8 +10,12 @@ class PublisherEdit extends React.Component {
     this.state = {
       _id: '',
       name: '',
+      city: '',
+      country: '',
       touched: {
-        name: false
+        name: false,
+        city: false,
+        country: false
       }
     }
   }
@@ -21,7 +25,9 @@ class PublisherEdit extends React.Component {
     if (this.props.publisher) {
       this.setState({
         _id: this.props.publisher._id,
-        name: this.props.publisher.name
+        name: this.props.publisher.name,
+        city: this.props.publisher.city,
+        country: this.props.publisher.country
       })
     }
   }
@@ -30,8 +36,12 @@ class PublisherEdit extends React.Component {
     this.setState({
       _id: '',
       name: '',
+      city: '',
+      country: '',
       touched: {
-        name: false
+        name: false,
+        city: false,
+        country: false
       }
     })
   }
@@ -53,7 +63,9 @@ class PublisherEdit extends React.Component {
     event.preventDefault()
     const publisher = {
       _id: this.state._id,
-      name: this.state.name
+      name: this.state.name,
+      city: this.state.city,
+      country: this.state.country
     }
     await this.props.handleSave(publisher)
     console.log('Error', this.props.modalError)
@@ -66,7 +78,9 @@ class PublisherEdit extends React.Component {
   handleCancel = () => {
     this.setState({
       _id: '',
-      name: ''
+      name: '',
+      city: '',
+      country: ''
     })
     this.props.closeModal()
   }
@@ -112,6 +126,30 @@ class PublisherEdit extends React.Component {
                 onChange={this.handleChange}
                 onBlur={this.handleBlur}
                 isInvalid={this.getValidationState(errors, 'name')}
+              />
+
+            </StyledForm.Group>
+            <StyledForm.Group controlId='city'>
+              <StyledForm.Label>City</StyledForm.Label>
+              <StyledForm.Control
+                type='text'
+                name='city'
+                value={this.state.city}
+                onChange={this.handleChange}
+                onBlur={this.handleBlur}
+                isInvalid={this.getValidationState(errors, 'city')}
+              />
+
+            </StyledForm.Group>
+            <StyledForm.Group controlId='country'>
+              <StyledForm.Label>Country</StyledForm.Label>
+              <StyledForm.Control
+                type='text'
+                name='country'
+                value={this.state.country}
+                onChange={this.handleChange}
+                onBlur={this.handleBlur}
+                isInvalid={this.getValidationState(errors, 'country')}
               />
 
             </StyledForm.Group>

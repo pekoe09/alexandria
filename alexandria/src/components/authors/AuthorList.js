@@ -3,20 +3,19 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import {
   ListTable,
-  ViewHeader,
-  StyledButton
+  StyledButton,
+  ViewHeader
 } from '../common/alexandriaComponents'
 import '../common/alexandria-react-table.css'
 import {
-  getAllPublishers,
-  addPublisher,
-  updatePublisher,
-  deletePublisher
-} from '../../actions/publisherActions'
-import PublisherEdit from './PublisherEdit'
+  getAllAuthors,
+  addAuthor,
+  updateAuthor,
+  deleteAuthor
+} from '../../actions/authorActions'
 import DeletionConfirmation from '../common/DeletionConfirmation'
 
-class PublisherList extends React.Component {
+class AuthorList extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -30,7 +29,7 @@ class PublisherList extends React.Component {
   }
 
   componentDidMount = async () => {
-    await this.props.getAllPublishers()
+    await this.props.getAllAuthors()
   }
 
   toggleEditModalOpen = () => {
@@ -41,14 +40,14 @@ class PublisherList extends React.Component {
     })
   }
 
-  handleSave = async (publisher) => {
-    if (publisher._id) {
-      await this.props.updatePublisher(publisher)
+  handleSave = async (author) => {
+    if (author._id) {
+      await this.props.updateAuthor(author)
     } else {
-      await this.props.addPublisher(publisher)
+      await this.props.addAuthor(author)
     }
     if (this.props.error) {
-      this.setState({ modalError: 'Could not save the publisher' })
+      this.setState({ modalError: 'Could not save the author' })
     }
   }
 
@@ -68,14 +67,14 @@ class PublisherList extends React.Component {
     e.stopPropagation()
     this.setState({
       deletionTargetId: item._id,
-      deletionTargetName: item.name,
+      deletionTargetName: `${item.lastName}, ${item.firstNames}`,
       deletionConfirmationIsOpen: true
     })
   }
 
   handleDeleteConfirmation = async (isConfirmed) => {
     if (isConfirmed) {
-      await this.props.deletePublisher(this.state.deletionTargetId)
+      await this.props.deleteAuthor(this.state.deletionTargetId)
     }
     this.setState({
       deletionConfirmationIsOpen: false,
@@ -87,7 +86,7 @@ class PublisherList extends React.Component {
   columns = [
     {
       Header: 'Name',
-      accessor: 'name'
+      accessor: 'fullName'
     },
     {
       Header: '',
@@ -112,28 +111,22 @@ class PublisherList extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <ViewHeader text='Publishers' />
+        <ViewHeader text='Authors' />
         <StyledButton
           bsstyle='primary'
           onClick={this.toggleEditModalOpen}
           style={{ marginLeft: 10 }}
         >
-          Add publisher
+          Add author
         </StyledButton>
         <ListTable
-          data={this.props.publishers}
+          data={this.props.authors}
           columns={this.columns}
           getTrProps={this.handleRowClick}
           defaultPageSize={20}
           minRows={1}
         />
-        <PublisherEdit
-          publisher={this.state.rowToEdit}
-          modalIsOpen={this.state.editModalIsOpen}
-          closeModal={this.toggleEditModalOpen}
-          handleSave={this.handleSave}
-          modalError={this.state.modalError}
-        />
+
         <DeletionConfirmation
           headerText={`Deleting ${this.state.deletionTargetName}`}
           bodyText='Are you sure you want to go ahead and delete this?'
@@ -143,20 +136,21 @@ class PublisherList extends React.Component {
       </React.Fragment>
     )
   }
+
 }
 
 const mapStateToProps = store => ({
-  publishers: store.publishers.items,
-  loading: store.publishers.loading,
-  error: store.publishers.error
+  authors: store.authors.items,
+  loading: store.authors.loading,
+  error: store.authors.error
 })
 
 export default withRouter(connect(
   mapStateToProps,
   {
-    getAllPublishers,
-    addPublisher,
-    updatePublisher,
-    deletePublisher
+    getAllAuthors,
+    addAuthor,
+    updateAuthor,
+    deleteAuthor
   }
-)(PublisherList))
+)(AuthorList))
