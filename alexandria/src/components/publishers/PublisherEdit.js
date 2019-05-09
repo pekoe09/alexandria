@@ -21,7 +21,6 @@ class PublisherEdit extends React.Component {
   }
 
   handleEnter = () => {
-    console.log('Publisher', this.state.publisher)
     if (this.props.publisher) {
       this.setState({
         _id: this.props.publisher._id,
@@ -127,7 +126,6 @@ class PublisherEdit extends React.Component {
                 onBlur={this.handleBlur}
                 isInvalid={this.getValidationState(errors, 'name')}
               />
-
             </StyledForm.Group>
             <StyledForm.Group controlId='city'>
               <StyledForm.Label>City</StyledForm.Label>
@@ -139,7 +137,6 @@ class PublisherEdit extends React.Component {
                 onBlur={this.handleBlur}
                 isInvalid={this.getValidationState(errors, 'city')}
               />
-
             </StyledForm.Group>
             <StyledForm.Group controlId='country'>
               <StyledForm.Label>Country</StyledForm.Label>
@@ -151,7 +148,6 @@ class PublisherEdit extends React.Component {
                 onBlur={this.handleBlur}
                 isInvalid={this.getValidationState(errors, 'country')}
               />
-
             </StyledForm.Group>
           </StyledForm>
         </Modal.Body>

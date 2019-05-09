@@ -13,6 +13,7 @@ import {
   updateAuthor,
   deleteAuthor
 } from '../../actions/authorActions'
+import AuthorEdit from './AuthorEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
 
 class AuthorList extends React.Component {
@@ -126,7 +127,13 @@ class AuthorList extends React.Component {
           defaultPageSize={20}
           minRows={1}
         />
-
+        <AuthorEdit
+          author={this.state.rowToEdit}
+          modalIsOpen={this.state.editModalIsOpen}
+          closeModal={this.toggleEditModalOpen}
+          handleSave={this.handleSave}
+          modalError={this.state.modalError}
+        />
         <DeletionConfirmation
           headerText={`Deleting ${this.state.deletionTargetName}`}
           bodyText='Are you sure you want to go ahead and delete this?'
