@@ -41,6 +41,13 @@ const LoggedInItems = () => {
         </NavLink>
       </Nav>
       <Nav>
+        <NavLink to='/locations'>
+          <StyledNavItem>
+            Locations
+          </StyledNavItem>
+        </NavLink>
+      </Nav>
+      <Nav>
         <Logout />
       </Nav>
     </React.Fragment>
