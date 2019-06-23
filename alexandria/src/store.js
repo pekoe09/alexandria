@@ -5,12 +5,14 @@ import storage from 'redux-persist/lib/storage'
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2'
 
 import authorReducer from './reducers/authorReducer'
+import categoryReducer from './reducers/categoryReducer'
 import locationReducer from './reducers/locationReducer'
 import publisherReducer from './reducers/publisherReducer'
 import userReducer from './reducers/userReducer'
 
 const appReducer = combineReducers({
   authors: authorReducer,
+  categories: categoryReducer,
   locations: locationReducer,
   publishers: publisherReducer,
   users: userReducer

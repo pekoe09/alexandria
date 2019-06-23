@@ -41,6 +41,13 @@ const LoggedInItems = () => {
         </NavLink>
       </Nav>
       <Nav>
+        <NavLink to='/categories'>
+          <StyledNavItem>
+            Categories
+          </StyledNavItem>
+        </NavLink>
+      </Nav>
+      <Nav>
         <NavLink to='/locations'>
           <StyledNavItem>
             Locations

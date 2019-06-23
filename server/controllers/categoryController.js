@@ -12,7 +12,7 @@ categoryRouter.get('/', wrapAsync(async (req, res, next) => {
 
 categoryRouter.post('/', wrapAsync(async (req, res, next) => {
   checkUser(req)
-  validateMandatoryFields(req, ['name', 'level'], 'category', 'create')
+  validateMandatoryFields(req, ['name'], 'category', 'create')
 
   let nameMatch = await Category.findOne({ name: req.body.name })
   if (nameMatch) {
@@ -21,22 +21,37 @@ categoryRouter.post('/', wrapAsync(async (req, res, next) => {
     throw err
   }
 
+  let parent = null
+  if (req.body.parentId) {
+    parent = await Category.findById(parentId)
+    if (!parent) {
+      let err = new Error('Parent is not valid')
+      err.isBadRequest = true
+      throw err
+    }
+  }
+
+  console.log('trying to get number')
+  let testnumber = await getNextAvailableNumber(req.body.parentId)
+  console.log(`got number ${testnumber}`)
+
   let category = new Category({
     name: req.body.name,
-    level: req.body.level,
-    number: getNextAvailableNumber(req.body.parentId, req.body.level),
-    parent: req.body.parentId,
+    level: await getCategoryLevel(req.body.parentId),
+    number: await getNextAvailableNumber(req.body.parentId),
+    parent,
     children: []
   })
   category = await category.save()
 
-  let parent = await Category.findById(category.parent)
-  parent.children = parent.children.concat({
-    _id: category._id,
-    name: category.name,
-    number: category.number
-  })
-  await Category.findByIdAndUpdate(category.parent, parent)
+  if (parent) {
+    parent.children = parent.children.concat({
+      _id: category._id,
+      name: category.name,
+      number: category.number
+    })
+    await Category.findByIdAndUpdate(category.parent, parent)
+  }
 
   res.status(201).json(category)
 }))
@@ -92,8 +107,25 @@ categoryRouter.delete('/:id', wrapAsync(async (req, res, next) => {
   }
 }))
 
-getNextAvailableNumber = (parent, level) => {
-  return 0
+getCategoryLevel = async (parentId) => {
+  if (parentId) {
+    let savedParent = await Category.findById(parentId)
+    return savedParent.level + 1;
+  } else {
+    return 0;
+  }
+}
+
+getNextAvailableNumber = async (parentId) => {
+  let level = await getCategoryLevel(parentId)
+  let maxCategory = Category
+    .findOne({ level: level })
+    .sort('number')
+  if (maxCategory) {
+    return maxCategory.number + 1
+  } else {
+    1
+  }
 }
 
 module.exports = categoryRouter
