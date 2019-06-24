@@ -31,10 +31,6 @@ categoryRouter.post('/', wrapAsync(async (req, res, next) => {
     }
   }
 
-  console.log('trying to get number')
-  let testnumber = await getNextAvailableNumber(req.body.parentId)
-  console.log(`got number ${testnumber}`)
-
   let category = new Category({
     name: req.body.name,
     level: await getCategoryLevel(req.body.parentId),
@@ -118,13 +114,13 @@ getCategoryLevel = async (parentId) => {
 
 getNextAvailableNumber = async (parentId) => {
   let level = await getCategoryLevel(parentId)
-  let maxCategory = Category
+  let maxCategory = await Category
     .findOne({ level: level })
-    .sort('number')
+    .sort('-number')
   if (maxCategory) {
     return maxCategory.number + 1
   } else {
-    1
+    return 1
   }
 }
 

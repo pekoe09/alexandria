@@ -127,7 +127,7 @@ class CategoryEdit extends React.Component {
               />
             </StyledForm.Group>
             <StyledForm.Group>
-              {this.state.level && <StyledForm.Label>{`Level ${this.state.level}`}</StyledForm.Label>}
+              {(this.state.level || this.state.level == 0) && <StyledForm.Label>{`Level ${this.state.level}`}</StyledForm.Label>}
               <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
               {this.state.number && <StyledForm.Label>{`Number ${this.state.number}`}</StyledForm.Label>}
             </StyledForm.Group>
@@ -151,8 +151,8 @@ CategoryEdit.propTypes = {
   category: propTypes.shape({
     _id: propTypes.string.isRequired,
     name: propTypes.string.isRequired,
-    level: propTypes.string,
-    number: propTypes.string
+    level: propTypes.number,
+    number: propTypes.number
   }),
   modalIsOpen: propTypes.bool.isRequired,
   closeModal: propTypes.func.isRequired,
