@@ -20,12 +20,12 @@ const authorSchema = new mongoose.Schema({
   }]
 })
 
-authorSchema.virtual('fullName').get(() => {
+authorSchema.virtual('fullName').get(function() {
   console.log('Virtual', this.firstNames, this.lastName)
   return (`${this.firstNames} ${this.lastName}`).trim()
 })
 
-authorSchema.virtual('fullNameReversed').get(() => {
+authorSchema.virtual('fullNameReversed').get(function() {
   const fullNameReversed = this.firstNames ?
     `${this.lastName}, ${this.firstNames}` :
     this.lastName

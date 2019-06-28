@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
   }
 })
 
-userSchema.virtual('fullName').get(() => {
+userSchema.virtual('fullName').get(function() {
   return (`${this.firstNames} ${this.lastName}`)
 })
 

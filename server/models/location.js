@@ -13,7 +13,7 @@ const locationSchema = new mongoose.Schema({
   }
 })
 
-locationSchema.virtual('fullName').get(() => {
+locationSchema.virtual('fullName').get(function() {
   let fullName = this.room
   if (this.shelving) {
     fullName = `${fullName} - ${this.shelving}`
