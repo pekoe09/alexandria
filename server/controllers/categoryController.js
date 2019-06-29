@@ -22,22 +22,40 @@ categoryRouter.post('/', wrapAsync(async (req, res, next) => {
   }
 
   let parent = null
+  let parentCopy = null
   if (req.body.parentId) {
-    parent = await Category.findById(parentId)
+    console.log('getting parent')
+    parent = await Category.findById(req.body.parentId)
+    console.log('got parent', parent)
     if (!parent) {
       let err = new Error('Parent is not valid')
       err.isBadRequest = true
       throw err
     }
+    parentCopy = {
+      _id: parent._id,
+      name: parent.name,
+      level: parent.level,
+      number: parent.number,
+      code: parent.code
+    }
+    console.log(parentCopy)
+    delete parentCopy.children
   }
-
+  console.log('getting numbers')
+  const level = await getCategoryLevel(req.body.parentId)
+  const number = await getNextAvailableNumber(req.body.parentId)
+  console.log('creating category')
+  console.log('parentcopy', parentCopy)
   let category = new Category({
     name: req.body.name,
-    level: await getCategoryLevel(req.body.parentId),
-    number: await getNextAvailableNumber(req.body.parentId),
-    parent,
+    level,
+    number,
+    code: parent ? `${parent.code}.${number}` : number,
+    parent: parentCopy,
     children: []
   })
+  console.log('saving category', category)
   category = await category.save()
 
   if (parent) {
@@ -48,6 +66,7 @@ categoryRouter.post('/', wrapAsync(async (req, res, next) => {
     })
     await Category.findByIdAndUpdate(category.parent, parent)
   }
+  console.log('parent is now', parent)
 
   res.status(201).json(category)
 }))
@@ -114,9 +133,17 @@ getCategoryLevel = async (parentId) => {
 
 getNextAvailableNumber = async (parentId) => {
   let level = await getCategoryLevel(parentId)
-  let maxCategory = await Category
-    .findOne({ level: level })
-    .sort('-number')
+  let maxCategory = null
+  if (parentId) {
+    maxCategory = await Category
+      .findOne({ 'parent._id': parentId })
+      .sort('-number')
+  } else {
+    maxCategory = await Category
+      .findOne({ level: level })
+      .sort('-number')
+  }
+
   if (maxCategory) {
     return maxCategory.number + 1
   } else {
