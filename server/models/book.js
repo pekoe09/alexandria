@@ -5,10 +5,10 @@ const bookSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  author: {
+  authors: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Author'
-  },
+  }],
   publisher: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Publisher'
@@ -30,7 +30,10 @@ const bookSchema = new mongoose.Schema({
   serialNumber: {
     type: Number
   },
-  read: {
+  pages: {
+    type: Number
+  },
+  readPages: {
     type: Number
   },
   acquiredDate: {
