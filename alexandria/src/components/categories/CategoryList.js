@@ -100,8 +100,8 @@ class CategoryList extends React.Component {
       }
     },
     {
-      Header: 'Number',
-      accessor: 'number',
+      Header: 'Code',
+      accessor: 'code',
       style: {
         textAlign: 'center'
       }
@@ -129,7 +129,7 @@ class CategoryList extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <ViewHeader text='Categorys' />
+        <ViewHeader text='Categories' />
         <StyledButton
           bsstyle='primary'
           onClick={this.toggleEditModalOpen}

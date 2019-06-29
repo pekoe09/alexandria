@@ -1,5 +1,28 @@
 const mongoose = require('mongoose')
 
+const categoryCopySchema = new mongoose.Schema({
+  _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
+  },
+  name: {
+    type: String,
+    required: true
+  },
+  level: {
+    type: Number,
+    required: true
+  },
+  number: {
+    type: Number,
+    required: true
+  },
+  code: {
+    type: String,
+    required: true
+  }
+})
+
 const categorySchema = new mongoose.Schema({
   name: {
     type: String,
@@ -14,8 +37,12 @@ const categorySchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  code: {
+    type: String,
+    required: true
+  },
   parent: {
-    _id: mongoose.Schema.Types.ObjectId
+    type: categoryCopySchema
   },
   children: [{
     _id: {
