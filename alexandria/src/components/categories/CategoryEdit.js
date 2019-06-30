@@ -4,6 +4,7 @@ import { StyledForm } from '../common/alexandriaComponents'
 import FormButtons from '../common/FormButtons'
 import { Modal } from 'react-bootstrap'
 import { Typeahead } from 'react-bootstrap-typeahead'
+import 'react-bootstrap-typeahead/css/Typeahead.css';
 import { connect } from 'react-redux'
 
 class CategoryEdit extends React.Component {
@@ -175,7 +176,7 @@ class CategoryEdit extends React.Component {
 
 const mapStateToProps = store => ({
   categories: store.categories.items
-    .sort((a, b) => a.code < b.code ? -11 : (a.code > b.code ? 1 : 0))
+    .sort((a, b) => a.code < b.code ? -1 : (a.code > b.code ? 1 : 0))
 })
 
 export default connect(

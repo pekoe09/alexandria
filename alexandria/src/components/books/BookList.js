@@ -13,7 +13,7 @@ import {
   updateBook,
   deleteBook
 } from '../../actions/bookActions'
-import AuthorEdit from './AuthorEdit'
+import BookEdit from './BookEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
 
 class BookList extends React.Component {
@@ -30,7 +30,7 @@ class BookList extends React.Component {
   }
 
   componentDidMount = async () => {
-    await this.props.getAllAuthors()
+    await this.props.getAllBooks()
   }
 
   toggleEditModalOpen = () => {
@@ -41,14 +41,14 @@ class BookList extends React.Component {
     })
   }
 
-  handleSave = async (author) => {
-    if (author._id) {
-      await this.props.updateAuthor(author)
+  handleSave = async (book) => {
+    if (book._id) {
+      await this.props.updateBook(book)
     } else {
-      await this.props.addAuthor(author)
+      await this.props.addBook(book)
     }
     if (this.props.error) {
-      this.setState({ modalError: 'Could not save the author' })
+      this.setState({ modalError: 'Could not save the book' })
     }
   }
 
@@ -75,7 +75,7 @@ class BookList extends React.Component {
 
   handleDeleteConfirmation = async (isConfirmed) => {
     if (isConfirmed) {
-      await this.props.deleteAuthor(this.state.deletionTargetId)
+      await this.props.deleteBook(this.state.deletionTargetId)
     }
     this.setState({
       deletionConfirmationIsOpen: false,
@@ -112,23 +112,23 @@ class BookList extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <ViewHeader text='Authors' />
+        <ViewHeader text='Books' />
         <StyledButton
           bsstyle='primary'
           onClick={this.toggleEditModalOpen}
           style={{ marginLeft: 10 }}
         >
-          Add author
+          Add book
         </StyledButton>
         <ListTable
-          data={this.props.authors}
+          data={this.props.books}
           columns={this.columns}
           getTrProps={this.handleRowClick}
           defaultPageSize={20}
           minRows={1}
         />
-        <AuthorEdit
-          author={this.state.rowToEdit}
+        <BookEdit
+          book={this.state.rowToEdit}
           modalIsOpen={this.state.editModalIsOpen}
           closeModal={this.toggleEditModalOpen}
           handleSave={this.handleSave}

@@ -132,7 +132,7 @@ class AuthorEdit extends React.Component {
         animation={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Add/edit publisher</Modal.Title>
+          <Modal.Title>Add/edit author</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <StyledForm>

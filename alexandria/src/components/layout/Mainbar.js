@@ -27,9 +27,9 @@ const LoggedInItems = () => {
   return (
     <React.Fragment>
       <Nav>
-        <NavLink to='/publishers'>
+        <NavLink to='/books'>
           <StyledNavItem>
-            Publishers
+            Books
           </StyledNavItem>
         </NavLink>
       </Nav>
@@ -37,6 +37,13 @@ const LoggedInItems = () => {
         <NavLink to='/authors'>
           <StyledNavItem>
             Authors
+          </StyledNavItem>
+        </NavLink>
+      </Nav>
+      <Nav>
+        <NavLink to='/publishers'>
+          <StyledNavItem>
+            Publishers
           </StyledNavItem>
         </NavLink>
       </Nav>

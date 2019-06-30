@@ -6,6 +6,9 @@ import moment from 'moment'
 import { StyledForm } from '../common/alexandriaComponents'
 import FormButtons from '../common/FormButtons'
 import { Modal } from 'react-bootstrap'
+import { Typeahead } from 'react-bootstrap-typeahead'
+import 'react-bootstrap-typeahead/css/Typeahead.css';
+import { connect } from 'react-redux'
 
 class BookEdit extends React.Component {
   constructor(props) {
@@ -27,7 +30,8 @@ class BookEdit extends React.Component {
       comment: '',
       touched: {
         title: false
-      }
+      },
+      multiple: true
     }
   }
 
@@ -61,15 +65,15 @@ class BookEdit extends React.Component {
         authors: this.props.book.authors,
         publisher: [this.props.book.publisher],
         publishingYear: this.props.book.publishingYear,
-        isbn: '',
-        categories: [],
-        location: [],
-        serialNumber: '',
-        pages: '',
-        readPages: '',
-        acquiredDate: null,
-        price: '',
-        comment: '',
+        isbn: this.props.book.isbn,
+        categories: this.props.book.categories,
+        location: this.props.book.location ? [this.props.book.location] : [],
+        serialNumber: this.props.book.serialNumber,
+        pages: this.props.book.pages,
+        readPages: this.props.book.readPages,
+        acquiredDate: this.props.book.acquiredDate,
+        price: this.props.book.price,
+        comment: this.props.book.comment,
       })
     }
   }
@@ -83,16 +87,24 @@ class BookEdit extends React.Component {
     this.setState({ [event.target.name]: event.target.value })
   }
 
-  handleDOBChange = date  => {
-    this.setState({
-      DOB: date
-    })
+  handleAuthorChange = (selected) => {
+    this.setState({ authors: selected })
   }
 
-  handleDODChange = date  => {
-    this.setState({
-      DOD: date
-    })
+  handleCategoryChange = (selected) => {
+    this.setState({ categories: selected })
+  }
+
+  handleLocationChange = (selected) => {
+    this.setState({ location: selected })
+  }
+
+  handlePublisherChange = (selected) => {
+    this.setState({ publisher: selected })
+  }
+
+  handleAcquiredChange = date => {
+    this.setState({ acquiredDate: date })
   }
 
   handleBlur = field => () => {
@@ -106,14 +118,23 @@ class BookEdit extends React.Component {
 
   handleSubmit = async (event) => {
     event.preventDefault()
-    const author = {
+    const book = {
       _id: this.state._id,
-      lastName: this.state.lastName,
-      firstNames: this.state.firstNames,
-      DOB: this.state.DOB,
-      DOD: this.state.DOD
+      title: this.state.title,
+      authors: this.state.authors,
+      publisher: this.state.publisher.length > 0 ? this.state.publisher[0] : null,
+      publishingYear: this.state.publishingYear,
+      isbn: this.state.isbn,
+      categories: this.state.categories,
+      location: this.state.location.length > 0 ? this.state.location[0] : null,
+      serialNumber: this.state.serialNumber,
+      pages: this.state.pages,
+      readPages: this.state.readPages,
+      acquiredDate: this.state.acquiredDate,
+      price: this.state.price,
+      comment: this.state.comment,
     }
-    await this.props.handleSave(author)
+    await this.props.handleSave(book)
     if (!this.props.modalError) {
       this.handleExit()
       this.props.closeModal()
@@ -127,7 +148,7 @@ class BookEdit extends React.Component {
 
   validate = () => {
     return {
-      lastName: !this.state.lastName
+      title: !this.state.title
     }
   }
 
@@ -153,50 +174,155 @@ class BookEdit extends React.Component {
         animation={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Add/edit publisher</Modal.Title>
+          <Modal.Title>Add/edit book</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <StyledForm>
-            <StyledForm.Group controlId='lastName'>
-              <StyledForm.Label>Last name</StyledForm.Label>
+            <StyledForm.Group controlId='title'>
+              <StyledForm.Label>Title</StyledForm.Label>
               <StyledForm.Control
                 type='text'
-                name='lastName'
-                value={this.state.lastName}
+                name='title'
+                value={this.state.title}
                 onChange={this.handleChange}
                 onBlur={this.handleBlur}
-                isInvalid={this.getValidationState(errors, 'lastName')}
+                isInvalid={this.getValidationState(errors, 'title')}
               />
             </StyledForm.Group>
-            <StyledForm.Group controlId='firstNames'>
-              <StyledForm.Label>First names</StyledForm.Label>
+            <StyledForm.Group>
+              <StyledForm.Label>Authors</StyledForm.Label>
+              <Typeahead
+                onChange={(selected) => { this.handleAuthorChange(selected) }}
+                options={this.props.authors}
+                multiple
+                clearButton
+                selected={this.state.authors}
+                labelKey="fullNameReversed"
+                id="_id"
+                maxResults={20}
+              />
+            </StyledForm.Group>
+            <StyledForm.Group>
+              <StyledForm.Label>Publisher</StyledForm.Label>
+              <Typeahead
+                onChange={(selected) => { this.handlePublisherChange(selected) }}
+                options={this.props.publishers}
+                selected={this.state.publisher}
+                labelKey="name"
+                id="_id"
+                maxResults={20}
+              />
+            </StyledForm.Group>
+            <StyledForm.Group controlId='publishingYear'>
+              <StyledForm.Label>Published</StyledForm.Label>
               <StyledForm.Control
                 type='text'
-                name='firstNames'
-                value={this.state.firstNames}
+                name='publishingYear'
+                value={this.state.publishingYear}
                 onChange={this.handleChange}
                 onBlur={this.handleBlur}
-                isInvalid={this.getValidationState(errors, 'firstNames')}
+                isInvalid={this.getValidationState(errors, 'publishingYear')}
               />
             </StyledForm.Group>
-            <StyledForm.Group controlId='DOB'>
-              <StyledForm.Label>Date of birth</StyledForm.Label>
-              <DatePicker
-                name='DOB'
-                selected={this.state.DOB}
-                onChange={this.handleDOBChange}
-                dateFormat="dd/MM/yyyy"
-                onBlur={this.handleBlur('DOB')}
+            <StyledForm.Group controlId='isbn'>
+              <StyledForm.Label>ISBN</StyledForm.Label>
+              <StyledForm.Control
+                type='text'
+                name='isbn'
+                value={this.state.isbn}
+                onChange={this.handleChange}
+                onBlur={this.handleBlur}
+                isInvalid={this.getValidationState(errors, 'isbn')}
               />
             </StyledForm.Group>
-            <StyledForm.Group controlId='DOD'>
-              <StyledForm.Label>Date of death</StyledForm.Label>
+            <StyledForm.Group>
+              <StyledForm.Label>Categories</StyledForm.Label>
+              <Typeahead
+                onChange={(selected) => { this.handleCategoryChange(selected) }}
+                options={this.props.categories}
+                selected={this.state.categories}
+                multiple
+                clearButton
+                labelKey={(category) => `${category.code} - ${category.name}`}
+                id="_id"
+                maxResults={20}
+              />
+            </StyledForm.Group>
+            <StyledForm.Group>
+              <StyledForm.Label>Location</StyledForm.Label>
+              <Typeahead
+                onChange={(selected) => { this.handleLocationChange(selected) }}
+                options={this.props.locations}
+                selected={this.state.location}
+                labelKey="fullName"
+                id="_id"
+                maxResults={20}
+              />
+            </StyledForm.Group>
+            <StyledForm.Group controlId='serialNumber'>
+              <StyledForm.Label>Serial number</StyledForm.Label>
+              <StyledForm.Control
+                type='number'
+                name='serialNumber'
+                value={this.state.serialNumber}
+                onChange={this.handleChange}
+                onBlur={this.handleBlur}
+                isInvalid={this.getValidationState(errors, 'serialNumber')}
+              />
+            </StyledForm.Group>
+            <StyledForm.Group controlId='pages'>
+              <StyledForm.Label>Pages</StyledForm.Label>
+              <StyledForm.Control
+                type='number'
+                name='pages'
+                value={this.state.pages}
+                onChange={this.handleChange}
+                onBlur={this.handleBlur}
+                isInvalid={this.getValidationState(errors, 'pages')}
+              />
+            </StyledForm.Group>
+            <StyledForm.Group controlId='readPages'>
+              <StyledForm.Label>Read pages</StyledForm.Label>
+              <StyledForm.Control
+                type='number'
+                name='readPages'
+                value={this.state.readPages}
+                onChange={this.handleChange}
+                onBlur={this.handleBlur}
+                isInvalid={this.getValidationState(errors, 'readPages')}
+              />
+            </StyledForm.Group>
+            <StyledForm.Group controlId='acquiredDate'>
+              <StyledForm.Label>Acquired on</StyledForm.Label>
               <DatePicker
-                name='DOD'
-                selected={this.state.DOD}
-                onChange={this.handleDODChange}
+                name='acquiredDate'
+                selected={this.state.acquiredDate}
+                onChange={this.handleAcquiredChange}
                 dateFormat="dd/MM/yyyy"
-                onBlur={this.handleBlur('DOD')}
+                onBlur={this.handleBlur('acquiredDate')}
+              />
+            </StyledForm.Group>
+            <StyledForm.Group controlId='price'>
+              <StyledForm.Label>Price</StyledForm.Label>
+              <StyledForm.Control
+                type='number'
+                name='price'
+                value={this.state.price}
+                onChange={this.handleChange}
+                onBlur={this.handleBlur}
+                isInvalid={this.getValidationState(errors, 'price')}
+              />
+            </StyledForm.Group>
+            <StyledForm.Group controlId='comment'>
+              <StyledForm.Label>Comment</StyledForm.Label>
+              <StyledForm.Control
+                as='textarea'
+                rows="5"
+                name='comment'
+                value={this.state.comment}
+                onChange={this.handleChange}
+                onBlur={this.handleBlur}
+                isInvalid={this.getValidationState(errors, 'comment')}
               />
             </StyledForm.Group>
           </StyledForm>
@@ -213,15 +339,58 @@ class BookEdit extends React.Component {
   }
 }
 
-export default BookEdit
+const mapStateToProps = store => ({
+  authors: store.authors.items
+    .sort((a, b) => a.fullName < b.fullName ? -1 : (a.fullName > b.fullName ? 1 : 0)),
+  categories: store.categories.items
+    .sort((a, b) => a.code < b.code ? -1 : (a.code > b.code ? 1 : 0)),
+  locations: store.locations.items
+    .sort((a, b) => a.fullName < b.fullName ? -1 : (a.fullName > b.fullName ? 1 : 0)),
+  publishers: store.publishers.items
+    .sort((a, b) => a.name < b.name ? -1 : (a.name > b.name ? 1 : 0))
+})
 
-AuthorEdit.propTypes = {
-  author: PropTypes.shape({
+export default connect(
+  mapStateToProps
+)(BookEdit)
+
+BookEdit.propTypes = {
+  book: PropTypes.shape({
     _id: PropTypes.string.isRequired,
-    lastName: PropTypes.string.isRequired,
-    firstNames: PropTypes.string,
-    DOB: PropTypes.objectOf(Date),
-    DOD: PropTypes.objectOf(Date)
+    title: PropTypes.string.isRequired,
+    authors: PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        lastName: PropTypes.string.isRequired,
+        firstNames: PropTypes.string,
+        fullName: PropTypes.string.isRequired
+      })
+    ),
+    publisher: PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired
+    }),
+    publishingYear: PropTypes.number,
+    isbn: PropTypes.string,
+    categories: PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        code: PropTypes.string.isRequired
+      })
+    ),
+    location: PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      room: PropTypes.string,
+      shelving: PropTypes.string,
+      shelf: PropTypes.string
+    }),
+    serialNumber: PropTypes.number,
+    pages: PropTypes.number,
+    readPages: PropTypes.number,
+    acquiredDate: PropTypes.objectOf(Date),
+    price: PropTypes.number,
+    comment: PropTypes.string
   }),
   modalIsOpen: PropTypes.bool.isRequired,
   closeModal: PropTypes.func.isRequired,
