@@ -25,9 +25,15 @@
 
 #main {
   width: 100%;
+  margin-top: 80px;
 }
 
 /* ***** Tweaks to react-bootstrap Modal ***** */
+
+.wide-modal {
+  width: 80%;
+  max-width: 80%;
+}
 
 .modal-backdrop {
   background-color: rgb(0,0,0,0.3)
@@ -64,4 +70,26 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* ***** Tweaks to react-datepicker ***** */
+
+.react-datepicker-wrapper {
+  height: 38px;
+  width: 100%
+}
+
+.react-datepicker__input-container {
+  height: 38px;
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  height: 38px;
+  width: 100%;
+  border-radius: 4px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: lightgray;
+  padding: 6px 12px;
 }

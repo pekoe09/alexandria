@@ -5,7 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import moment from 'moment'
 import { StyledForm } from '../common/alexandriaComponents'
 import FormButtons from '../common/FormButtons'
-import { Modal } from 'react-bootstrap'
+import { Modal, Row, Col } from 'react-bootstrap'
 import { Typeahead } from 'react-bootstrap-typeahead'
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import { connect } from 'react-redux'
@@ -172,6 +172,7 @@ class BookEdit extends React.Component {
         onExit={this.handleExit}
         onHide={this.props.closeModal}
         animation={false}
+        dialogClassName="wide-modal"
       >
         <Modal.Header closeButton>
           <Modal.Title>Add/edit book</Modal.Title>
@@ -202,39 +203,41 @@ class BookEdit extends React.Component {
                 maxResults={20}
               />
             </StyledForm.Group>
-            <StyledForm.Group>
-              <StyledForm.Label>Publisher</StyledForm.Label>
-              <Typeahead
-                onChange={(selected) => { this.handlePublisherChange(selected) }}
-                options={this.props.publishers}
-                selected={this.state.publisher}
-                labelKey="name"
-                id="_id"
-                maxResults={20}
-              />
-            </StyledForm.Group>
-            <StyledForm.Group controlId='publishingYear'>
-              <StyledForm.Label>Published</StyledForm.Label>
-              <StyledForm.Control
-                type='text'
-                name='publishingYear'
-                value={this.state.publishingYear}
-                onChange={this.handleChange}
-                onBlur={this.handleBlur}
-                isInvalid={this.getValidationState(errors, 'publishingYear')}
-              />
-            </StyledForm.Group>
-            <StyledForm.Group controlId='isbn'>
-              <StyledForm.Label>ISBN</StyledForm.Label>
-              <StyledForm.Control
-                type='text'
-                name='isbn'
-                value={this.state.isbn}
-                onChange={this.handleChange}
-                onBlur={this.handleBlur}
-                isInvalid={this.getValidationState(errors, 'isbn')}
-              />
-            </StyledForm.Group>
+            <StyledForm.Row>
+              <StyledForm.Group as={Col}>
+                <StyledForm.Label>Publisher</StyledForm.Label>
+                <Typeahead
+                  onChange={(selected) => { this.handlePublisherChange(selected) }}
+                  options={this.props.publishers}
+                  selected={this.state.publisher}
+                  labelKey="name"
+                  id="_id"
+                  maxResults={20}
+                />
+              </StyledForm.Group>
+              <StyledForm.Group as={Col} md={2}>
+                <StyledForm.Label>Published</StyledForm.Label>
+                <StyledForm.Control
+                  type='text'
+                  name='publishingYear'
+                  value={this.state.publishingYear}
+                  onChange={this.handleChange}
+                  onBlur={this.handleBlur}
+                  isInvalid={this.getValidationState(errors, 'publishingYear')}
+                />
+              </StyledForm.Group>
+              <StyledForm.Group as={Col} md={3}>
+                <StyledForm.Label>ISBN</StyledForm.Label>
+                <StyledForm.Control
+                  type='text'
+                  name='isbn'
+                  value={this.state.isbn}
+                  onChange={this.handleChange}
+                  onBlur={this.handleBlur}
+                  isInvalid={this.getValidationState(errors, 'isbn')}
+                />
+              </StyledForm.Group>
+            </StyledForm.Row>
             <StyledForm.Group>
               <StyledForm.Label>Categories</StyledForm.Label>
               <Typeahead
@@ -248,71 +251,75 @@ class BookEdit extends React.Component {
                 maxResults={20}
               />
             </StyledForm.Group>
-            <StyledForm.Group>
-              <StyledForm.Label>Location</StyledForm.Label>
-              <Typeahead
-                onChange={(selected) => { this.handleLocationChange(selected) }}
-                options={this.props.locations}
-                selected={this.state.location}
-                labelKey="fullName"
-                id="_id"
-                maxResults={20}
-              />
-            </StyledForm.Group>
-            <StyledForm.Group controlId='serialNumber'>
-              <StyledForm.Label>Serial number</StyledForm.Label>
-              <StyledForm.Control
-                type='number'
-                name='serialNumber'
-                value={this.state.serialNumber}
-                onChange={this.handleChange}
-                onBlur={this.handleBlur}
-                isInvalid={this.getValidationState(errors, 'serialNumber')}
-              />
-            </StyledForm.Group>
-            <StyledForm.Group controlId='pages'>
-              <StyledForm.Label>Pages</StyledForm.Label>
-              <StyledForm.Control
-                type='number'
-                name='pages'
-                value={this.state.pages}
-                onChange={this.handleChange}
-                onBlur={this.handleBlur}
-                isInvalid={this.getValidationState(errors, 'pages')}
-              />
-            </StyledForm.Group>
-            <StyledForm.Group controlId='readPages'>
-              <StyledForm.Label>Read pages</StyledForm.Label>
-              <StyledForm.Control
-                type='number'
-                name='readPages'
-                value={this.state.readPages}
-                onChange={this.handleChange}
-                onBlur={this.handleBlur}
-                isInvalid={this.getValidationState(errors, 'readPages')}
-              />
-            </StyledForm.Group>
-            <StyledForm.Group controlId='acquiredDate'>
-              <StyledForm.Label>Acquired on</StyledForm.Label>
-              <DatePicker
-                name='acquiredDate'
-                selected={this.state.acquiredDate}
-                onChange={this.handleAcquiredChange}
-                dateFormat="dd/MM/yyyy"
-                onBlur={this.handleBlur('acquiredDate')}
-              />
-            </StyledForm.Group>
-            <StyledForm.Group controlId='price'>
-              <StyledForm.Label>Price</StyledForm.Label>
-              <StyledForm.Control
-                type='number'
-                name='price'
-                value={this.state.price}
-                onChange={this.handleChange}
-                onBlur={this.handleBlur}
-                isInvalid={this.getValidationState(errors, 'price')}
-              />
-            </StyledForm.Group>
+            <StyledForm.Row>
+              <StyledForm.Group as={Col}>
+                <StyledForm.Label>Location</StyledForm.Label>
+                <Typeahead
+                  onChange={(selected) => { this.handleLocationChange(selected) }}
+                  options={this.props.locations}
+                  selected={this.state.location}
+                  labelKey="fullName"
+                  id="_id"
+                  maxResults={20}
+                />
+              </StyledForm.Group>
+              <StyledForm.Group as={Col} md={3}>
+                <StyledForm.Label>Serial number</StyledForm.Label>
+                <StyledForm.Control
+                  type='number'
+                  name='serialNumber'
+                  value={this.state.serialNumber}
+                  onChange={this.handleChange}
+                  onBlur={this.handleBlur}
+                  isInvalid={this.getValidationState(errors, 'serialNumber')}
+                />
+              </StyledForm.Group>
+            </StyledForm.Row>
+            <StyledForm.Row>
+              <StyledForm.Group as={Col}>
+                <StyledForm.Label>Pages</StyledForm.Label>
+                <StyledForm.Control
+                  type='number'
+                  name='pages'
+                  value={this.state.pages}
+                  onChange={this.handleChange}
+                  onBlur={this.handleBlur}
+                  isInvalid={this.getValidationState(errors, 'pages')}
+                />
+              </StyledForm.Group>
+              <StyledForm.Group as={Col}>
+                <StyledForm.Label>Read pages</StyledForm.Label>
+                <StyledForm.Control
+                  type='number'
+                  name='readPages'
+                  value={this.state.readPages}
+                  onChange={this.handleChange}
+                  onBlur={this.handleBlur}
+                  isInvalid={this.getValidationState(errors, 'readPages')}
+                />
+              </StyledForm.Group>
+              <StyledForm.Group as={Col}>
+                <StyledForm.Label>Acquired on</StyledForm.Label>
+                <DatePicker
+                  name='acquiredDate'
+                  selected={this.state.acquiredDate}
+                  onChange={this.handleAcquiredChange}
+                  dateFormat="dd/MM/yyyy"
+                  onBlur={this.handleBlur('acquiredDate')}
+                />
+              </StyledForm.Group>
+              <StyledForm.Group as={Col}>
+                <StyledForm.Label>Price</StyledForm.Label>
+                <StyledForm.Control
+                  type='number'
+                  name='price'
+                  value={this.state.price}
+                  onChange={this.handleChange}
+                  onBlur={this.handleBlur}
+                  isInvalid={this.getValidationState(errors, 'price')}
+                />
+              </StyledForm.Group>
+            </StyledForm.Row>
             <StyledForm.Group controlId='comment'>
               <StyledForm.Label>Comment</StyledForm.Label>
               <StyledForm.Control
