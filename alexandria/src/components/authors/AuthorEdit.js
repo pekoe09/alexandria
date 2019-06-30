@@ -47,8 +47,10 @@ class AuthorEdit extends React.Component {
         _id: this.props.author._id,
         lastName: this.props.author.lastName,
         firstNames: this.props.author.firstNames,
-        DOB: this.props.author.DOB,
-        DOD: this.props.author.DOD
+        DOB: this.props.author.DOB ?
+          moment(this.props.author.DOB).toDate() : null,
+        DOD: this.props.author.DOD ?
+          moment(this.props.author.DOD).toDate() : null
       })
     }
   }
@@ -62,13 +64,13 @@ class AuthorEdit extends React.Component {
     this.setState({ [event.target.name]: event.target.value })
   }
 
-  handleDOBChange = date  => {
+  handleDOBChange = date => {
     this.setState({
       DOB: date
     })
   }
 
-  handleDODChange = date  => {
+  handleDODChange = date => {
     this.setState({
       DOD: date
     })
@@ -199,8 +201,8 @@ AuthorEdit.propTypes = {
     _id: PropTypes.string.isRequired,
     lastName: PropTypes.string.isRequired,
     firstNames: PropTypes.string,
-    DOB: PropTypes.objectOf(Date),
-    DOD: PropTypes.objectOf(Date)
+    DOB: PropTypes.string,
+    DOD: PropTypes.string
   }),
   modalIsOpen: PropTypes.bool.isRequired,
   closeModal: PropTypes.func.isRequired,

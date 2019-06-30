@@ -71,7 +71,8 @@ class BookEdit extends React.Component {
         serialNumber: this.props.book.serialNumber,
         pages: this.props.book.pages,
         readPages: this.props.book.readPages,
-        acquiredDate: this.props.book.acquiredDate,
+        acquiredDate: this.props.book.acquiredDate ?
+          moment(this.props.book.acquiredDate).toDate() : null,
         price: this.props.book.price,
         comment: this.props.book.comment,
       })
@@ -121,12 +122,12 @@ class BookEdit extends React.Component {
     const book = {
       _id: this.state._id,
       title: this.state.title,
-      authors: this.state.authors,
-      publisher: this.state.publisher.length > 0 ? this.state.publisher[0] : null,
+      authors: this.state.authors.map(a => a._id),
+      publisher: this.state.publisher.length > 0 ? this.state.publisher[0]._id : null,
       publishingYear: this.state.publishingYear,
       isbn: this.state.isbn,
-      categories: this.state.categories,
-      location: this.state.location.length > 0 ? this.state.location[0] : null,
+      categories: this.state.categories.map(c => c._id),
+      location: this.state.location.length > 0 ? this.state.location[0]._id : null,
       serialNumber: this.state.serialNumber,
       pages: this.state.pages,
       readPages: this.state.readPages,
@@ -395,7 +396,7 @@ BookEdit.propTypes = {
     serialNumber: PropTypes.number,
     pages: PropTypes.number,
     readPages: PropTypes.number,
-    acquiredDate: PropTypes.objectOf(Date),
+    acquiredDate: PropTypes.string,
     price: PropTypes.number,
     comment: PropTypes.string
   }),

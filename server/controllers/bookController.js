@@ -9,6 +9,10 @@ const Location = require('../models/location')
 bookRouter.get('/', wrapAsync(async (req, res, next) => {
   const books = await Book
     .find({})
+    .populate('authors')
+    .populate('publisher')
+    .populate('categories')
+    .populate('location')
     .sort({
       'author.fullNameReversed': 1,
       title: 1
@@ -19,28 +23,78 @@ bookRouter.post('/', wrapAsync(async (req, res, next) => {
   checkUser(req)
   validateMandatoryFields(req, ['title'], 'book', 'create')
 
+  let authors = []
+  if (req.body.authors) {
+    req.body.authors.forEach(async a => {
+      const author = await Author.findById(a)
+      if (!author) {
+        let err = new Error(`Author is not valid (${a})`)
+        err.isBadRequest = true
+        throw err
+      }
+      authors.push(author)
+    })
+  }
+
+  let categories = []
+  if (req.body.categories) {
+    req.body.categories.forEach(async c => {
+      const category = await Category.findById(c)
+      if (!category) {
+        let err = new Error(`Category is not valid (${c})`)
+        err.isBadRequest = true
+        throw err
+      }
+      categories.push(category)
+    })
+  }
+
+  let publisher = null
+  if (req.body.publisher) {
+    publisher = await Publisher.findById(req.body.publisher)
+    if (!publisher) {
+      let err = new Error(`Publisher is not valid (${req.body.publisher})`)
+      err.isBadRequest = true
+      throw err
+    }
+  }
+
+  let location = null
+  if (req.body.location) {
+    location = await Location.findById(req.body.location)
+    if (!location) {
+      let err = new Error(`Location is not valid (${req.body.location})`)
+    }
+  }
+
   let book = new Book({
     title: req.body.title,
-    author: req.body.authorId,
-    publisher: req.body.publisherId,
+    authors: req.body.authors,
+    publisher: req.body.publisher,
     publishingYear: req.body.publishingYear,
     isbn: req.body.isbn,
-    categories: req.body.categoryIds,
-    location: req.body.locationId,
+    categories: req.body.categories,
+    location: req.body.location,
     serialNumber: req.body.serialNumber,
-    read: req.body.read,
+    pages: req.body.pages,
+    readPages: req.body.readPages,
     acquiredDate: req.body.acquiredDate,
     price: req.body.price,
     comment: req.body.comment
   })
   book = await book.save()
-  if (req.body.authorId) {
-    let author = Author.findById(req.body.authorId)
-    author.books = author.books.concat(book._id)
-    await Author.findByIdAndUpdate(author._id, author)
-  }
 
-  res.status(201).json(book)
+  authors.forEach(async a => {
+    a.books.push(book._id)
+    await Author.findByIdAndUpdate(a._id, a)
+  })
+  const savedBook = await Book.findById(book._id)
+    .populate('authors')
+    .populate('publisher')
+    .populate('categories')
+    .populate('location')
+
+  res.status(201).json(savedBook)
 }))
 
 bookRouter.put('/:id', wrapAsync(async (req, res, next) => {

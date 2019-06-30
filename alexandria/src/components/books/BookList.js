@@ -86,8 +86,8 @@ class BookList extends React.Component {
 
   columns = [
     {
-      Header: 'Name',
-      accessor: 'fullName'
+      Header: 'Title',
+      accessor: 'title'
     },
     {
       Header: '',
