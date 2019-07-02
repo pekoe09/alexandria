@@ -7,16 +7,12 @@ authorRouter.get('/', wrapAsync(async (req, res, next) => {
   const authors = await Author
     .find({})
     .sort('fullNameReversed')
-
-  console.log(authors)
   res.json(authors)
 }))
 
 authorRouter.post('/', wrapAsync(async (req, res, next) => {
   checkUser(req)
   validateMandatoryFields(req, ['lastName'], 'author', 'create')
-  console.log('Saving author')
-  console.log(req.body)
   let author = new Author({
     lastName: req.body.lastName,
     firstNames: req.body.firstNames,
@@ -24,9 +20,7 @@ authorRouter.post('/', wrapAsync(async (req, res, next) => {
     DOD: req.body.DOD,
     books: []
   })
-  console.log('Sving', author)
   author = await author.save()
-  console.log('Saved', author)
   res.status(201).json(author)
 }))
 
