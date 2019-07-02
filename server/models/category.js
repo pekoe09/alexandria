@@ -44,20 +44,7 @@ const categorySchema = new mongoose.Schema({
   parent: {
     type: categoryCopySchema
   },
-  children: [{
-    _id: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true
-    },
-    name: {
-      type: String,
-      required: true
-    },
-    number: {
-      type: Number,
-      required: true
-    }
-  }]
+  children: [mongoose.Schema.Types.ObjectId]
 })
 
 const Category = mongoose.model('Category', categorySchema)

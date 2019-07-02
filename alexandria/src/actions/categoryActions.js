@@ -88,6 +88,7 @@ export const addCategory = (category) => {
     try {
       category = await entityService.addEntity('categories', category)
       dispatch(addCategorySuccess(category))
+      dispatch(getAllCategories())
     } catch (error) {
       console.log(error)
       dispatch(addCategoryFailure(error))
@@ -112,6 +113,7 @@ export const updateCategory = (category) => {
 export const deleteCategory = (id) => {
   return async (dispatch) => {
     dispatch(deleteCategoryBegin())
+    dispatch(getAllCategories())
     try {
       await entityService.removeEntity('categories', id)
       dispatch(deleteCategorySuccess(id))
