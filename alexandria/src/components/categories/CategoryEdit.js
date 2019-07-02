@@ -149,7 +149,7 @@ class CategoryEdit extends React.Component {
               <StyledForm.Label>Parent category</StyledForm.Label>
               <Typeahead
                 onChange={(selected) => { this.handleParentChange(selected) }}
-                options={this.props.categories}
+                options={this.state._id ? this.props.categories.filter(c => c._id !== this.state._id) : this.props.categories}
                 selected={this.state.parent}
                 labelKey={(category) => `${category.code} - ${category.name}`}
                 id="_id"

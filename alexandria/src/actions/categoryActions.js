@@ -113,10 +113,10 @@ export const updateCategory = (category) => {
 export const deleteCategory = (id) => {
   return async (dispatch) => {
     dispatch(deleteCategoryBegin())
-    dispatch(getAllCategories())
     try {
       await entityService.removeEntity('categories', id)
       dispatch(deleteCategorySuccess(id))
+      dispatch(getAllCategories())
     } catch (error) {
       console.log(error)
       dispatch(deleteCategoryFailure(error))

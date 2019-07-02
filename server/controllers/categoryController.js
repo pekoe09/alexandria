@@ -60,12 +60,14 @@ categoryRouter.put('/:id', wrapAsync(async (req, res, next) => {
     throw err
   }
 
-  if (req.body.parentId !== category.parent._id.toString()) {
+  const oldParentId = category.parent ? category.parent._id : null
+  if (req.body.parentId !== (oldParentId ? oldParentId.toString() : '')) {
     const { parent, parentCopy } = await getParentAndCopy(req.body.parentId)
     category.level = await getCategoryLevel(req.body.parentId)
     category.number = await getNextAvailableNumber(req.body.parentId)
 
-    let { oldParent } = await getParentAndCopy(category.parent._id)
+    const oldParentData = await getParentAndCopy(oldParentId)
+    let oldParent = oldParentData.parent
     if (oldParent) {
       await removeChild(oldParent, category)
     }
@@ -92,6 +94,7 @@ categoryRouter.delete('/:id', wrapAsync(async (req, res, next) => {
     err.isBadRequest = true
     throw err
   }
+  console.log('deleting category', category)
 
   let foundBooks = await Book.find({
     categories: {
@@ -112,18 +115,22 @@ categoryRouter.delete('/:id', wrapAsync(async (req, res, next) => {
     }
 
     if (parent) {
-      parent.children = parent.children.filter(c => !c._id.equals(category._id))
+      console.log('parent of the deceased', parent)
+      console.log('copy of the same', parentCopy)
+      parent.children = parent.children.filter(c => !c.equals(category._id))
       await Category.findByIdAndUpdate(parent._id, parent)
     }
 
     let child = null
     if (category.children.length > 0) {
-      for (let c of children) {
-        child = await Category.findById(c._id)
+      for (let c of category.children) {
+        child = await Category.findById(c)
         child.parent = parentCopy
         child.level = await getCategoryLevel(parent._id)
         child.number = await getNextAvailableNumber(parent._id)
-        child.code = parent ? `${parent.code}.${number}` : number
+        child.code = parent ? `${parent.code}.${child.number}` : child.number
+        await Category.findByIdAndUpdate(child._id, child)
+        console.log('attempting to recode children for:', child)
         await recodeChildren(child, child.children, true)
       }
     }
@@ -202,13 +209,13 @@ recodeChildren = async (parent, children, renumberIsOn) => {
   for (let c of children) {
     child = await Category.findById(c)
     if (child) {
-      if(renumberIsOn) {
+      if (renumberIsOn) {
         number = await getNextAvailableNumber(parentId)
         child.number = number
-      }      
+      }
       child.code = parent ? `${parent.code}.${child.number}` : child.number
       child.level = parent.level + 1
-      
+      console.log('saving recoded', child)
       await Category.findByIdAndUpdate(child._id, child)
       await recodeChildren(child, child.children, false)
     }
