@@ -94,6 +94,10 @@ class BookList extends React.Component {
       accessor: 'authorsString'
     },
     {
+      Header: 'Categories',
+      accessor: 'categoriesString'
+    },
+    {
       Header: '',
       accessor: 'delete',
       Cell: (row) => (

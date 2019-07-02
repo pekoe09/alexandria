@@ -26,6 +26,9 @@ const bookSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category'
   }],
+  categoriesString: {
+    type: String
+  },
   location: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Location'

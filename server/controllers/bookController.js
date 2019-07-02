@@ -26,7 +26,6 @@ bookRouter.post('/', wrapAsync(async (req, res, next) => {
   let authors = []
   let authorsString = ''
   if (req.body.authors) {
-    console.log('received authors', req.body.authors)
     for (const a of req.body.authors) {
       const author = await Author.findById(a)
       if (!author) {
@@ -34,27 +33,28 @@ bookRouter.post('/', wrapAsync(async (req, res, next) => {
         err.isBadRequest = true
         throw err
       }
-      console.log('adding author ', author)
       authors.push(author)
     }
 
-    console.log('authors array', authors)
     authorsString = authors.reduce((fullString, author) => `${fullString}${author.fullNameReversed}; `, '')
     authorsString = authorsString.slice(0, authorsString.length - 2)
-    console.log('authors string ', authorsString)
   }
 
   let categories = []
+  let categoriesString = ''
   if (req.body.categories) {
-    req.body.categories.forEach(async c => {
-      const category = await Category.findById(c)
+    for (const c of req.body.categories) {
+      let category = await Category.findById(c)
       if (!category) {
         let err = new Error(`Category is not valid (${c})`)
         err.isBadRequest = true
         throw err
       }
       categories.push(category)
-    })
+    }
+    categories = categories.sort((a, b) => a.code > b.code ? 1 : (a.code < b.code ? -1 : 0))
+    categoriesString = categories.reduce((fullString, category) => `${fullString}${category.name}, `, '')
+    categoriesString = categoriesString.slice(0, categoriesString.length - 2)
   }
 
   let publisher = null
@@ -83,6 +83,7 @@ bookRouter.post('/', wrapAsync(async (req, res, next) => {
     publishingYear: req.body.publishingYear,
     isbn: req.body.isbn,
     categories: req.body.categories,
+    categoriesString,
     location: req.body.location,
     serialNumber: req.body.serialNumber,
     pages: req.body.pages,
