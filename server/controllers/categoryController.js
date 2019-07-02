@@ -21,32 +21,11 @@ categoryRouter.post('/', wrapAsync(async (req, res, next) => {
     throw err
   }
 
-  const { parent, parentCopy } = getParentAndCopy(req.body.parentId)
-  // if (req.body.parentId) {
-  //   console.log('getting parent')
-  //   parent = await Category.findById(req.body.parentId)
-  //   console.log('got parent', parent)
-  //   if (!parent) {
-  //     let err = new Error('Parent is not valid')
-  //     err.isBadRequest = true
-  //     throw err
-  //   }
-  //   parentCopy = {
-  //     _id: parent._id,
-  //     name: parent.name,
-  //     level: parent.level,
-  //     number: parent.number,
-  //     code: parent.code
-  //   }
-  //   console.log(parentCopy)
-  //   delete parentCopy.children
-  // }
-
+  const { parent, parentCopy } = await getParentAndCopy(req.body.parentId)
   console.log('getting numbers')
   const level = await getCategoryLevel(req.body.parentId)
   const number = await getNextAvailableNumber(req.body.parentId)
   console.log('creating category')
-  console.log('parentcopy', parentCopy)
   let category = new Category({
     name: req.body.name,
     level,
@@ -65,7 +44,7 @@ categoryRouter.post('/', wrapAsync(async (req, res, next) => {
     //   number: category.number
     // })
     // await Category.findByIdAndUpdate(category.parent._id, parent)
-    addChild(parent, category)
+    await addChild(parent, category)
   }
   console.log('parent is now', parent)
 
@@ -81,6 +60,7 @@ categoryRouter.put('/:id', wrapAsync(async (req, res, next) => {
     err.isBadRequest = true
     throw err
   }
+  console.log('category to edit: ', category)
 
   validateMandatoryFields(req, ['name'], 'category', 'update')
 
@@ -91,33 +71,33 @@ categoryRouter.put('/:id', wrapAsync(async (req, res, next) => {
     throw err
   }
 
-  let level = category.level
-  let number = category.number
-  const { parent, parentCopy } = getParentAndCopy(req.body.parentId)
-  if(!req.body.parentId.equals(category.parentId)) {
+  if (req.body.parentId !== category.parent._id.toString()) {
+    const { parent, parentCopy } = await getParentAndCopy(req.body.parentId)
     console.log('getting numbers')
-    level = await getCategoryLevel(req.body.parentId)
-    number = await getNextAvailableNumber(req.body.parentId)
-    console.log('creating category')
+    category.level = await getCategoryLevel(req.body.parentId)
+    category.number = await getNextAvailableNumber(req.body.parentId)
     console.log('parentcopy', parentCopy)
-    let { oldParent } = getParentAndCopy(category.parent._id)
 
-    if(oldParent) {
+    let { oldParent } = await getParentAndCopy(category.parent._id)
+    console.log('got old parent', oldParent)
+    if (oldParent) {
+      console.log('about to remove child')
       await removeChild(oldParent, category)
     }
+
     if (parent) {
+      console.log('about to add child')
       await addChild(parent, category)
     }
-    // re-code all descendants of the category based on the new parent
+    category.code = parent ? `${parent.code}.${category.number}` : category.number
+    category.parent = parentCopy
+    console.log('recoding children')
+    await recodeChildren(category, category.children)
   }
-  
   category.name = req.body.name
-  category.level = level
-  category.number = number
-  category.code = parent ? `${parent.code}.${number}` : number
-  category.parent = parentCopy
 
   category = await Category.findByIdAndUpdate(category._id, category, { new: true })
+  console.log('returning updated ', category)
   res.status(201).json(category)
 }))
 
@@ -210,7 +190,8 @@ addChild = async (parent, child) => {
     name: child.name,
     number: child.number
   })
-  parent = await Category.findByIdAndUpdate(child.parent._id, parent, { new: true })
+  console.log('updated children', parent.children)
+  parent = await Category.findByIdAndUpdate(parent._id, parent, { new: true })
   console.log('new parent is now', parent)
 }
 
@@ -218,6 +199,23 @@ removeChild = async (parent, child) => {
   parent.children = parent.children.filter(c => !c._id.equals(child._id))
   parent = await Category.findByIdAndUpdate(child.parent._id, parent, { new: true })
   console.log('old parent is now', parent)
+}
+
+recodeChildren = async (parent, children) => {
+  let child, number
+  let parentId = parent ? null : parent._id
+  for (let c of children) {
+    child = await Category.findById(c._id)
+    if (child) {
+      number = await getNextAvailableNumber(parentId)
+      child.code = parent ? `${parent.code}.${number}` : number
+      child.level = parent.level + 1
+      child.number = number
+      console.log('updating child', child)
+      await Category.findByIdAndUpdate(child._id, child)
+      await recodeChildren(child, child.children)
+    }
+  }
 }
 
 module.exports = categoryRouter

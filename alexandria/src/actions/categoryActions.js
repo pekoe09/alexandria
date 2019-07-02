@@ -101,6 +101,7 @@ export const updateCategory = (category) => {
     try {
       category = await entityService.updateEntity('categories', category)
       dispatch(updateCategorySuccess(category))
+      dispatch(getAllCategories())
     } catch (error) {
       console.log(error)
       dispatch(updateCategoryFailure(error))

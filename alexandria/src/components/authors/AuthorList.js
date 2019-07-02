@@ -87,7 +87,7 @@ class AuthorList extends React.Component {
   columns = [
     {
       Header: 'Name',
-      accessor: 'fullName'
+      accessor: 'fullNameReversed'
     },
     {
       Header: '',

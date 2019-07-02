@@ -63,7 +63,7 @@ class BookEdit extends React.Component {
         _id: this.props.book._id,
         title: this.props.book.title,
         authors: this.props.book.authors,
-        publisher: [this.props.book.publisher],
+        publisher: this.props.book.publisher ? [this.props.book.publisher] : [],
         publishingYear: this.props.book.publishingYear,
         isbn: this.props.book.isbn,
         categories: this.props.book.categories,

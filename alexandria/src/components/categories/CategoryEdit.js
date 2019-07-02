@@ -146,6 +146,7 @@ class CategoryEdit extends React.Component {
               />
             </StyledForm.Group>
             <StyledForm.Group>
+              <StyledForm.Label>Parent category</StyledForm.Label>
               <Typeahead
                 onChange={(selected) => { this.handleParentChange(selected) }}
                 options={this.props.categories}

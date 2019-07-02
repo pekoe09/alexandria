@@ -24,16 +24,24 @@ bookRouter.post('/', wrapAsync(async (req, res, next) => {
   validateMandatoryFields(req, ['title'], 'book', 'create')
 
   let authors = []
+  let authorsString = ''
   if (req.body.authors) {
-    req.body.authors.forEach(async a => {
+    console.log('received authors', req.body.authors)
+    for (const a of req.body.authors) {
       const author = await Author.findById(a)
       if (!author) {
         let err = new Error(`Author is not valid (${a})`)
         err.isBadRequest = true
         throw err
       }
+      console.log('adding author ', author)
       authors.push(author)
-    })
+    }
+
+    console.log('authors array', authors)
+    authorsString = authors.reduce((fullString, author) => `${fullString}${author.fullNameReversed}; `, '')
+    authorsString = authorsString.slice(0, authorsString.length - 2)
+    console.log('authors string ', authorsString)
   }
 
   let categories = []
@@ -70,6 +78,7 @@ bookRouter.post('/', wrapAsync(async (req, res, next) => {
   let book = new Book({
     title: req.body.title,
     authors: req.body.authors,
+    authorsString,
     publisher: req.body.publisher,
     publishingYear: req.body.publishingYear,
     isbn: req.body.isbn,

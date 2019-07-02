@@ -90,6 +90,10 @@ class BookList extends React.Component {
       accessor: 'title'
     },
     {
+      Header: 'Authors',
+      accessor: 'authorsString'
+    },
+    {
       Header: '',
       accessor: 'delete',
       Cell: (row) => (
