@@ -1,4 +1,5 @@
 import entityService from '../services/entityServices'
+import { getAllBooks } from './bookActions'
 
 export const CATEGORIES_GETALL_BEGIN = 'CATEGORIES_GETALL_BEGIN'
 export const CATEGORIES_GETALL_SUCCESS = 'CATEGORIES_GETALL_SUCCESS'
@@ -103,6 +104,7 @@ export const updateCategory = (category) => {
       category = await entityService.updateEntity('categories', category)
       dispatch(updateCategorySuccess(category))
       dispatch(getAllCategories())
+      dispatch(getAllBooks())
     } catch (error) {
       console.log(error)
       dispatch(updateCategoryFailure(error))

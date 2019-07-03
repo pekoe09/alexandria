@@ -65,6 +65,27 @@ const validateMonthNumbers = (req, fieldNames, entity, operation) => {
   })
 }
 
+const hydrateIdsToObjects = async (ids, Entity, entityName) => {
+  let objects = []
+  for (const id of ids) {
+    const entity = await Entity.findById(id)
+    if(!entity) {
+      let err = new Error(`${entityName} is not valid (${id})`)
+      err.isBadRequest = true
+      throw err
+    }
+    objects.push(entity)
+  }
+  return objects
+}
+
+const stringifyByProperty = (arr, propertyName, separator) => {
+  let propStr = ''
+  propStr = arr.reduce((fullString, entity) => `${fullString}${entity[propertyName]}${separator}`, '')
+  propStr = propStr.slice(0, propStr.length - separator.length)
+  return propStr
+}
+
 module.exports = {
   wrapAsync,
   checkUser,
@@ -72,5 +93,7 @@ module.exports = {
   validateMandatoryFields,
   validateNonNegativeFields,
   validateMonthNumbers,
-  validateEmailForm
+  validateEmailForm,
+  hydrateIdsToObjects,
+  stringifyByProperty
 }

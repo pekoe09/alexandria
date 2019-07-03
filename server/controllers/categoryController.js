@@ -1,4 +1,10 @@
-const { wrapAsync, checkUser, validateMandatoryFields } = require('./controllerHelpers')
+const { 
+  wrapAsync, 
+  checkUser, 
+  validateMandatoryFields,
+  hydrateIdsToObjects,
+  stringifyByProperty
+} = require('./controllerHelpers')
 const categoryRouter = require('express').Router()
 const Category = require('../models/category')
 const Book = require('../models/book')
@@ -59,6 +65,10 @@ categoryRouter.put('/:id', wrapAsync(async (req, res, next) => {
     err.isBadRequest = true
     throw err
   }
+  let nameChanged = false
+  if(category.name !== req.body.name) {
+    nameChanged = true
+  }
 
   const oldParentId = category.parent ? category.parent._id : null
   if (req.body.parentId !== (oldParentId ? oldParentId.toString() : '')) {
@@ -80,6 +90,19 @@ categoryRouter.put('/:id', wrapAsync(async (req, res, next) => {
     await recodeChildren(category, category.children, false)
   }
   category.name = req.body.name
+
+  // update categoriesString in all books that have this category if the name has changed
+  if(nameChanged) {
+    let books = await Book.find({ categories: category._id })
+    for(let book in books) {
+      let categories = await hydrateIdsToObjects(book.categories, Category, 'Category')
+      categories = categories.filter(c => c._id !== category._id)
+      let categoriesString = stringifyByProperty(categories, 'name', ', ')
+      categoriesString = `${categoriesString}, ${category.name}`
+      book.categoriesString = categoriesString
+      await Book.findByIdAndUpdate(book._id, book)
+    }
+  }
 
   category = await Category.findByIdAndUpdate(category._id, category, { new: true })
   res.status(201).json(category)

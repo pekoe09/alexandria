@@ -1,4 +1,10 @@
-const { wrapAsync, checkUser, validateMandatoryFields } = require('./controllerHelpers')
+const { 
+  wrapAsync, 
+  checkUser, 
+  validateMandatoryFields,
+  hydrateIdsToObjects,
+  stringifyByProperty
+} = require('./controllerHelpers')
 const authorRouter = require('express').Router()
 const Author = require('../models/author')
 const Book = require('../models/book')
@@ -35,11 +41,30 @@ authorRouter.put('/:id', wrapAsync(async (req, res, next) => {
     throw err
   }
 
+  let nameChanged = false
+  if((author.lastName !== req.body.lastName) || (author.firstNames !== req.body.firstNames)) {
+    nameChanged = true
+  }
+
   author.lastName = req.body.lastName
   author.firstNames = req.body.firstNames
-  author.DOB = req.body.dob
-  author.DOD = req.body.dod
+  author.DOB = req.body.DOB
+  author.DOD = req.body.DOD
   author = await Author.findByIdAndUpdate(author._id, author, { new: true })
+
+  // update authorsString in all books by this person if the name has changed
+  if(nameChanged) {
+    let books = await hydrateIdsToObjects(author.books, Book, 'Book')
+    for(let book of books) {
+      let authors = await hydrateIdsToObjects(book.authors, Author, 'Author')
+      authors = authors.filter(a => a._id !== author._id)
+      let authorsString = stringifyByProperty(authors, 'fullNameReversed', '; ')
+      authorsString = `${authorsString}; ${author.fullNameReversed}`
+      book.authorsString = authorsString
+      await Book.findByIdAndUpdate(book._id, book)
+    }
+  }
+
   res.status(201).json(author)
 }))
 
