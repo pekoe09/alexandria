@@ -1,4 +1,10 @@
-const { wrapAsync, checkUser, validateMandatoryFields } = require('./controllerHelpers')
+const { 
+  wrapAsync,
+  checkUser,
+  validateMandatoryFields,
+  hydrateIdsToObjects,
+  stringifyByProperty
+} = require('./controllerHelpers')
 const bookRouter = require('express').Router()
 const Book = require('../models/book')
 const Author = require('../models/author')
@@ -118,28 +124,68 @@ bookRouter.put('/:id', wrapAsync(async (req, res, next) => {
     throw err
   }
 
-  if (!book.author.equals(req.body.authorId)) {
-    let oldAuthor = Author.findById(book.author)
-    oldAuthor.books = oldAuthor.books.filter(b => !b._id.equals(book._id))
-    await Author.findByIdAndUpdate(oldAuthor._id, oldAuthor)
-    let newAuthor = Author.findById(req.body.authorId)
-    newAuthor.books = newAuthor.books.concat(book._id)
-    await Author.findByIdAndUpdate(newAuthor._id, newAuthor)
+  if (req.body.publisher) {
+    let publisher = await Publisher.findById(req.body.publisher)
+    if (!publisher) {
+      let err = new Error(`Publisher is not valid (${req.body.publisher})`)
+      err.isBadRequest = true
+      throw err
+    }
   }
 
+  if (req.body.location) {
+    let location = await Location.findById(req.body.location)
+    if (!location) {
+      let err = new Error(`Location is not valid (${req.body.location})`)
+    }
+  }
+
+  let oldAuthors = hydrateIdsToObjects(book.authors, Author, 'Author')
+  let authors = hydrateIdsToObjects(req.body.authors, Author, 'Author')
+  let authorsString = stringifyByProperty(authors, 'fullNameReversed', '; ')
+
+  // add book to newly added authors' books
+  for (let author of authors) {
+    if(!author.books.includes(book._id)) {
+      author.books = author.books.push(book._id)
+      await Author.findByIdAndUpdate(author._id, author)
+    }
+  }
+
+  // remove book from those authors who have been removed
+  for (let oldAuthor of oldAuthors) {
+    if(!authors.some(a => a._id.equals(oldAuthor._id))) {
+      oldAuthor.books = oldAuthor.books.filter(b => !b.equals(book._id))
+      await Author.findByIdAndUpdate(oldAuthor._id, oldAuthor)
+    }
+  }
+
+  let categories = hydrateIdsToObjects(req.body.categories, Category, 'Category')
+  categories = categories.sort((a, b) => a.code > b.code ? 1 : (a.code < b.code ? -1 : 0))
+  let categoriesString = stringifyByProperty(categories, 'name', ', ') 
+
   book.title = req.body.title
-  book.author = req.body.authorId
-  book.publisher = req.body.publisherId
+  book.authors = req.body.authors
+  book.authorsString = authorsString
+  book.publisher = req.body.publisher
   book.publishingYear = req.body.publishingYear
   book.isbn = req.body.isbn
   book.categories = req.body.categories
-  book.location = req.body.locationId
+  book.categoriesString = categoriesString
+  book.location = req.body.location
   book.serialNumber = req.body.serialNumber
-  book.read = req.body.read
+  book.pages = req.body.pages
+  book.readPages = req.body.readPages
   book.acquiredDate = req.body.acquiredDate
   book.price = req.body.price
   book.comment = req.body.comment
   book = await Book.findByIdAndUpdate(book._id, book, { new: true })
+  book = await Book.findById(book._id)
+    .populate('authors')
+    .populate('publisher')
+    .populate('categories')
+    .populate('location') 
+
   res.status(201).json(book)
 }))
 
@@ -153,9 +199,9 @@ bookRouter.delete('/:id', wrapAsync(async (req, res, next) => {
     throw err
   }
 
-  if (book.author) {
-    let author = await Author.findById(book.author)
-    author.books = author.books.filter(b => !b._id.equals(book._id))
+  let authors = hydrateIdsToObjects(book.authors, Author, 'Author')
+  for (let author of authors) {
+    author.books = author.books.filter(b => !b.equals(book._id))
     await Author.findByIdAndUpdate(author._id, author)
   }
 
