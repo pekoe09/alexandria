@@ -3,7 +3,7 @@ import Mainbar from './Mainbar'
 
 const layoutStyle = {
   display: 'flex',
-  height: '100vh',
+  minHeight: '100vh',
   fontFamily: 'Open sans',
   backgroundColor: '#3B8487'
 }
