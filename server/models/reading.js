@@ -11,16 +11,21 @@ const readingSchema = new mongoose.Schema({
     required: true
   },
   startPage: {
-    type: Number
+    type: Number,
+    min: 1
   },
   endPage: {
-    type: Number
+    type: Number,
+    min: 1
   },
   readPages: {
-    type: Number
+    type: Number,
+    min: 1,
+    required: true
   },
   minutes: {
-    type: Number
+    type: Number,
+    min: 1
   }
 })
 

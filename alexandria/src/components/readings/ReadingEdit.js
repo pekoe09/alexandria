@@ -21,6 +21,7 @@ class ReadingEdit extends React.Component {
       readPages: '',
       startPage: '',
       endPage: '',
+      minutes: '',
       touched: {
         date: false,
         book: false
@@ -36,6 +37,7 @@ class ReadingEdit extends React.Component {
       readPages: '',
       startPage: '',
       endPage: '',
+      minutes: '',
       touched: {
         date: false,
         book: false
@@ -53,6 +55,7 @@ class ReadingEdit extends React.Component {
         readPages: this.props.reading.readPages,
         startPage: this.props.reading.startPage,
         endPage: this.props.reading.endPage,
+        minutes: this.props.reading.minutes,
         touched: {
           date: false,
           book: false
@@ -150,7 +153,8 @@ class ReadingEdit extends React.Component {
       book: this.state.book.length > 0 ? this.state.book[0]._id : null,
       readPages: this.state.readPages,
       startPage: this.state.startPage,
-      endPage: this.state.endPage
+      endPage: this.state.endPage,
+      minutes: this.state.minutes,
     }
     await this.props.handleSave(reading)
     if (!this.props.modalError) {
@@ -256,6 +260,18 @@ class ReadingEdit extends React.Component {
                   isInvalid={this.getValidationState(errors, 'readPages')}
                 />
               </StyledForm.Group>
+              <StyledForm.Group as={Col}>
+                <StyledForm.Label>Minutes read</StyledForm.Label>
+                <StyledForm.Control
+                  type='number'
+                  name='minutes'
+                  min={1}
+                  value={this.state.minutes}
+                  onChange={this.handleChange}
+                  onBlur={this.handleBlur}
+                  isInvalid={this.getValidationState(errors, 'minutes')}
+                />
+              </StyledForm.Group>
             </StyledForm.Row>
           </StyledForm>
         </Modal.Body>
@@ -286,21 +302,12 @@ ReadingEdit.propTypes = {
     book: PropTypes.shape({
       _id: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
-      authors: PropTypes.arrayOf(
-        PropTypes.shape({
-          _id: PropTypes.string.isRequired,
-          fullName: PropTypes.string.isRequired,
-          fullNameReversed: PropTypes.string.isRequired
-        })
-      ),
-      categories: PropTypes.arrayOf(
-        PropTypes.shape({
-          _id: PropTypes.string.isRequired,
-          name: PropTypes.string.isRequired,
-          code: PropTypes.string.isRequired
-        })
-      )
-    })
+    }).isRequired,
+    date: PropTypes.string.isRequired,
+    startPage: PropTypes.number,
+    endPage: PropTypes.number,
+    readPages: PropTypes.number.isRequired,
+    minutes: PropTypes.number
   }),
   modalIsOpen: PropTypes.bool.isRequired,
   closeModal: PropTypes.func.isRequired,

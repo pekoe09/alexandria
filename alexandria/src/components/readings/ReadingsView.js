@@ -13,7 +13,7 @@ import {
 } from '../../actions/readingActions'
 
 const mainColStyle = {
-
+  paddingRight: 0
 }
 
 class ReadingsView extends React.Component {
@@ -23,6 +23,7 @@ class ReadingsView extends React.Component {
       date: new Date(),
       editModalIsOpen: false,
       modalError: '',
+      readingToEdit: null
     }
   }
 
@@ -42,6 +43,7 @@ class ReadingsView extends React.Component {
     this.setState({
       editModalIsOpen: !this.state.editModalIsOpen,
       modalError: '',
+      readingToEdit: null
     })
   }
 
@@ -56,6 +58,14 @@ class ReadingsView extends React.Component {
     }
   }
 
+  handleReadingClick = (readingId) => {
+    const reading = this.props.readings.find(r => r._id === readingId)
+    this.setState({ 
+      readingToEdit: reading,
+      editModalIsOpen: true
+    })
+  }
+
   render() {
     return (
       <>
@@ -67,9 +77,10 @@ class ReadingsView extends React.Component {
             <DatePage
               readings={this.props.readings}
               date={this.state.date}
+              handleReadingClick={this.handleReadingClick}
             />
           </Col>
-          <Col sm={2} style={mainColStyle}>
+          <Col sm={2}>
             <DiarySideBar
               dates={this.getDates()}
               handleDateClick={this.handleDateClick}
@@ -78,6 +89,7 @@ class ReadingsView extends React.Component {
         </Row>
 
         <ReadingEdit
+          reading={this.state.readingToEdit}
           modalIsOpen={this.state.editModalIsOpen}
           closeModal={this.toggleEditModalOpen}
           handleSave={this.handleSave}

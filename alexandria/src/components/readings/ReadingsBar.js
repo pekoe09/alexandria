@@ -10,10 +10,10 @@ const ReadingsBar = ({ handleOpenEdit }) => {
         <Col md={8} sm={8}>
           <ViewHeader text='Reading sessions' />
         </Col>
-        <Col md={4} sm={4} style={{ paddingRight: 0 }}>
+        <Col md={4} sm={4}>
           <StyledButton
             bsstyle='primary'
-            style={{ marginLeft: 10, float: 'right' }}
+            style={{ marginLeft: 10, marginRihgt: 0, float: 'right' }}
             onClick={handleOpenEdit}
           >
             Add reading
