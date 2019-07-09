@@ -27,7 +27,9 @@ class ReadingsView extends React.Component {
       deletionConfirmationIsOpen: false,
       modalError: '',
       readingToEdit: null,
-      readingToDelete: null
+      readingToDelete: null,
+      searchPhrase: '',
+      searchPhraseToUse: ''
     }
   }
 
@@ -41,6 +43,18 @@ class ReadingsView extends React.Component {
 
   getDates = () => {
     return this.props.readings.map(r => r.date)
+  }
+
+  getFilteredReadings = () => {
+    let filtered = this.props.readings
+    console.log('props', this.props.readings)
+    if (this.state.searchPhraseToUse.length > 0) {
+      console.log('applying filter', this.state.searchPhraseToUse)
+      filtered = this.props.readings.filter(r =>
+        r.book.title.toLowerCase().includes(this.state.searchPhraseToUse.toLowerCase()))
+    }
+    console.log(filtered)
+    return filtered
   }
 
   toggleEditModalOpen = () => {
@@ -90,6 +104,21 @@ class ReadingsView extends React.Component {
     })
   }
 
+  handlePhraseChange = searchPhraseEvent => {
+    let searchPhrase = searchPhraseEvent.target.value
+    console.log('phrase ', searchPhrase)
+    if (searchPhrase.trim().length > 0) {
+      this.setState({ searchPhrase })
+    } else {
+      this.setState({ searchPhrase: '' })
+    }
+  }
+
+  handleSearch = () => {
+    console.log('setting used phrase to ', this.state.searchPhrase)
+    this.setState({ searchPhraseToUse: this.state.searchPhrase })
+  }
+
   render() {
     return (
       <>
@@ -97,9 +126,12 @@ class ReadingsView extends React.Component {
           <Col sm={10} style={mainColStyle}>
             <ReadingsBar
               handleOpenEdit={this.toggleEditModalOpen}
+              handlePhraseChange={this.handlePhraseChange}
+              handleSearch={this.handleSearch}
+              searchPhrase={this.state.searchPhrase}
             />
             <DatePage
-              readings={this.props.readings}
+              readings={this.getFilteredReadings()}
               date={this.state.date}
               handleReadingClick={this.handleReadingClick}
               handleDeleteRequest={this.handleDeleteRequest}
