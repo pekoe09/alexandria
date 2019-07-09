@@ -1,19 +1,22 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { StyledButton } from '../common/alexandriaComponents'
 
 const readingStyle = {
   padding: 15,
   marginTop: 10,
   backgroundColor: 'rgb(98, 161, 164)',
   color: 'white',
-  fontFamily: 'sans-serif'
+  fontFamily: 'sans-serif',
+  borderRadius: 4
 }
 
 const readingHeaderStyle = {
   fontSize: '1.3em'
 }
 
-const Reading = ({ reading, handleReadingClick }) => {
+const Reading = ({ reading, handleReadingClick, handleDeleteRequest }) => {
+  const id = reading._id
   return (
     <div
       style={readingStyle}
@@ -23,6 +26,13 @@ const Reading = ({ reading, handleReadingClick }) => {
         {reading.startPage && <span>{`From page ${reading.startPage} to ${reading.endPage}`}</span>}
         {reading.readPages && <span>{` Total pages read: ${reading.readPages}`}</span>}
         {reading.minutes && <span>{`, spent ${reading.minutes} minutes`}</span>}
+        <StyledButton
+          onClick={(e) => handleDeleteRequest(id, e)}
+          bsstyle='rowdanger'
+          style={{ float: 'right' }}
+        >
+          Delete
+        </StyledButton>
       </div>
     </div>
   )
@@ -41,5 +51,6 @@ Reading.propTypes = {
     readPages: PropTypes.number.isRequired,
     minutes: PropTypes.number
   }).isRequired,
-  handleReadingClick: PropTypes.func.isRequired
+  handleReadingClick: PropTypes.func.isRequired,
+  handleDeleteRequest: PropTypes.func.isRequired
 }

@@ -1,10 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { Row, Col } from 'react-bootstrap'
+import moment from 'moment'
 import ReadingsBar from './ReadingsBar'
 import DiarySideBar from './DiarySideBar'
 import DatePage from './DatePage'
 import ReadingEdit from './ReadingEdit'
+import DeletionConfirmation from '../common/DeletionConfirmation'
 import {
   getAllReadings,
   addReading,
@@ -22,8 +24,10 @@ class ReadingsView extends React.Component {
     this.state = {
       date: new Date(),
       editModalIsOpen: false,
+      deletionConfirmationIsOpen: false,
       modalError: '',
-      readingToEdit: null
+      readingToEdit: null,
+      readingToDelete: null
     }
   }
 
@@ -47,7 +51,7 @@ class ReadingsView extends React.Component {
     })
   }
 
-  handleSave = async (reading) => {
+  handleSave = async reading => {
     if (reading._id) {
       await this.props.updateReading(reading)
     } else {
@@ -58,11 +62,31 @@ class ReadingsView extends React.Component {
     }
   }
 
-  handleReadingClick = (readingId) => {
+  handleReadingClick = readingId => {
     const reading = this.props.readings.find(r => r._id === readingId)
-    this.setState({ 
+    this.setState({
       readingToEdit: reading,
       editModalIsOpen: true
+    })
+  }
+
+  handleDeleteRequest = (readingId, e) => {
+    console.log('event', e)
+    e.stopPropagation()
+    const reading = this.props.readings.find(r => r._id === readingId)
+    this.setState({
+      readingToDelete: reading,
+      deletionConfirmationIsOpen: true
+    })
+  }
+
+  handleDeleteConfirmation = async isConfirmed => {
+    if (isConfirmed) {
+      await this.props.deleteReading(this.state.readingToDelete._id)
+    }
+    this.setState({
+      deletionConfirmationIsOpen: false,
+      readingToDelete: null
     })
   }
 
@@ -78,6 +102,7 @@ class ReadingsView extends React.Component {
               readings={this.props.readings}
               date={this.state.date}
               handleReadingClick={this.handleReadingClick}
+              handleDeleteRequest={this.handleDeleteRequest}
             />
           </Col>
           <Col sm={2}>
@@ -94,6 +119,13 @@ class ReadingsView extends React.Component {
           closeModal={this.toggleEditModalOpen}
           handleSave={this.handleSave}
           modalError={this.state.modalError}
+        />
+        <DeletionConfirmation
+          headerText={!this.state.readingToDelete ? '' :
+            `Deleting ${this.state.readingToDelete.book.title} / ${moment(this.state.readingToDelete.date).format('D.M.YYYY')}`}
+          bodyText='Are you sure you want to go ahead and delete this?'
+          modalIsOpen={this.state.deletionConfirmationIsOpen}
+          closeModal={this.handleDeleteConfirmation}
         />
       </>
     )
