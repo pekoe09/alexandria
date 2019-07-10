@@ -9,6 +9,7 @@ import bookReducer from './reducers/bookReducer'
 import categoryReducer from './reducers/categoryReducer'
 import locationReducer from './reducers/locationReducer'
 import publisherReducer from './reducers/publisherReducer'
+import readingReducer from './reducers/readingReducer'
 import userReducer from './reducers/userReducer'
 
 const appReducer = combineReducers({
@@ -17,6 +18,7 @@ const appReducer = combineReducers({
   categories: categoryReducer,
   locations: locationReducer,
   publishers: publisherReducer,
+  readings: readingReducer,
   users: userReducer
 })
 

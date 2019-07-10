@@ -10,6 +10,7 @@ import BookList from '../books/BookList'
 import CategoryList from '../categories/CategoryList'
 import LocationList from '../locations/LocationList'
 import PublisherList from '../publishers/PublisherList'
+import ReadingsView from '../readings/ReadingsView'
 
 class App extends React.Component {
   render() {
@@ -21,6 +22,7 @@ class App extends React.Component {
         <Route exact path='/categories' render={() => <CategoryList />} />
         <Route exact path='/locations' render={() => <LocationList />} />
         <Route exact path='/publishers' render={() => <PublisherList />} />
+        <Route exact path='/readings' render={() => <ReadingsView />} />
         <Route exact path='/colortest' render={() => <ColorTest />} />
       </Layout>
     )

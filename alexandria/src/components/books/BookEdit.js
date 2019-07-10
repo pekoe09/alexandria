@@ -219,7 +219,7 @@ class BookEdit extends React.Component {
               <StyledForm.Group as={Col} md={2}>
                 <StyledForm.Label>Published</StyledForm.Label>
                 <StyledForm.Control
-                  type='text'
+                  type='number'
                   name='publishingYear'
                   value={this.state.publishingYear}
                   onChange={this.handleChange}
