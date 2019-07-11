@@ -47,13 +47,10 @@ class ReadingsView extends React.Component {
 
   getFilteredReadings = () => {
     let filtered = this.props.readings
-    console.log('props', this.props.readings)
     if (this.state.searchPhraseToUse.length > 0) {
-      console.log('applying filter', this.state.searchPhraseToUse)
       filtered = this.props.readings.filter(r =>
         r.book.title.toLowerCase().includes(this.state.searchPhraseToUse.toLowerCase()))
     }
-    console.log(filtered)
     return filtered
   }
 
@@ -85,7 +82,6 @@ class ReadingsView extends React.Component {
   }
 
   handleDeleteRequest = (readingId, e) => {
-    console.log('event', e)
     e.stopPropagation()
     const reading = this.props.readings.find(r => r._id === readingId)
     this.setState({
@@ -106,7 +102,6 @@ class ReadingsView extends React.Component {
 
   handlePhraseChange = searchPhraseEvent => {
     let searchPhrase = searchPhraseEvent.target.value
-    console.log('phrase ', searchPhrase)
     if (searchPhrase.trim().length > 0) {
       this.setState({ searchPhrase })
     } else {
@@ -115,7 +110,6 @@ class ReadingsView extends React.Component {
   }
 
   handleSearch = () => {
-    console.log('setting used phrase to ', this.state.searchPhrase)
     this.setState({ searchPhraseToUse: this.state.searchPhrase })
   }
 

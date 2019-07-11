@@ -3,8 +3,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import {
   ListTable,
-  StyledButton,
-  ViewHeader
+  StyledButton
 } from '../common/alexandriaComponents'
 import '../common/alexandria-react-table.css'
 import {
@@ -13,6 +12,8 @@ import {
   updateBook,
   deleteBook
 } from '../../actions/bookActions'
+import ViewBar from '../common/ViewBar'
+import AdvancedBookSearch from './AdvancedBookSearch'
 import BookEdit from './BookEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
 
@@ -25,7 +26,11 @@ class BookList extends React.Component {
       modalError: '',
       deletionTargetId: '',
       deletionTargetName: '',
-      deletionConfirmationIsOpen: false
+      deletionConfirmationIsOpen: false,
+      searchPhrase: '',
+      searchPhraseToUse: '',
+      advancedSearchIsVisible: false,
+      searchCriteria: null
     }
   }
 
@@ -84,6 +89,46 @@ class BookList extends React.Component {
     })
   }
 
+  handlePhraseChange = searchPhraseEvent => {
+    let searchPhrase = searchPhraseEvent.target.value
+    if (searchPhrase.trim().length > 0) {
+      this.setState({ searchPhrase })
+    } else {
+      this.setState({ searchPhrase: '' })
+    }
+  }
+
+  handleSearch = () => {
+    this.setState({ searchPhraseToUse: this.state.searchPhrase })
+  }
+
+  handleCriteriaSearch = criteria => {
+    this.setState({ searchCriteria: criteria })
+    this.toggleAdvancedSearch()
+  }
+
+  toggleAdvancedSearch = () => {
+    this.setState({ advancedSearchIsVisible: !this.state.advancedSearchIsVisible })
+  }
+
+  getSearchCriteriaString = () => {
+    return ''
+  }
+
+  getFilteredBooks = () => {
+    let searchPhrase = this.state.searchPhraseToUse.toLowerCase()
+    let filtered = this.props.books
+    if (this.state.searchPhraseToUse.length > 0) {
+      filtered = this.props.books.filter(b =>
+        b.title.toLowerCase().includes(searchPhrase)
+        || b.authors.some(a =>
+          a.fullName.toLowerCase().includes(searchPhrase) || a.fullNameReversed.toLowerCase().includes(searchPhrase))
+        || b.categories.some(c => c.name.toLowerCase().includes(searchPhrase))
+      )
+    }
+    return filtered
+  }
+
   columns = [
     {
       Header: 'Title',
@@ -120,20 +165,30 @@ class BookList extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <ViewHeader text='Books' />
-        <StyledButton
-          bsstyle='primary'
-          onClick={this.toggleEditModalOpen}
-          style={{ marginLeft: 10 }}
-        >
-          Add book
-        </StyledButton>
+        <ViewBar
+          headerText='Books'
+          addBtnText='Add book'
+          handleOpenEdit={this.toggleEditModalOpen}
+          handlePhraseChange={this.handlePhraseChange}
+          handleSearch={this.handleSearch}
+          searchPhrase={this.state.searchPhrase}
+          toggleAdvancedSearch={this.toggleAdvancedSearch}
+        />
+        <div>
+          {this.state.searchCriteria ? this.getSearchCriteriaString() : ''}
+        </div>
         <ListTable
-          data={this.props.books}
+          data={this.getFilteredBooks()}
           columns={this.columns}
           getTrProps={this.handleRowClick}
           defaultPageSize={20}
           minRows={1}
+        />
+
+        <AdvancedBookSearch
+          modalIsOpen={this.state.advancedSearchIsVisible}
+          handleSearch={this.handleCriteriaSearch}
+          closeModal={this.toggleAdvancedSearch}
         />
         <BookEdit
           book={this.state.rowToEdit}
@@ -151,7 +206,6 @@ class BookList extends React.Component {
       </React.Fragment>
     )
   }
-
 }
 
 const mapStateToProps = store => ({
