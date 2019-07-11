@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import {
   ListTable,
-  ViewHeader,
   StyledButton
 } from '../common/alexandriaComponents'
 import '../common/alexandria-react-table.css'
@@ -13,6 +12,7 @@ import {
   updatePublisher,
   deletePublisher
 } from '../../actions/publisherActions'
+import ViewBar from '../common/ViewBar'
 import PublisherEdit from './PublisherEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
 
@@ -25,7 +25,9 @@ class PublisherList extends React.Component {
       modalError: '',
       deletionTargetId: '',
       deletionTargetName: '',
-      deletionConfirmationIsOpen: false
+      deletionConfirmationIsOpen: false,
+      searchPhrase: '',
+      searchPhraseToUse: ''
     }
   }
 
@@ -84,6 +86,30 @@ class PublisherList extends React.Component {
     })
   }
 
+  handlePhraseChange = searchPhraseEvent => {
+    let searchPhrase = searchPhraseEvent.target.value
+    if (searchPhrase.trim().length > 0) {
+      this.setState({ searchPhrase })
+    } else {
+      this.setState({ searchPhrase: '' })
+    }
+  }
+
+  handleSearch = () => {
+    this.setState({ searchPhraseToUse: this.state.searchPhrase })
+  }
+
+  getFilteredPublishers = () => {
+    let searchPhrase = this.state.searchPhraseToUse.toLowerCase()
+    let filtered = this.props.publishers
+    if (this.state.searchPhraseToUse.length > 0) {
+      filtered = this.props.publishers.filter(p =>
+        p.name.toLowerCase().includes(searchPhrase)
+      )
+    }
+    return filtered
+  }
+
   columns = [
     {
       Header: 'Name',
@@ -112,16 +138,16 @@ class PublisherList extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <ViewHeader text='Publishers' />
-        <StyledButton
-          bsstyle='primary'
-          onClick={this.toggleEditModalOpen}
-          style={{ marginLeft: 10 }}
-        >
-          Add publisher
-        </StyledButton>
+        <ViewBar
+          headerText='Publishers'
+          addBtnText='Add publisher'
+          handleOpenEdit={this.toggleEditModalOpen}
+          handlePhraseChange={this.handlePhraseChange}
+          handleSearch={this.handleSearch}
+          searchPhrase={this.state.searchPhrase}
+        />
         <ListTable
-          data={this.props.publishers}
+          data={this.getFilteredPublishers()}
           columns={this.columns}
           getTrProps={this.handleRowClick}
           defaultPageSize={20}

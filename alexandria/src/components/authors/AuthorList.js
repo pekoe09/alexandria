@@ -3,8 +3,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import {
   ListTable,
-  StyledButton,
-  ViewHeader
+  StyledButton
 } from '../common/alexandriaComponents'
 import '../common/alexandria-react-table.css'
 import {
@@ -13,6 +12,7 @@ import {
   updateAuthor,
   deleteAuthor
 } from '../../actions/authorActions'
+import ViewBar from '../common/ViewBar'
 import AuthorEdit from './AuthorEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
 
@@ -25,7 +25,9 @@ class AuthorList extends React.Component {
       modalError: '',
       deletionTargetId: '',
       deletionTargetName: '',
-      deletionConfirmationIsOpen: false
+      deletionConfirmationIsOpen: false,
+      searchPhrase: '',
+      searchPhraseToUse: ''
     }
   }
 
@@ -84,6 +86,29 @@ class AuthorList extends React.Component {
     })
   }
 
+  handlePhraseChange = searchPhraseEvent => {
+    let searchPhrase = searchPhraseEvent.target.value
+    if (searchPhrase.trim().length > 0) {
+      this.setState({ searchPhrase })
+    } else {
+      this.setState({ searchPhrase: '' })
+    }
+  }
+
+  handleSearch = () => {
+    this.setState({ searchPhraseToUse: this.state.searchPhrase })
+  }
+
+  getFilteredAuthors = () => {
+    let searchPhrase = this.state.searchPhraseToUse.toLowerCase()
+    let filtered = this.props.authors
+    if (this.state.searchPhraseToUse.length > 0) {
+      filtered = this.props.authors.filter(a =>
+        a.fullName.toLowerCase().includes(searchPhrase) || a.fullNameReversed.includes(searchPhrase))
+    }
+    return filtered
+  }
+
   columns = [
     {
       Header: 'Name',
@@ -112,16 +137,16 @@ class AuthorList extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <ViewHeader text='Authors' />
-        <StyledButton
-          bsstyle='primary'
-          onClick={this.toggleEditModalOpen}
-          style={{ marginLeft: 10 }}
-        >
-          Add author
-        </StyledButton>
+        <ViewBar
+          headerText='Authors'
+          addBtnText='Add author'
+          handleOpenEdit={this.toggleEditModalOpen}
+          handlePhraseChange={this.handlePhraseChange}
+          handleSearch={this.handleSearch}
+          searchPhrase={this.state.searchPhrase}
+        />
         <ListTable
-          data={this.props.authors}
+          data={this.getFilteredAuthors()}
           columns={this.columns}
           getTrProps={this.handleRowClick}
           defaultPageSize={20}

@@ -13,6 +13,7 @@ import {
   updateCategory,
   deleteCategory
 } from '../../actions/categoryActions'
+import ViewBar from '../common/ViewBar'
 import CategoryEdit from './CategoryEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
 
@@ -25,7 +26,9 @@ class CategoryList extends React.Component {
       modalError: '',
       deletionTargetId: '',
       deletionTargetName: '',
-      deletionConfirmationIsOpen: false
+      deletionConfirmationIsOpen: false,
+      searchPhrase: '',
+      searchPhraseToUse: ''
     }
   }
 
@@ -84,6 +87,30 @@ class CategoryList extends React.Component {
     })
   }
 
+  handlePhraseChange = searchPhraseEvent => {
+    let searchPhrase = searchPhraseEvent.target.value
+    if (searchPhrase.trim().length > 0) {
+      this.setState({ searchPhrase })
+    } else {
+      this.setState({ searchPhrase: '' })
+    }
+  }
+
+  handleSearch = () => {
+    this.setState({ searchPhraseToUse: this.state.searchPhrase })
+  }
+
+  getFilteredCategories = () => {
+    let searchPhrase = this.state.searchPhraseToUse.toLowerCase()
+    let filtered = this.props.categories
+    if (this.state.searchPhraseToUse.length > 0) {
+      filtered = this.props.categories.filter(c =>
+        c.name.toLowerCase().includes(searchPhrase)
+      )
+    }
+    return filtered
+  }
+
   columns = [
     {
       Header: 'Name',
@@ -129,16 +156,16 @@ class CategoryList extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <ViewHeader text='Categories' />
-        <StyledButton
-          bsstyle='primary'
-          onClick={this.toggleEditModalOpen}
-          style={{ marginLeft: 10 }}
-        >
-          Add category
-        </StyledButton>
+        <ViewBar
+          headerText='Categories'
+          addBtnText='Add category'
+          handleOpenEdit={this.toggleEditModalOpen}
+          handlePhraseChange={this.handlePhraseChange}
+          handleSearch={this.handleSearch}
+          searchPhrase={this.state.searchPhrase}
+        />
         <ListTable
-          data={this.props.categories}
+          data={this.getFilteredCategories()}
           columns={this.columns}
           getTrProps={this.handleRowClick}
           defaultPageSize={20}
