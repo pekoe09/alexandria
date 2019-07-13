@@ -132,15 +132,24 @@ class BookList extends React.Component {
   columns = [
     {
       Header: 'Title',
-      accessor: 'title'
+      accessor: 'title',
+      headerStyle: {
+        textAlign: 'left'
+      },
     },
     {
       Header: 'Authors',
-      accessor: 'authorsString'
+      accessor: 'authorsString',
+      headerStyle: {
+        textAlign: 'left'
+      },
     },
     {
       Header: 'Categories',
-      accessor: 'categoriesString'
+      accessor: 'categoriesString',
+      headerStyle: {
+        textAlign: 'left'
+      },
     },
     {
       Header: '',

@@ -112,7 +112,20 @@ class AuthorList extends React.Component {
   columns = [
     {
       Header: 'Name',
-      accessor: 'fullNameReversed'
+      accessor: 'fullNameReversed',
+      headerStyle: {
+        textAlign: 'left'
+      }
+    },
+    {
+      Header: '# of books',
+      accessor: '',
+      Cell: (row) => (
+        row.original.books.length
+      ),
+      style: {
+        textAlign: 'center'
+      }
     },
     {
       Header: '',

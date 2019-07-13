@@ -48,6 +48,7 @@ readingRouter.put('/:id', wrapAsync(async (req, res, next) => {
   reading.startPage = req.body.startPage
   reading.endPage = req.body.endPage
   reading.readPages = req.body.readPages
+  reading.minutes = req.body.minutes
 
   await Reading.findByIdAndUpdate(reading._id, reading)
   reading = await Reading.findById(reading._id).populate('book')

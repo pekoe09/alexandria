@@ -113,7 +113,10 @@ class PublisherList extends React.Component {
   columns = [
     {
       Header: 'Name',
-      accessor: 'name'
+      accessor: 'name',
+      headerStyle: {
+        textAlign: 'left'
+      }
     },
     {
       Header: '',

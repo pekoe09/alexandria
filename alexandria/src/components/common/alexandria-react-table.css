@@ -1,14 +1,27 @@
+.rt-table {
+  font-family: sans-serif;
+}
+
 .rt-thead .rt-tr {
   min-width: 180px;
   background-color: #125D60;
   color: white;
   font-weight: 700;
-  font-family: sans-serif;
+}
+
+.ReactTable .rt-thead .rt-th {
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .rt-tr {
   background-color: #62A1A4;
   color: white;
+}
+
+.ReactTable .rt-td {
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .ReactTable .-pagination .-btn {
@@ -17,7 +30,6 @@
 
 .ReactTable .rt-noData {
   height: 10px;
-  font-family: sans-serif;
   font-weight: 700;
   background-color: rgb(59, 132, 135);
   color: white;

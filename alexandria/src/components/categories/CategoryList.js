@@ -115,8 +115,8 @@ class CategoryList extends React.Component {
     {
       Header: 'Name',
       accessor: 'name',
-      style: {
-        textAlign: 'center'
+      headerStyle: {
+        textAlign: 'left'
       }
     },
     {

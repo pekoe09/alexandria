@@ -115,8 +115,8 @@ class LocationList extends React.Component {
     {
       Header: 'Room',
       accessor: 'room',
-      style: {
-        textAlign: 'center'
+      headerStyle: {
+        textAlign: 'left'
       }
     },
     {
