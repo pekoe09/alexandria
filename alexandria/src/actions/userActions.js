@@ -1,5 +1,13 @@
 import userService from '../services/userServices'
 
+import { getAllAuthors } from './authorActions'
+import { getAllBooks } from './bookActions'
+import { getAllCategories } from './categoryActions'
+import { getAllLocations } from './locationActions'
+import { getAllPublishers } from './publisherActions'
+import { getAllReadings } from './readingActions'
+import { doesNotReject } from 'assert';
+
 export const LOGIN_BEGIN = 'LOGIN_BEGIN'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
 export const LOGIN_FAILURE = 'LOGIN_FAILURE'
@@ -39,6 +47,12 @@ export const login = (credentials) => {
     try {
       const currentUser = await userService.login(credentials)
       dispatch(loginSuccess(currentUser))
+      dispatch(getAllAuthors())
+      dispatch(getAllBooks())
+      dispatch(getAllCategories())
+      dispatch(getAllLocations())
+      dispatch(getAllPublishers())
+      dispatch(getAllReadings())
     } catch (exception) {
       console.log(exception)
       dispatch(loginFailure(exception))

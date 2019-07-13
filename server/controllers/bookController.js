@@ -23,6 +23,7 @@ bookRouter.get('/', wrapAsync(async (req, res, next) => {
       'author.fullNameReversed': 1,
       title: 1
     })
+  res.json(books)
 }))
 
 bookRouter.post('/', wrapAsync(async (req, res, next) => {
@@ -140,13 +141,13 @@ bookRouter.put('/:id', wrapAsync(async (req, res, next) => {
     }
   }
 
-  let oldAuthors = hydrateIdsToObjects(book.authors, Author, 'Author')
-  let authors = hydrateIdsToObjects(req.body.authors, Author, 'Author')
+  let oldAuthors = await hydrateIdsToObjects(book.authors, Author, 'Author')
+  let authors = await hydrateIdsToObjects(req.body.authors, Author, 'Author')
   let authorsString = stringifyByProperty(authors, 'fullNameReversed', '; ')
 
   // add book to newly added authors' books
   for (let author of authors) {
-    if(!author.books.includes(book._id)) {
+    if(!author.books.some(b => b.equals(book._id))) {
       author.books = author.books.push(book._id)
       await Author.findByIdAndUpdate(author._id, author)
     }
@@ -160,7 +161,7 @@ bookRouter.put('/:id', wrapAsync(async (req, res, next) => {
     }
   }
 
-  let categories = hydrateIdsToObjects(req.body.categories, Category, 'Category')
+  let categories = await hydrateIdsToObjects(req.body.categories, Category, 'Category')
   categories = categories.sort((a, b) => a.code > b.code ? 1 : (a.code < b.code ? -1 : 0))
   let categoriesString = stringifyByProperty(categories, 'name', ', ') 
 
@@ -199,7 +200,7 @@ bookRouter.delete('/:id', wrapAsync(async (req, res, next) => {
     throw err
   }
 
-  let authors = hydrateIdsToObjects(book.authors, Author, 'Author')
+  let authors = await hydrateIdsToObjects(book.authors, Author, 'Author')
   for (let author of authors) {
     author.books = author.books.filter(b => !b.equals(book._id))
     await Author.findByIdAndUpdate(author._id, author)

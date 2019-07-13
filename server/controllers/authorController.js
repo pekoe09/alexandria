@@ -1,6 +1,6 @@
-const { 
-  wrapAsync, 
-  checkUser, 
+const {
+  wrapAsync,
+  checkUser,
   validateMandatoryFields,
   hydrateIdsToObjects,
   stringifyByProperty
@@ -42,7 +42,7 @@ authorRouter.put('/:id', wrapAsync(async (req, res, next) => {
   }
 
   let nameChanged = false
-  if((author.lastName !== req.body.lastName) || (author.firstNames !== req.body.firstNames)) {
+  if ((author.lastName !== req.body.lastName) || (author.firstNames !== req.body.firstNames)) {
     nameChanged = true
   }
 
@@ -53,13 +53,14 @@ authorRouter.put('/:id', wrapAsync(async (req, res, next) => {
   author = await Author.findByIdAndUpdate(author._id, author, { new: true })
 
   // update authorsString in all books by this person if the name has changed
-  if(nameChanged) {
+  if (nameChanged) {
     let books = await hydrateIdsToObjects(author.books, Book, 'Book')
-    for(let book of books) {
+    for (let book of books) {
       let authors = await hydrateIdsToObjects(book.authors, Author, 'Author')
-      authors = authors.filter(a => a._id !== author._id)
+      authors = authors.filter(a => !a._id.equals(author._id))
       let authorsString = stringifyByProperty(authors, 'fullNameReversed', '; ')
-      authorsString = `${authorsString}; ${author.fullNameReversed}`
+      authorsString = authorsString.length > 0 ?
+        `${authorsString}; ${author.fullNameReversed}` : author.fullNameReversed
       book.authorsString = authorsString
       await Book.findByIdAndUpdate(book._id, book)
     }
