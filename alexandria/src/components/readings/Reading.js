@@ -21,11 +21,12 @@ const Reading = ({ reading, handleReadingClick, handleDeleteRequest }) => {
   return (
     <div
       style={readingStyle}
+      onClick={() => handleReadingClick(id)}
     >
       <Row>
         <Col md={10}>
           <span style={readingHeaderStyle}>{reading.book.title}</span>
-          <div onClick={() => handleReadingClick(reading._id)}>
+          <div>
             {reading.startPage && <span>{`From page ${reading.startPage} to ${reading.endPage}`}</span>}
             {reading.readPages && <span>{` Total pages read: ${reading.readPages}`}</span>}
             {reading.minutes && <span>{`, spent ${reading.minutes} minutes`}</span>}

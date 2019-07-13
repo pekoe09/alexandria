@@ -13,6 +13,7 @@ import {
   updateLocation,
   deleteLocation
 } from '../../actions/locationActions'
+import ViewBar from '../common/ViewBar'
 import LocationEdit from './LocationEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
 
@@ -25,7 +26,9 @@ class LocationList extends React.Component {
       modalError: '',
       deletionTargetId: '',
       deletionTargetName: '',
-      deletionConfirmationIsOpen: false
+      deletionConfirmationIsOpen: false,
+      searchPhrase: '',
+      searchPhraseToUse: ''
     }
   }
 
@@ -84,6 +87,30 @@ class LocationList extends React.Component {
     })
   }
 
+  handlePhraseChange = searchPhraseEvent => {
+    let searchPhrase = searchPhraseEvent.target.value
+    if (searchPhrase.trim().length > 0) {
+      this.setState({ searchPhrase })
+    } else {
+      this.setState({ searchPhrase: '' })
+    }
+  }
+
+  handleSearch = () => {
+    this.setState({ searchPhraseToUse: this.state.searchPhrase })
+  }
+
+  getFilteredLocations = () => {
+    let searchPhrase = this.state.searchPhraseToUse.toLowerCase()
+    let filtered = this.props.locations
+    if (this.state.searchPhraseToUse.length > 0) {
+      filtered = this.props.locations.filter(l =>
+        l.fullName.toLowerCase().includes(searchPhrase)
+      )
+    }
+    return filtered
+  }
+
   columns = [
     {
       Header: 'Room',
@@ -129,16 +156,16 @@ class LocationList extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <ViewHeader text='Locations' />
-        <StyledButton
-          bsstyle='primary'
-          onClick={this.toggleEditModalOpen}
-          style={{ marginLeft: 10 }}
-        >
-          Add location
-        </StyledButton>
+        <ViewBar
+          headerText='Locations'
+          addBtnText='Add location'
+          handleOpenEdit={this.toggleEditModalOpen}
+          handlePhraseChange={this.handlePhraseChange}
+          handleSearch={this.handleSearch}
+          searchPhrase={this.state.searchPhrase}
+        />
         <ListTable
-          data={this.props.locations}
+          data={this.getFilteredLocations()}
           columns={this.columns}
           getTrProps={this.handleRowClick}
           defaultPageSize={20}

@@ -26,6 +26,7 @@ const ViewBar = ({
               name='searchPhrase'
               value={searchPhrase}
               onChange={handlePhraseChange}
+              placeholder='Write a search text'
             />
             <InputGroup.Append>
               <StyledButton
