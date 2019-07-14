@@ -7,7 +7,13 @@ const sidebarStyle = {
   padding: 15,
   backgroundColor: 'rgb(2, 68, 71)',
   color: 'white',
-  marginRight: 15
+  marginRight: 15,
+  fontFamily: 'sans-serif'
+}
+
+const sidebarHeaderStyle = {
+  fontSize: '1.2em',
+  marginBottom: 20
 }
 
 const listStyle = {
@@ -73,7 +79,7 @@ const getHeadings = (dates, handleDateClick) => {
 const DiarySideBar = ({ dates, handleDateClick }) => {
   return (
     <div style={sidebarStyle}>
-      Reading sessions
+      <div style={sidebarHeaderStyle}>Reading sessions</div>
       {dates && dates.length > 0 && getHeadings(dates, handleDateClick)}
       {(!dates || dates.length === 0) && <div>No entries</div>}
     </div>

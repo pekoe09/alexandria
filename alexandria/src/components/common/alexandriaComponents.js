@@ -111,6 +111,7 @@ const StyledNavItem = styled(NavItem)`
   padding: 6px 12px;
   border-radius: 2px;
   margin-right: 8px;
+  font-family: 'sans-serif';
 `
 
 const ViewHeader = ({ text }) => {

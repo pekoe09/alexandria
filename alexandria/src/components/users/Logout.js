@@ -15,6 +15,9 @@ const Logout = ({ logout, history }) => {
       <Button
         onClick={handleLogout}
         size='mini'
+        style={{
+          fontFamily: 'sans-serif'
+        }}
       >
         Logout
       </Button>

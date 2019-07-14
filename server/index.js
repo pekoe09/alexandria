@@ -31,12 +31,14 @@ app.use('/api/publishers', publisherRouter)
 app.use('/api/readings', readingRouter)
 app.use('/api/users', userRouter)
 
-app.use(express.static(path.resolve(__dirname, '../alexandria/build')))
+app.use(express.static('/alexandria/public'))
+
+/*app.use(express.static(path.resolve(__dirname, '../alexandria/build')))
 
 app.get('*', (req, res) => {
   console.log('unspecified request', req.url)
   res.sendFile(path.resolve(__dirname, '../alexandria/build', 'index.html'))
-})
+})*/
 
 app.use((err, req, res, next) => {
   console.log(err.message)

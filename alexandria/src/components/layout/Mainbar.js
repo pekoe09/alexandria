@@ -1,11 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { withRouter, NavLink } from 'react-router-dom'
-import { Navbar, Nav, NavItem } from 'react-bootstrap'
+import { Navbar, Nav, NavItem, Image } from 'react-bootstrap'
 import styled from 'styled-components'
 import Login from '../users/Login'
 import Logout from '../users/Logout'
-import { StyledNav, StyledNavItem } from '../common/alexandriaComponents'
+import { StyledNavItem } from '../common/alexandriaComponents'
 
 const StyledNavbar = styled(Navbar)`
   margin-bottom: 0;
@@ -82,7 +82,11 @@ const Mainbar = ({ currentUser }) => {
     >
       <Navbar.Brand>
         <NavLink to='/'>
-          Jotain
+          <Image
+            src='alexandria-logo.png'
+            fluid
+            style={{ maxHeight: 60, borderRadius: 3 }}
+          />
         </NavLink>
       </Navbar.Brand>
       {currentUser && <LoggedInItems />}

@@ -24,14 +24,12 @@ class Login extends React.Component {
       password: this.state.password
     }
     await this.props.login(credentials)
-    if (!this.props.error) {
-      // load all data
-    }
   }
 
   render() {
     return (
       <Form inline>
+        <input type="hidden" value="prayer"/>
         <FormGroup>
           <FormControl
             placeholder='Username'
@@ -39,7 +37,11 @@ class Login extends React.Component {
             size='mini'
             value={this.state.username}
             onChange={this.handleChange}
-            style={{ marginRight: 5 }}
+            style={{
+              marginRight: 5,
+              fontFamily: 'sans-serif'
+            }}
+            autoComplete='off'
           />
           <FormControl
             placeholder='Password'
@@ -47,9 +49,19 @@ class Login extends React.Component {
             size='mini'
             value={this.state.password}
             onChange={this.handleChange}
-            style={{ marginRight: 5 }}
+            style={{
+              marginRight: 10,
+              fontFamily: 'sans-serif'
+            }}
+            autoComplete='off'
           />
-          <Button type='submit' onClick={this.handleSubmit}>Login</Button>
+          <Button
+            type='submit'
+            onClick={this.handleSubmit}
+            style={{ fontFamily: 'sans-serif' }}
+          >
+            Login
+          </Button>
         </FormGroup>
       </Form>
     )

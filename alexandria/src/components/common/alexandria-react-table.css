@@ -30,8 +30,14 @@
 
 .ReactTable .rt-noData {
   height: 10px;
-  font-weight: 700;
+  font-weight: 500;
+  font-family: 'sans-serif';
   background-color: rgb(59, 132, 135);
   color: white;
   padding: 5px;
+  top: 70%;
+}
+
+.ReactTable .pagination-bottom {
+  font-family: 'sans-serif';
 }

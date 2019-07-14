@@ -39,7 +39,7 @@ const ViewBar = ({
           {toggleAdvancedSearch
             && <Button
               variant='link'
-              style={{ color: 'white' }}
+              style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '0.9em' }}
               onClick={toggleAdvancedSearch}
             >
               Click to show advanced search
