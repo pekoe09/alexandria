@@ -4,7 +4,7 @@ const bookStats = (books, categories) => {
     count: 0,
     pages: 0,
     readPages: 0,
-    unRead: 0,
+    unread: 0,
     started: 0,
     finished: 0,
     categoryCounts: {}
@@ -15,17 +15,15 @@ const bookStats = (books, categories) => {
     const catArr = book.categories.map(c =>
       c.code.split('.').length > 0 ? c.code.split('.')[0] : c.code)
     const catSet = new Set(catArr)
-    console.log('got cat set of ', catSet)
     for (const cat of catSet) {
       newCatCount = { ...newCatCount, [cat.toString()]: newCatCount[cat.toString()] ? newCatCount[cat.toString()] + 1 : 1 }
-      console.log('updated cat count', newCatCount)
     }
 
     return {
       count: stats.count + 1,
       pages: stats.pages + book.pages,
       readPages: stats.readPages + book.readPages,
-      unRead: book.readPages === 0 ? stats.unRead + 1 : stats.unRead,
+      unread: book.readPages === 0 ? stats.unread + 1 : stats.unread,
       started: (book.readPages > 0 && book.readPages < book.pages) ? stats.started + 1 : stats.started,
       finished: book.readPages === book.pages ? stats.finished + 1 : stats.finished,
       categoryCounts: newCatCount
@@ -35,7 +33,7 @@ const bookStats = (books, categories) => {
       count: 0,
       pages: 0,
       readPages: 0,
-      unRead: 0,
+      unread: 0,
       started: 0,
       finished: 0,
       categoryCounts: {}
@@ -49,7 +47,7 @@ const bookStats = (books, categories) => {
     categoryCounts.push({ name: name, count: value })
   }
   stats.categoryCounts = categoryCounts
-
+  console.log('book stats', stats)
   return stats
 }
 

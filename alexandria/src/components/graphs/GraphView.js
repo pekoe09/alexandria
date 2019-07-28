@@ -1,5 +1,5 @@
 import React from 'react'
-import {Row, Col, Modal} from 'react-bootstrap'
+import { Row, Col, Modal } from 'react-bootstrap'
 import PropTypes from 'prop-types'
 import GraphCriteria from './GraphCriteria'
 import GraphContainer from './GraphContainer'
@@ -19,18 +19,20 @@ class GraphView extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <Row>
-            <GraphCriteria 
+            <GraphCriteria
               getCriteriaForm={this.props.getCriteriaForm}
             />
           </Row>
           <Row>
             <Col md={9}>
-              <GraphContainer 
+              <GraphContainer
                 getCharts={this.props.getCharts}
               />
             </Col>
             <Col md={3}>
-              <KPIContainer />
+              <KPIContainer
+                kpis={this.props.kpis}
+              />
             </Col>
           </Row>
         </Modal.Body>
@@ -48,6 +50,12 @@ GraphView.propTypes = {
     PropTypes.shape({
       name: PropTypes.string,
       call: PropTypes.func.isRequired
+    })
+  ).isRequired,
+  kpis: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      value: PropTypes.number.isRequired
     })
   ).isRequired,
   modalIsOpen: PropTypes.bool.isRequired,

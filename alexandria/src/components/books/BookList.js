@@ -19,6 +19,7 @@ import BookEdit from './BookEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
 import GraphView from '../graphs/GraphView'
 import BookCountByCategoryPie from './BookCountByCategoryPie'
+import BookCountByStatusPie from './BookCountByStatusPie'
 import { bookStats } from './bookStats'
 
 class BookList extends React.Component {
@@ -137,7 +138,7 @@ class BookList extends React.Component {
   }
 
   toggleStats = () => {
-    this.setState({ 
+    this.setState({
       stats: this.state.statsIsVisible ? this.state.stats : bookStats(this.props.books, this.props.categories),
       statsIsVisible: !this.state.statsIsVisible
     })
@@ -149,11 +150,31 @@ class BookList extends React.Component {
     )
   }
 
-  getBookChart = () => {    
+  getCategoryPie = () => {
     return (
       <BookCountByCategoryPie
         key={1}
         data={this.state.stats.categoryCounts}
+      />
+    )
+  }
+
+  getStatusPie = () => {
+    const statuses = []
+    if (this.state.stats.unread) {
+      statuses.push({ name: 'Not read yet', count: this.state.stats.unread })
+    }
+    if (this.state.stats.started) {
+      statuses.push({ name: 'Part way through', count: this.state.stats.started })
+    }
+    if (this.state.stats.finished) {
+      statuses.push({ name: 'Read', count: this.state.stats.finished })
+    }
+
+    return (
+      <BookCountByStatusPie
+        key={2}
+        data={statuses}
       />
     )
   }
@@ -259,7 +280,26 @@ class BookList extends React.Component {
           getCharts={[
             {
               title: 'Books in main categories',
-              call: this.getBookChart
+              call: this.getCategoryPie
+            },
+            {
+              title: 'Books by reading status',
+              call: this.getStatusPie
+            }
+          ]}
+          kpis={[
+            {
+              name: 'Books in total',
+              value: this.state.stats ? this.state.stats.count : '-'
+            },
+            {
+              name: 'Pages in total',
+              value: this.state.stats ? this.state.stats.pages : '-'
+            },
+            {
+              name: 'of which read',
+              value: (this.state.stats && this.state.stats.pages) ?
+                parseFloat(this.state.stats.readPages / this.state.stats.pages * 100).toFixed(0) + '%' : '-'
             }
           ]}
           modalIsOpen={this.state.statsIsVisible}

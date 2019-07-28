@@ -6,7 +6,8 @@ const chartBoxStyle = {
   borderRadius: 4,
   borderColor: 'lightgrey',
   borderWidth: 1,
-  padding: 10
+  padding: 10,
+  marginBottom: 10
 }
 
 const chartTitleStyle = {
