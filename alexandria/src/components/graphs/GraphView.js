@@ -1,6 +1,5 @@
 import React from 'react'
 import {Row, Col, Modal} from 'react-bootstrap'
-import {StyledForm} from '../common/alexandriaComponents'
 import PropTypes from 'prop-types'
 import GraphCriteria from './GraphCriteria'
 import GraphContainer from './GraphContainer'
@@ -21,12 +20,14 @@ class GraphView extends React.Component {
         <Modal.Body>
           <Row>
             <GraphCriteria 
-              criteriaForm={this.props.criteriaForm}
+              getCriteriaForm={this.props.getCriteriaForm}
             />
           </Row>
           <Row>
             <Col md={9}>
-              <GraphContainer />
+              <GraphContainer 
+                getCharts={this.props.getCharts}
+              />
             </Col>
             <Col md={3}>
               <KPIContainer />
@@ -42,7 +43,13 @@ export default GraphView
 
 GraphView.propTypes = {
   title: PropTypes.string,
-  criteriaForm: PropTypes.instanceOf(StyledForm).isRequired,
+  getCriteriaForm: PropTypes.func.isRequired,
+  getCharts: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      call: PropTypes.func.isRequired
+    })
+  ).isRequired,
   modalIsOpen: PropTypes.bool.isRequired,
   closeModal: PropTypes.func.isRequired
 }

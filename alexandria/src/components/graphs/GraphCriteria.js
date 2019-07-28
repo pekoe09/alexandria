@@ -1,11 +1,10 @@
 import React from 'react'
-import {StyledForm} from '../common/alexandriaComponents'
 import PropTypes from 'prop-types'
 
-const GraphCriteria = () => {
+const GraphCriteria = ({ getCriteriaForm }) => {
   return (
     <>
-      {criteriaForm}
+      {getCriteriaForm()}
     </>
   )
 }
@@ -13,5 +12,5 @@ const GraphCriteria = () => {
 export default GraphCriteria
 
 GraphCriteria.propTypes = {
-  criteriaForm: PropTypes.instanceOf(StyledForm).isRequired
+  getCriteriaForm: PropTypes.func.isRequired
 }

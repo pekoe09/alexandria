@@ -3,7 +3,8 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import {
   ListTable,
-  StyledButton
+  StyledButton,
+  StyledForm
 } from '../common/alexandriaComponents'
 import '../common/alexandria-react-table.css'
 import {
@@ -16,6 +17,9 @@ import ViewBar from '../common/ViewBar'
 import AdvancedBookSearch from './AdvancedBookSearch'
 import BookEdit from './BookEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
+import GraphView from '../graphs/GraphView'
+import BookCountByCategoryPie from './BookCountByCategoryPie'
+import { bookStats } from './bookStats'
 
 class BookList extends React.Component {
   constructor(props) {
@@ -30,12 +34,15 @@ class BookList extends React.Component {
       searchPhrase: '',
       searchPhraseToUse: '',
       advancedSearchIsVisible: false,
-      searchCriteria: null
+      searchCriteria: null,
+      statsIsVisible: false,
+      stats: null
     }
   }
 
   componentDidMount = async () => {
     await this.props.getAllBooks()
+    this.setState({ stats: bookStats(this.props.books, this.props.categories) })
   }
 
   toggleEditModalOpen = () => {
@@ -129,6 +136,28 @@ class BookList extends React.Component {
     return filtered
   }
 
+  toggleStats = () => {
+    this.setState({ 
+      stats: this.state.statsIsVisible ? this.state.stats : bookStats(this.props.books, this.props.categories),
+      statsIsVisible: !this.state.statsIsVisible
+    })
+  }
+
+  getStatsCriteriaForm = () => {
+    return (
+      <StyledForm></StyledForm>
+    )
+  }
+
+  getBookChart = () => {    
+    return (
+      <BookCountByCategoryPie
+        key={1}
+        data={this.state.stats.categoryCounts}
+      />
+    )
+  }
+
   columns = [
     {
       Header: 'Title',
@@ -150,6 +179,17 @@ class BookList extends React.Component {
       headerStyle: {
         textAlign: 'left'
       },
+    },
+    {
+      Header: 'Pages read',
+      accessor: '',
+      Cell: (row) => (
+        row.original.pages ? parseFloat(row.original.readPages / row.original.pages * 100).toFixed(0) + ' %' : '-'
+      ),
+      style: {
+        textAlign: 'center'
+      },
+      maxWidth: 120
     },
     {
       Header: '',
@@ -182,6 +222,7 @@ class BookList extends React.Component {
           handleSearch={this.handleSearch}
           searchPhrase={this.state.searchPhrase}
           toggleAdvancedSearch={this.toggleAdvancedSearch}
+          showStats={this.toggleStats}
         />
         <div>
           {this.state.searchCriteria ? this.getSearchCriteriaString() : ''}
@@ -212,6 +253,18 @@ class BookList extends React.Component {
           modalIsOpen={this.state.deletionConfirmationIsOpen}
           closeModal={this.handleDeleteConfirmation}
         />
+        <GraphView
+          title='Book statistics'
+          getCriteriaForm={this.getStatsCriteriaForm}
+          getCharts={[
+            {
+              title: 'Books in main categories',
+              call: this.getBookChart
+            }
+          ]}
+          modalIsOpen={this.state.statsIsVisible}
+          closeModal={this.toggleStats}
+        />
       </React.Fragment>
     )
   }
@@ -219,6 +272,7 @@ class BookList extends React.Component {
 
 const mapStateToProps = store => ({
   books: store.books.items,
+  categories: store.categories.items,
   loading: store.books.loading,
   error: store.books.error
 })

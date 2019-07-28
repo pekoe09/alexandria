@@ -11,7 +11,8 @@ const ViewBar = ({
   handlePhraseChange,
   handleSearch,
   searchPhrase,
-  toggleAdvancedSearch
+  toggleAdvancedSearch,
+  showStats
 }) => {
   return (
     <>
@@ -46,14 +47,24 @@ const ViewBar = ({
           </Button>
           }
         </Col>
-        <Col md={2} sm={2} style={{ paddingLeft: 0 }}>
+        <Col md={2} sm={2} style={{ paddingLeft: 0 }}>          
           <StyledButton
             bsstyle='primary'
-            style={{ marginLeft: 10, marginRight: 10, float: 'right' }}
+            style={{ marginRight: 10, float: 'right' }}
             onClick={handleOpenEdit}
           >
             {addBtnText}
           </StyledButton>
+          {
+            showStats &&
+            <StyledButton
+              bsstyle='primary'
+              style={{ marginLeft: 10, marginRight: 10, float: 'right' }}
+              onClick={showStats}
+            >
+              Statistics
+            </StyledButton>
+          }
         </Col>
       </Row>
     </>
@@ -69,5 +80,6 @@ ViewBar.propTypes = {
   handlePhraseChange: PropTypes.func.isRequired,
   handleSearch: PropTypes.func.isRequired,
   searchPhrase: PropTypes.string.isRequired,
-  toggleAdvancedSearch: PropTypes.func
+  toggleAdvancedSearch: PropTypes.func,
+  showStats: PropTypes.func
 }
