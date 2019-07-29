@@ -175,7 +175,7 @@ class PublisherList extends React.Component {
 }
 
 const mapStateToProps = store => ({
-  publishers: store.publishers.items,
+  publishers: store.publishers.items.sort((a, b) => a.name > b.name ? 1 : (a.name < b.name ? -1 : 0)),
   loading: store.publishers.loading,
   error: store.publishers.error
 })

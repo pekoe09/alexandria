@@ -190,7 +190,7 @@ class CategoryList extends React.Component {
 }
 
 const mapStateToProps = store => ({
-  categories: store.categories.items,
+  categories: store.categories.items.sort((a, b) => a.code > b.code ? 1 : (a.code < b.code ? -1 : 0)),
   loading: store.categories.loading,
   error: store.categories.error
 })

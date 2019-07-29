@@ -37,7 +37,10 @@ KPIContainer.propTypes = {
   kpis: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
-      value: PropTypes.number.isRequired
+      value: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+      ]).isRequired
     })
   ).isRequired
 }

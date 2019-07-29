@@ -6,6 +6,7 @@ import {
   StyledButton,
   StyledForm
 } from '../common/alexandriaComponents'
+import { Button } from 'react-bootstrap'
 import '../common/alexandria-react-table.css'
 import {
   getAllBooks,
@@ -111,6 +112,7 @@ class BookList extends React.Component {
   }
 
   handleCriteriaSearch = criteria => {
+    console.log('criteria', criteria)
     this.setState({ searchCriteria: criteria })
     this.toggleAdvancedSearch()
   }
@@ -120,7 +122,51 @@ class BookList extends React.Component {
   }
 
   getSearchCriteriaString = () => {
-    return ''
+    let criteriaStr = ''
+    if (this.state.searchCriteria) {
+      const criteria = this.state.searchCriteria
+      criteriaStr = 'Filtered by: '
+      if (criteria.title) {
+        criteriaStr = `${criteriaStr}Title: "${criteria.title}" `
+      }
+      if (this.state.searchCriteria.author) {
+        criteriaStr = `${criteriaStr}Author: "${criteria.author}" `
+      }
+      if (criteria.categories.length > 0) {
+        criteriaStr = `${criteriaStr}Categories: `
+        for (const category of criteria.categories) {
+          criteriaStr = `${criteriaStr}${category.code} - ${category.name} `
+        }
+      }
+      if (criteria.includeReadBooks) {
+        criteriaStr = `${criteriaStr}read books `
+      }
+      if (criteria.includeUnfinishedBooks) {
+        criteriaStr = `${criteriaStr}unfinished books `
+      }
+      if (criteria.includeUnreadBooks) {
+        criteriaStr = `${criteriaStr}unread books `
+      }
+      if (criteria.isbn) {
+        criteriaStr = `${criteriaStr}ISBN: "${criteria.isbn}" `
+      }
+      if (criteria.locations.length > 0) {
+        criteriaStr = `${criteriaStr}Locations: `
+        for (const location of criteria.locations) {
+          criteriaStr = `${criteriaStr}${location.fullName} `
+        }
+      }
+      if (criteria.publisher) {
+        criteriaStr = `${criteriaStr}Publisher: "${criteria.publisher}" `
+      }
+      if (criteria.publishingYear) {
+        criteriaStr = `${criteriaStr}Publishing year: ${criteria.publishingYear} `
+      }
+      if (criteria.serialNumber) {
+        criteriaStr = `${criteriaStr}Serial number: ${criteria.serialNumber}`
+      }
+    }
+    return criteriaStr
   }
 
   getFilteredBooks = () => {
@@ -133,6 +179,65 @@ class BookList extends React.Component {
           a.fullName.toLowerCase().includes(searchPhrase) || a.fullNameReversed.toLowerCase().includes(searchPhrase))
         || b.categories.some(c => c.name.toLowerCase().includes(searchPhrase))
       )
+    } else if (this.state.searchCriteria) {
+      const criteria = this.state.searchCriteria
+      if (criteria.title) {
+        filtered = filtered.filter(b => b.title.toLowerCase().includes(criteria.title.toLowerCase()))
+      }
+      if (criteria.author) {
+        filtered = filtered.filter(b => {
+          for (const author of b.authors) {
+            if (author.fullName.toLowerCase().includes(criteria.author.toLowerCase()) ||
+              author.fullNameReversed.toLowerCase().includes(criteria.author.toLowerCase())) {
+              return true
+            }
+          }
+          return false
+        })
+      }
+      if (criteria.categories.length > 0) {
+        filtered = filtered.filter(b => {
+          for (const category of criteria.categories) {
+            for (const bookCategory of b.categories) {
+              if (category._id === bookCategory._id) {
+                return true
+              }
+            }
+          }
+          return false
+        })
+      }
+      if (!criteria.includeReadBooks) {
+        filtered = filtered.filter(b => b.pages !== b.readPages)
+      }
+      if (!criteria.includeUnfinishedBooks) {
+        filtered = filtered.filter(b => !b.readPages || b.pages === b.readPages)
+      }
+      if (!criteria.includeUnreadBooks) {
+        filtered = filtered.filter(b => b.readPages)
+      }
+      if (criteria.isbn) {
+        filtered = filtered.filter(b => b.isbn.includes(criteria.isbn))
+      }
+      if (criteria.locations.length > 0) {
+        filtered = filtered.filter(b => {
+          for (const location of criteria.locations) {
+            if (location._id === b.location._id) {
+              return true
+            }
+          }
+          return false
+        })
+      }
+      if (criteria.publisher) {
+        filtered = filtered.filter(b => b.publisher.name.toLowerCase().includes(criteria.publisher.toLowerCase()))
+      }
+      if (criteria.publishingYear) {
+        filtered = filtered.filter(b => b.publishingYear.toString().contains(criteria.publishingYear.toString()))
+      }
+      if (criteria.serialNumber) {
+        filtered = filtered.filter(b => b.serialNumber.toString().contains(criteria.serialNumber.toString()))
+      }
     }
     return filtered
   }
@@ -245,9 +350,18 @@ class BookList extends React.Component {
           toggleAdvancedSearch={this.toggleAdvancedSearch}
           showStats={this.toggleStats}
         />
-        <div>
+        <div style={{ fontFamily: 'sans-serif', color: 'white', marginLeft: 10, marginRight: 10 }}>
           {this.state.searchCriteria ? this.getSearchCriteriaString() : ''}
         </div>
+        {this.state.searchCriteria
+          && <Button
+            variant='link'
+            style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '0.9em' }}
+            onClick={() => this.setState({ searchCriteria: null })}
+          >
+            Clear search criteria
+          </Button>
+        }
         <ListTable
           data={this.getFilteredBooks()}
           columns={this.columns}
@@ -311,7 +425,7 @@ class BookList extends React.Component {
 }
 
 const mapStateToProps = store => ({
-  books: store.books.items,
+  books: store.books.items.sort((a, b) => a.title > b.title ? 1 : (a.title < b.title ? -1 : 0)),
   categories: store.categories.items,
   loading: store.books.loading,
   error: store.books.error

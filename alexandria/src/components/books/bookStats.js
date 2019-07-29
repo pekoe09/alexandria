@@ -1,5 +1,4 @@
 const bookStats = (books, categories) => {
-  console.log('bookstats called', books)
   let stats = {
     count: 0,
     pages: 0,
@@ -47,7 +46,6 @@ const bookStats = (books, categories) => {
     categoryCounts.push({ name: name, count: value })
   }
   stats.categoryCounts = categoryCounts
-  console.log('book stats', stats)
   return stats
 }
 

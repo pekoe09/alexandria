@@ -55,7 +55,10 @@ GraphView.propTypes = {
   kpis: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string.isRequired,
-      value: PropTypes.number.isRequired
+      value: PropTypes.oneOfType([
+        PropTypes.number,
+        PropTypes.string
+      ]).isRequired
     })
   ).isRequired,
   modalIsOpen: PropTypes.bool.isRequired,

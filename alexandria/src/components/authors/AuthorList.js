@@ -185,7 +185,8 @@ class AuthorList extends React.Component {
 }
 
 const mapStateToProps = store => ({
-  authors: store.authors.items,
+  authors: store.authors.items.sort((a, b) =>
+    a.fullNameReversed > b.fullNameReversed ? 1 : (a.fullNameReversed < b.fullNameReversed ? -1 : 0)),
   loading: store.authors.loading,
   error: store.authors.error
 })

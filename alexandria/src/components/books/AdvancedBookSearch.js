@@ -16,7 +16,7 @@ class AdvancedBookSearch extends React.Component {
       publisher: '',
       publishingYear: '',
       isbn: '',
-      location: [],
+      locations: [],
       serialNumber: '',
       includeReadBooks: true,
       includeUnfinishedBooks: true,
@@ -32,7 +32,7 @@ class AdvancedBookSearch extends React.Component {
       publisher: '',
       publishingYear: '',
       isbn: '',
-      location: [],
+      locations: [],
       serialNumber: '',
       includeReadBooks: true,
       includeUnfinishedBooks: true,
@@ -49,7 +49,7 @@ class AdvancedBookSearch extends React.Component {
         publisher: this.props.publisher,
         publishingYear: this.props.publishingYear,
         isbn: this.props.isbn,
-        location: this.props.location,
+        locations: this.props.locations,
         serialNumber: this.props.serialNumber,
         includeReadBooks: this.props.includeReadBooks,
         includeUnfinishedBooks: this.props.includeUnfinishedBooks,
@@ -75,7 +75,7 @@ class AdvancedBookSearch extends React.Component {
   }
 
   handleLocationChange = selected => {
-    this.setState({ location: selected })
+    this.setState({ locations: selected })
   }
 
   handleSearch = () => {
@@ -216,13 +216,19 @@ class AdvancedBookSearch extends React.Component {
             style={{ marginRight: 5 }}
           >
             Search
-      </Button>
+          </Button>
+          <Button
+            bsstyle='default'
+            onClick={this.clearState}
+          >
+            Clear
+          </Button>
           <Button
             bsstyle='default'
             onClick={this.handleCancel}
           >
             Cancel
-      </Button>
+          </Button>
         </Modal.Footer>
       </Modal>
     )
@@ -252,7 +258,7 @@ AdvancedBookSearch.propTypes = {
     publisher: PropTypes.string,
     publishingYear: PropTypes.number,
     isbn: PropTypes.string,
-    location: PropTypes.arrayOf(PropTypes.shape({
+    locations: PropTypes.arrayOf(PropTypes.shape({
       _id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired
     })),
