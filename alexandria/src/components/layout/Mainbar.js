@@ -79,6 +79,7 @@ const Mainbar = ({ currentUser }) => {
   return (
     <StyledNavbar
       fixed='top'
+      expand='lg'
     >
       <Navbar.Brand>
         <NavLink to='/'>
@@ -89,8 +90,11 @@ const Mainbar = ({ currentUser }) => {
           />
         </NavLink>
       </Navbar.Brand>
-      {currentUser && <LoggedInItems />}
-      {!currentUser && <AnonymousItems />}
+      <Navbar.Toggle aria-controls='responsive-mainbar' />
+      <Navbar.Collapse id='responsive-mainbar'>
+        {currentUser && <LoggedInItems />}
+        {!currentUser && <AnonymousItems />}
+      </Navbar.Collapse>
     </StyledNavbar>
   )
 }

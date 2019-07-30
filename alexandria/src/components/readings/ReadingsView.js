@@ -7,6 +7,7 @@ import DiarySideBar from './DiarySideBar'
 import DatePage from './DatePage'
 import ReadingEdit from './ReadingEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
+import ViewBar from '../common/ViewBar'
 import {
   getAllReadings,
   addReading,
@@ -119,6 +120,14 @@ class ReadingsView extends React.Component {
         <Row>
           <Col sm={10} style={mainColStyle}>
             <ReadingsBar
+              handleOpenEdit={this.toggleEditModalOpen}
+              handlePhraseChange={this.handlePhraseChange}
+              handleSearch={this.handleSearch}
+              searchPhrase={this.state.searchPhrase}
+            />
+            <ViewBar
+              headerText='Reading sessions'
+              addBtnText='Add reading'
               handleOpenEdit={this.toggleEditModalOpen}
               handlePhraseChange={this.handlePhraseChange}
               handleSearch={this.handleSearch}
