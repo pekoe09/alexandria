@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { ViewHeader, StyledButton, StyledForm, StyledLink } from './alexandriaComponents'
-import { InputGroup, Button } from 'react-bootstrap'
+import { InputGroup, Button, Form } from 'react-bootstrap'
 import { Row, Col } from 'react-bootstrap'
 
 const ViewBar = ({
@@ -20,10 +20,10 @@ const ViewBar = ({
         <Col md={3}>
           <ViewHeader text={headerText} />
         </Col>
-        <Col md={9}style={{ paddingLeft: 0 }}>          
+        <Col md={9} style={{ paddingLeft: 0 }}>
           <StyledButton
             bsstyle='primary'
-            style={{ marginRight: 10, float: 'right' }}
+            style={{ marginRight: 10, marginLeft: 10, float: 'right' }}
             onClick={handleOpenEdit}
           >
             {addBtnText}
@@ -32,7 +32,7 @@ const ViewBar = ({
             showStats &&
             <StyledButton
               bsstyle='primary'
-              style={{ marginLeft: 10, marginRight: 10, float: 'right' }}
+              style={{ marginLeft: 10, float: 'right' }}
               onClick={showStats}
             >
               Statistics
@@ -42,33 +42,42 @@ const ViewBar = ({
             toggleAdvancedSearch &&
             <Button
               variant='link'
-              style={{ 
-                color: 'white', 
-                fontFamily: 'sans-serif', 
+              style={{
+                color: 'white',
+                fontFamily: 'sans-serif',
                 fontSize: '0.9em',
-                float: 'right' 
+                float: 'right'
               }}
               onClick={toggleAdvancedSearch}
             >
               Advanced search
             </Button>
           }
-          <InputGroup style={{ float: 'right' }}>
-            <StyledForm.Control
-              type='text'
-              name='searchPhrase'
-              value={searchPhrase}
-              onChange={handlePhraseChange}
-              placeholder='Write a search text'
-            />
-            <InputGroup.Append>
-              <StyledButton
-                onClick={handleSearch}
-              >
-                Go!
+          <Form
+            inline
+            style={{ 
+              display: 'grid',
+              width: 'auto',
+              marginLeft: 25
+            }}
+          >
+            <InputGroup>
+              <StyledForm.Control
+                type='text'
+                name='searchPhrase'
+                value={searchPhrase}
+                onChange={handlePhraseChange}
+                placeholder='Write a search text'
+              />
+              <InputGroup.Append>
+                <StyledButton
+                  onClick={handleSearch}
+                >
+                  Go!
               </StyledButton>
-            </InputGroup.Append>
-          </InputGroup>
+              </InputGroup.Append>
+            </InputGroup>
+          </Form>
         </Col>
       </Row>
     </>

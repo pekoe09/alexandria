@@ -90,7 +90,7 @@ const Mainbar = ({ currentUser }) => {
           />
         </NavLink>
       </Navbar.Brand>
-      <Navbar.Toggle aria-controls='responsive-mainbar' />
+      <Navbar.Toggle aria-controls='responsive-mainbar' className='custom-toggler' animation={false}/>
       <Navbar.Collapse id='responsive-mainbar'>
         {currentUser && <LoggedInItems />}
         {!currentUser && <AnonymousItems />}

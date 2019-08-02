@@ -2,7 +2,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Row, Col } from 'react-bootstrap'
 import moment from 'moment'
-import ReadingsBar from './ReadingsBar'
 import DiarySideBar from './DiarySideBar'
 import DatePage from './DatePage'
 import ReadingEdit from './ReadingEdit'
@@ -119,12 +118,6 @@ class ReadingsView extends React.Component {
       <>
         <Row>
           <Col sm={10} style={mainColStyle}>
-            <ReadingsBar
-              handleOpenEdit={this.toggleEditModalOpen}
-              handlePhraseChange={this.handlePhraseChange}
-              handleSearch={this.handleSearch}
-              searchPhrase={this.state.searchPhrase}
-            />
             <ViewBar
               headerText='Reading sessions'
               addBtnText='Add reading'
