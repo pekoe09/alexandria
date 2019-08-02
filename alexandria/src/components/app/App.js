@@ -3,7 +3,7 @@ import { Route, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import './App.css'
 import ColorTest from '../common/ColorTest'
-import FrontPage from '../layout/FrontPage'
+import FrontPageContainer from '../layout/FrontPageContainer'
 import Layout from '../layout/Layout'
 import AuthorsList from '../authors/AuthorList'
 import BookList from '../books/BookList'
@@ -16,7 +16,7 @@ class App extends React.Component {
   render() {
     return (
       <Layout>
-        <Route exact path='/' render={() => <FrontPage />} />
+        <Route exact path='/' render={() => <FrontPageContainer />} />
         <Route exact path='/authors' render={() => <AuthorsList />} />
         <Route exact path='/books' render={() => <BookList />} />
         <Route exact path='/categories' render={() => <CategoryList />} />

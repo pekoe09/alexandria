@@ -1,13 +1,22 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-const chartBoxStyle = {
+const chartBoxCoreStyle = {
   borderStyle: 'solid',
   borderRadius: 4,
-  borderColor: 'lightgrey',
   borderWidth: 1,
   padding: 10,
   marginBottom: 10
+}
+
+const chartBoxBasicStyle = {
+  borderColor: 'lightgrey',
+}
+
+const chartBoxInvertedStyle = {
+  borderColor: 'rgb(2, 68, 71)',
+  backgroundColor: 'rgb(98, 161, 164)',
+  color: 'white'
 }
 
 const chartTitleStyle = {
@@ -15,12 +24,14 @@ const chartTitleStyle = {
   fontFamily: 'sans-serif'
 }
 
-const GraphContainer = ({ getCharts }) => {
+const GraphContainer = ({ getCharts, inverted }) => {
   return (
     <>
       {getCharts.map((getChart, i) => {
         return (
-          <div style={chartBoxStyle} key={getChart.title}>
+          <div
+            style={inverted ? { ...chartBoxCoreStyle, ...chartBoxInvertedStyle } : { ...chartBoxCoreStyle, ...chartBoxBasicStyle }}
+            key={getChart.title}>
             <div style={chartTitleStyle}>{getChart.title}</div>
             {getChart.call()}
           </div>
@@ -39,4 +50,5 @@ GraphContainer.propTypes = {
       call: PropTypes.func.isRequired
     })
   ).isRequired,
+  inverted: PropTypes.bool
 }

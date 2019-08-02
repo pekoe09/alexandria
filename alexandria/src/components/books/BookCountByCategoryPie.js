@@ -2,7 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { VictoryPie } from 'victory'
 
-const BookCountByCategoryPie = ({ data }) => {
+const BookCountByCategoryPie = ({ data, style }) => {
+  console.log('pie style', style)
   return (
     <VictoryPie
       data={data}
@@ -12,6 +13,7 @@ const BookCountByCategoryPie = ({ data }) => {
       padding={40}
       colorScale='cool'
       width={600}
+      style={style}
     />
   )
 }
