@@ -1,13 +1,55 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
-import ReactTable from 'react-table'
+import { useTable } from 'react-table'
 import { Button, Nav, NavItem } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { Form } from 'react-bootstrap'
 
-const ListTable = styled(ReactTable)`
+// const ListTable = styled(ReactTable)`
+//   margin: 10px;
+// `
+
+const ListTable = styled.div`
   margin: 10px;
 `
+
+const StyledTable = ({columns, data}) => {
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headers,
+    rows,
+    prepareRow,
+  } = useTable({
+    columns, data
+  })
+
+  return (
+    <table {...getTableProps} className='rt-table'>
+      <thead>
+        <tr className='rt-tr'>
+          {headers.map(column => (
+            <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody {...getTableBodyProps}>
+        {rows.map(
+          (row, i) => {
+            prepareRow(row)
+            return (
+              <tr {...row.getRowProps()} className='rt-tr'>
+                {row.cells.map(cell => {
+                  return <td {...cell.getCellProps()} className='rt-td'>{cell.render('Cell')}</td>
+                })}
+              </tr>
+            )
+          }
+        )}
+      </tbody>
+    </table>
+  )
+}
 
 const LinkButton = ({ text, to, type }) => {
   return (
@@ -115,15 +157,15 @@ const StyledNavItem = styled(NavItem)`
 `
 
 const ViewHeader = ({ text }) => {
-  return <h2 
-      style={{ 
-        fontFamily: 'sans-serif',
-        color: 'white',
-        marginLeft: 10
-      }}
-    >
-      {text}
-    </h2>
+  return <h2
+    style={{
+      fontFamily: 'sans-serif',
+      color: 'white',
+      marginLeft: 10
+    }}
+  >
+    {text}
+  </h2>
 }
 
 export {
@@ -134,5 +176,6 @@ export {
   StyledForm,
   StyledLink,
   StyledNavItem,
+  StyledTable,
   StyledVerticalLink
 } 

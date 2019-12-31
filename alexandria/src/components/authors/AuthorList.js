@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
+import { useTable } from 'react-table'
 import {
   ListTable,
-  StyledButton
+  StyledButton,
+  StyledTable
 } from '../common/alexandriaComponents'
 import '../common/alexandria-react-table.css'
 import {
@@ -15,174 +17,170 @@ import {
 import ViewBar from '../common/ViewBar'
 import AuthorEdit from './AuthorEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
+import { func } from 'prop-types'
 
-class AuthorList extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      editModalIsOpen: false,
-      rowToEdit: null,
-      modalError: '',
-      deletionTargetId: '',
-      deletionTargetName: '',
-      deletionConfirmationIsOpen: false,
-      searchPhrase: '',
-      searchPhraseToUse: ''
-    }
+function AuthorList(props) {
+  const [editModalIsOpen, setEditModalIsOpen] = useState(false)
+  const [rowToEdit, setRowToEdit] = useState(null)
+  const [modalError, setModalError] = useState('')
+  const [deletionTargetId, setDeletionTargetId] = useState('')
+  const [deletionTargetName, setDeletionTargetName] = useState('')
+  const [deletionConfirmationIsOpen, setDeletionConfirmationIsOpen] = useState(false)
+  const [searchPhrase, setSearchPhrase] = useState('')
+  const [searchPhraseToUse, setSearchPhraseToUse] = useState('')
+
+  // get the initial data
+  useEffect(() => {
+    (async function getData() {
+      await props.getAllAuthors()
+    })()
+  }, [])
+
+
+  const toggleEditModalOpen = () => {
+    setModalError('')
+    setEditModalIsOpen(!editModalIsOpen)
+    setRowToEdit(null)
   }
 
-  componentDidMount = async () => {
-    await this.props.getAllAuthors()
-  }
-
-  toggleEditModalOpen = () => {
-    this.setState({
-      modalError: '',
-      editModalIsOpen: !this.state.editModalIsOpen,
-      rowToEdit: null
-    })
-  }
-
-  handleSave = async (author) => {
+  const handleSave = async (author) => {
     if (author._id) {
-      await this.props.updateAuthor(author)
+      await props.updateAuthor(author)
     } else {
-      await this.props.addAuthor(author)
+      await props.addAuthor(author)
     }
-    if (this.props.error) {
-      this.setState({ modalError: 'Could not save the author' })
+    if (props.error) {
+      setModalError('Could not save the author')
     }
   }
 
-  handleRowClick = (state, rowInfo) => {
+  const handleRowClick = (state, rowInfo) => {
     return {
       onClick: (e) => {
-        this.setState({
-          editModalIsOpen: true,
-          rowToEdit: rowInfo.original,
-          modalError: ''
-        })
+        setEditModalIsOpen(true)
+        setRowToEdit(rowInfo.original)
+        setModalError('')
       }
     }
   }
 
-  handleDeleteRequest = (item, e) => {
+  const handleDeleteRequest = (item, e) => {
     e.stopPropagation()
-    this.setState({
-      deletionTargetId: item._id,
-      deletionTargetName: `${item.lastName}, ${item.firstNames}`,
-      deletionConfirmationIsOpen: true
-    })
+    setDeletionTargetId(item._id)
+    setDeletionTargetName(`${item.lastName}, ${item.firstNames}`)
+    setDeletionConfirmationIsOpen(true)
   }
 
-  handleDeleteConfirmation = async (isConfirmed) => {
+  const handleDeleteConfirmation = async (isConfirmed) => {
     if (isConfirmed) {
-      await this.props.deleteAuthor(this.state.deletionTargetId)
+      await props.deleteAuthor(deletionTargetId)
     }
-    this.setState({
-      deletionConfirmationIsOpen: false,
-      deletionTargetId: '',
-      deletionTargetName: ''
-    })
+    setDeletionConfirmationIsOpen(false)
+    setDeletionTargetId('')
+    setDeletionTargetName('')
   }
 
-  handlePhraseChange = searchPhraseEvent => {
+  const handlePhraseChange = searchPhraseEvent => {
     let searchPhrase = searchPhraseEvent.target.value
     if (searchPhrase.trim().length > 0) {
-      this.setState({ searchPhrase })
+      setSearchPhrase(searchPhrase)
     } else {
-      this.setState({ searchPhrase: '' })
+      setSearchPhrase('')
     }
   }
 
-  handleSearch = () => {
-    this.setState({ searchPhraseToUse: this.state.searchPhrase })
+  const handleSearch = () => {
+    setSearchPhraseToUse(searchPhrase)
   }
 
   // Tätä funktiota pitää kutsua React.useMemo()-kutsun kautta, riippuvaisuuksina this.props.authors ja this.state.searchPhraseToUse(?)
-  getFilteredAuthors = () => {
-    let searchPhrase = this.state.searchPhraseToUse.toLowerCase()
-    let filtered = this.props.authors
-    if (this.state.searchPhraseToUse.length > 0) {
-      filtered = this.props.authors.filter(a =>
+  const getFilteredAuthors = () => {
+    let searchPhrase = searchPhraseToUse.toLowerCase()
+    let filtered = props.authors
+    if (searchPhraseToUse.length > 0) {
+      filtered = props.authors.filter(a =>
         a.fullName.toLowerCase().includes(searchPhrase) || a.fullNameReversed.includes(searchPhrase))
     }
     return filtered
   }
 
-  // sarakemäärittely (columns) tapahduttava React.useMemo() -kutsun kautta
-  columns = [
-    {
-      Header: 'Name',
-      accessor: 'fullNameReversed',
-      headerStyle: {
-        textAlign: 'left'
-      }
-    },
-    {
-      Header: '# of books',
-      accessor: '',
-      Cell: (row) => (
-        row.original.books.length
-      ),
-      style: {
-        textAlign: 'center'
-      }
-    },
-    {
-      Header: '',
-      accessor: 'delete',
-      Cell: (row) => (
-        <StyledButton
-          onClick={(e) => this.handleDeleteRequest(row.original, e)}
-          bsstyle='rowdanger'
-        >
-          Delete
-        </StyledButton>
-      ),
-      style: {
-        textAlign: 'center'
-      },
-      sortable: false,
-      filterable: false,
-      maxWidth: 80
-    }
-  ]
+  const getData = React.useMemo(() => getFilteredAuthors(), [])
 
-  render() {
-    return (
-      <React.Fragment>
-        <ViewBar
-          headerText='Authors'
-          addBtnText='Add author'
-          handleOpenEdit={this.toggleEditModalOpen}
-          handlePhraseChange={this.handlePhraseChange}
-          handleSearch={this.handleSearch}
-          searchPhrase={this.state.searchPhrase}
-        />
-        <ListTable
-          data={this.getFilteredAuthors()}
-          columns={this.columns}
-          getTrProps={this.handleRowClick}
-          defaultPageSize={20}
-          minRows={1}
-        />
-        <AuthorEdit
-          author={this.state.rowToEdit}
-          modalIsOpen={this.state.editModalIsOpen}
-          closeModal={this.toggleEditModalOpen}
-          handleSave={this.handleSave}
-          modalError={this.state.modalError}
-        />
-        <DeletionConfirmation
-          headerText={`Deleting ${this.state.deletionTargetName}`}
-          bodyText='Are you sure you want to go ahead and delete this?'
-          modalIsOpen={this.state.deletionConfirmationIsOpen}
-          closeModal={this.handleDeleteConfirmation}
-        />
-      </React.Fragment>
-    )
-  }
+  // sarakemäärittely (columns) tapahduttava React.useMemo() -kutsun kautta
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: 'Name',
+        accessor: 'fullNameReversed',
+        headerStyle: {
+          textAlign: 'left'
+        }
+      },
+      {
+        Header: '# of books',
+        accessor: '',
+
+        style: {
+          textAlign: 'center'
+        }
+      },
+      {
+        Header: '',
+        accessor: 'delete',
+        Cell: (row) => (
+          <StyledButton
+            onClick={(e) => handleDeleteRequest(row.original, e)}
+            bsstyle='rowdanger'
+          >
+            Delete
+        </StyledButton>
+        ),
+        style: {
+          textAlign: 'center'
+        },
+        sortable: false,
+        filterable: false,
+        maxWidth: 80
+      }
+    ]
+  )
+
+  return (
+    <React.Fragment>
+      <ViewBar
+        headerText='Authors'
+        addBtnText='Add author'
+        handleOpenEdit={toggleEditModalOpen}
+        handlePhraseChange={handlePhraseChange}
+        handleSearch={handleSearch}
+        searchPhrase={searchPhrase}
+      />
+      <ListTable
+        data={getData}
+        columns={columns}
+        getTrProps={handleRowClick}
+        defaultPageSize={20}
+        minRows={1}
+      />
+      <StyledTable
+        columns={columns}
+        data={getData}
+      />
+      <AuthorEdit
+        author={rowToEdit}
+        modalIsOpen={editModalIsOpen}
+        closeModal={toggleEditModalOpen}
+        handleSave={handleSave}
+        modalError={modalError}
+      />
+      <DeletionConfirmation
+        headerText={`Deleting ${deletionTargetName}`}
+        bodyText='Are you sure you want to go ahead and delete this?'
+        modalIsOpen={deletionConfirmationIsOpen}
+        closeModal={handleDeleteConfirmation}
+      />
+    </React.Fragment>
+  )
 
 }
 
