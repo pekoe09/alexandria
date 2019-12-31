@@ -113,7 +113,9 @@ function AuthorList(props) {
       {
         Header: '# of books',
         accessor: '',
-
+        Cell: (item) => (
+          item.row.original.books.length
+        ),
         style: {
           textAlign: 'center'
         }
