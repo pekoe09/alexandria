@@ -99,6 +99,7 @@ class AuthorList extends React.Component {
     this.setState({ searchPhraseToUse: this.state.searchPhrase })
   }
 
+  // Tätä funktiota pitää kutsua React.useMemo()-kutsun kautta, riippuvaisuuksina this.props.authors ja this.state.searchPhraseToUse(?)
   getFilteredAuthors = () => {
     let searchPhrase = this.state.searchPhraseToUse.toLowerCase()
     let filtered = this.props.authors
@@ -109,6 +110,7 @@ class AuthorList extends React.Component {
     return filtered
   }
 
+  // sarakemäärittely (columns) tapahduttava React.useMemo() -kutsun kautta
   columns = [
     {
       Header: 'Name',
