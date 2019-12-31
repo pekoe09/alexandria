@@ -17,7 +17,7 @@ const ListTable = styled.div`
   margin: 10px;
 `
 
-const StyledTable = ({ columns, data }) => {
+const StyledTable = ({ columns, data, handleRowClick }) => {
   const defaultColumn = React.useMemo(
     () => ({
       minWidth: 30, width: 150, maxWidth: 200
@@ -61,7 +61,7 @@ const StyledTable = ({ columns, data }) => {
           (row, i) => {
             prepareRow(row)
             return (
-              <tr {...row.getRowProps()} className='rt-tr'>
+              <tr {...row.getRowProps({onClick: () => handleRowClick(row)})} className='rt-tr'>
                 {row.cells.map(cell => {
                   return <td {...cell.getCellProps()} className='rt-td'>{cell.render('Cell')}</td>
                 })}

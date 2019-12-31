@@ -52,14 +52,10 @@ function AuthorList(props) {
     }
   }
 
-  const handleRowClick = (state, rowInfo) => {
-    return {
-      onClick: (e) => {
-        setEditModalIsOpen(true)
-        setRowToEdit(rowInfo.original)
-        setModalError('')
-      }
-    }
+  const handleRowClick = (row) => {
+    setEditModalIsOpen(true)
+    setRowToEdit(row.original)
+    setModalError('')
   }
 
   const handleDeleteRequest = (item, e) => {
@@ -136,7 +132,7 @@ function AuthorList(props) {
         style: {
           textAlign: 'center'
         },
-        sortable: false,
+        disableSortBy: true,
         filterable: false,
         maxWidth: 80
       }
@@ -156,6 +152,7 @@ function AuthorList(props) {
       <StyledTable
         columns={columns}
         data={getData}
+        handleRowClick={handleRowClick}
       />
       <AuthorEdit
         author={rowToEdit}
