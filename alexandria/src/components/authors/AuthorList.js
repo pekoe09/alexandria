@@ -16,7 +16,6 @@ import ViewBar from '../common/ViewBar'
 import AuthorEdit from './AuthorEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
 
-
 function AuthorList(props) {
   const [editModalIsOpen, setEditModalIsOpen] = useState(false)
   const [rowToEdit, setRowToEdit] = useState(null)
