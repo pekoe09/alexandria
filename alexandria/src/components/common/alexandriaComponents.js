@@ -1,6 +1,10 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
-import { useTable } from 'react-table'
+import {
+  useTable,
+  useFlexLayout,
+  useSortBy
+} from 'react-table'
 import { Button, Nav, NavItem } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { Form } from 'react-bootstrap'
@@ -13,27 +17,46 @@ const ListTable = styled.div`
   margin: 10px;
 `
 
-const StyledTable = ({columns, data}) => {
+const StyledTable = ({ columns, data }) => {
+  const defaultColumn = React.useMemo(
+    () => ({
+      minWidth: 30, width: 150, maxWidth: 200
+    })
+  )
+
   const {
     getTableProps,
     getTableBodyProps,
     headers,
     rows,
     prepareRow,
-  } = useTable({
-    columns, data
-  })
+  } = useTable(
+    {
+      columns, data, defaultColumn
+    },
+    useFlexLayout,
+    useSortBy
+  )
 
   return (
     <table {...getTableProps} className='rt-table'>
-      <thead>
+      <thead className='rt-thead'>
         <tr className='rt-tr'>
           {headers.map(column => (
-            <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+            <th {...column.getHeaderProps(column.getSortByToggleProps)} className='rt-th'>
+              {column.render('Header')}
+              <span>
+                {column.isSorted
+                  ? column.isSortedDesc
+                    ? ' 🔽'
+                    : ' 🔼'
+                  : ''}
+              </span>
+            </th>
           ))}
         </tr>
       </thead>
-      <tbody {...getTableBodyProps}>
+      <tbody {...getTableBodyProps} className='rt-tbody'>
         {rows.map(
           (row, i) => {
             prepareRow(row)

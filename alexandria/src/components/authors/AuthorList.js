@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import { useTable } from 'react-table'
 import {
-  ListTable,
   StyledButton,
   StyledTable
 } from '../common/alexandriaComponents'
@@ -17,7 +15,7 @@ import {
 import ViewBar from '../common/ViewBar'
 import AuthorEdit from './AuthorEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
-import { func } from 'prop-types'
+
 
 function AuthorList(props) {
   const [editModalIsOpen, setEditModalIsOpen] = useState(false)
@@ -154,13 +152,6 @@ function AuthorList(props) {
         handlePhraseChange={handlePhraseChange}
         handleSearch={handleSearch}
         searchPhrase={searchPhrase}
-      />
-      <ListTable
-        data={getData}
-        columns={columns}
-        getTrProps={handleRowClick}
-        defaultPageSize={20}
-        minRows={1}
       />
       <StyledTable
         columns={columns}
