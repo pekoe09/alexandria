@@ -102,7 +102,7 @@ function AuthorList(props) {
     return filtered
   }
 
-  const getData = React.useMemo(() => getFilteredAuthors(), [])
+  const getData = React.useMemo(() => getFilteredAuthors(), [props.authors])
 
   // sarakemäärittely (columns) tapahduttava React.useMemo() -kutsun kautta
   const columns = React.useMemo(
@@ -125,9 +125,9 @@ function AuthorList(props) {
       {
         Header: '',
         accessor: 'delete',
-        Cell: (row) => (
+        Cell: (item) => (
           <StyledButton
-            onClick={(e) => handleDeleteRequest(row.original, e)}
+            onClick={(e) => handleDeleteRequest(item.row.original, e)}
             bsstyle='rowdanger'
           >
             Delete
