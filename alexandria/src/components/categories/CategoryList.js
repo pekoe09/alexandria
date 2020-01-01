@@ -58,13 +58,13 @@ function CategoryList(props) {
   const handleDeleteRequest = (item, e) => {
     e.stopPropagation()
     setDeletionTargetId(item._id)
-    setDeletionTargetName(`${item.lastName}, ${item.firstNames}`)
+    setDeletionTargetName(item.name)
     setDeletionConfirmationIsOpen(true)
   }
 
   const handleDeleteConfirmation = async (isConfirmed) => {
     if (isConfirmed) {
-      await props.deleteCategory(this.state.deletionTargetId)
+      await props.deleteCategory(deletionTargetId)
     }
     setDeletionConfirmationIsOpen(false)
     setDeletionTargetId('')
@@ -123,9 +123,9 @@ function CategoryList(props) {
       {
         Header: '',
         accessor: 'delete',
-        Cell: (row) => (
+        Cell: (item) => (
           <StyledButton
-            onClick={(e) => this.handleDeleteRequest(row.original, e)}
+            onClick={(e) => handleDeleteRequest(item.row.original, e)}
             bsstyle='rowdanger'
           >
             Delete
@@ -134,7 +134,7 @@ function CategoryList(props) {
         style: {
           textAlign: 'center'
         },
-        sortable: false,
+        disableSortBy: false,
         filterable: false,
         maxWidth: 80
       }

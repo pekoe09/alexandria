@@ -33,7 +33,6 @@ function AuthorList(props) {
     })()
   }, [])
 
-
   const toggleEditModalOpen = () => {
     setModalError('')
     setEditModalIsOpen(!editModalIsOpen)
@@ -86,7 +85,6 @@ function AuthorList(props) {
     setSearchPhraseToUse(searchPhrase)
   }
 
-  // Tätä funktiota pitää kutsua React.useMemo()-kutsun kautta, riippuvaisuuksina this.props.authors ja this.state.searchPhraseToUse(?)
   const getFilteredAuthors = () => {
     let searchPhrase = searchPhraseToUse.toLowerCase()
     let filtered = props.authors
