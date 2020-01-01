@@ -2,7 +2,6 @@ import React from 'react'
 import { ViewHeader } from '../common/alexandriaComponents'
 import { Row, Col } from 'react-bootstrap'
 import GraphContainer from '../graphs/GraphContainer'
-import KPIContainer from '../graphs/KPIContainer'
 import BookCountByCategoryPie from '../books/BookCountByCategoryPie'
 import BookCountByStatusPie from '../books/BookCountByStatusPie'
 

@@ -12,6 +12,10 @@ import {
   BOOK_DELETE_SUCCESS,
   BOOK_DELETE_FAILURE
 } from '../actions/bookActions'
+import {
+  READING_CREATE_SUCCESS,
+  READING_UPDATE_SUCCESS
+} from '../actions/readingActions'
 
 const initialState = {
   items: [],
@@ -100,6 +104,26 @@ const bookReducer = (store = initialState, action) => {
         ...store,
         deleting: false,
         error: action.payload.error
+      }
+    case READING_CREATE_SUCCESS:
+      const created = action.payload.reading.book
+      const target = store.items.find(c => c._id === created._id)
+      if (target) {
+        target.readPages = created.readPages
+      }
+      return {
+        ...store,
+        items: store.items.map(c => c._id === created._id ? target : c)
+      }
+    case READING_UPDATE_SUCCESS:
+      const readUpdated = action.payload.reading.book
+      const targetUpdated = store.items.find(c => c._id === readUpdated._id)
+      if (targetUpdated) {
+        targetUpdated.readPages = readUpdated.readPages
+      }
+      return {
+        ...store,
+        items: store.items.map(c => c._id === readUpdated._id ? targetUpdated : c)
       }
     default:
       return store

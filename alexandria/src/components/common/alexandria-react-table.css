@@ -1,17 +1,32 @@
 .rt-table {
   font-family: sans-serif;
+  display: block;
+  overflow: auto;
+  margin: 0px 10px 10px 10px;
+}
+
+.rt-thead {
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: grid;
+}
+
+.rt-tbody {
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
 }
 
 .rt-thead .rt-tr {
-  min-width: 180px;
   background-color: #125D60;
   color: white;
   font-weight: 700;
 }
 
-.ReactTable .rt-thead .rt-th {
-  padding-left: 10px;
-  padding-right: 10px;
+.rt-th {
+  padding-left: 5px;
 }
 
 .rt-tr {
@@ -19,9 +34,9 @@
   color: white;
 }
 
-.ReactTable .rt-td {
-  padding-left: 10px;
-  padding-right: 10px;
+.rt-td {
+  line-height: 2em;
+  padding-left: 5px;
 }
 
 .ReactTable .-pagination .-btn {
@@ -40,4 +55,21 @@
 
 .ReactTable .pagination-bottom {
   font-family: 'sans-serif';
+}
+
+.rt-pagination {
+  font-family: 'sans-serif';
+  font-size: 0.8em;
+  text-align: center;
+  color: white;
+}
+
+.rt-paginationbutton {
+  font-size: 0.8em;
+  font-weight: 900;
+  border: none;
+}
+
+.rt-paginationbutton:disabled {
+  background: dimgray;
 }

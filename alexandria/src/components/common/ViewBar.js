@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { ViewHeader, StyledButton, StyledForm, StyledLink } from './alexandriaComponents'
+import { ViewHeader, StyledButton, StyledForm } from './alexandriaComponents'
 import { InputGroup, Button, Form } from 'react-bootstrap'
 import { Row, Col } from 'react-bootstrap'
 

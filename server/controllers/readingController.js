@@ -31,6 +31,11 @@ readingRouter.post('/', wrapAsync(async (req, res, next) => {
     minutes: req.body.minutes
   })
   reading = await reading.save()
+  if(!book.readPages || book.readPages < reading.endPage ) {
+    book.readPages = Math.min(reading.endPage, book.pages)
+    await Book.findByIdAndUpdate(book._id, book)
+  }
+
   reading = await Reading.findById(reading._id).populate('book')
   res.status(201).json(reading)
 }))
@@ -51,6 +56,11 @@ readingRouter.put('/:id', wrapAsync(async (req, res, next) => {
   reading.minutes = req.body.minutes
 
   await Reading.findByIdAndUpdate(reading._id, reading)
+  if(!book.readPages || book.readPages < reading.endPage ) {
+    book.readPages = Math.min(reading.endPage, book.pages)
+    await Book.findByIdAndUpdate(book._id, book)
+  }
+
   reading = await Reading.findById(reading._id).populate('book')
   res.status(201).json(reading)
 }))
