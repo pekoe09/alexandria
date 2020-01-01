@@ -6,7 +6,7 @@ import {
   usePagination,
   useSortBy
 } from 'react-table'
-import { Button, Nav, NavItem } from 'react-bootstrap'
+import { Button, NavItem } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { Form } from 'react-bootstrap'
 
@@ -18,7 +18,7 @@ const StyledTable = ({ columns, data, handleRowClick }) => {
   const defaultColumn = React.useMemo(
     () => ({
       minWidth: 30, width: 150, maxWidth: 200
-    })
+    }), []
   )
 
   const {

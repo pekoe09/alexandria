@@ -6,7 +6,6 @@ import { getAllCategories } from './categoryActions'
 import { getAllLocations } from './locationActions'
 import { getAllPublishers } from './publisherActions'
 import { getAllReadings } from './readingActions'
-import { doesNotReject } from 'assert';
 
 export const LOGIN_BEGIN = 'LOGIN_BEGIN'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'

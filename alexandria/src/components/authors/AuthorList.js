@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import {
@@ -85,7 +85,7 @@ function AuthorList(props) {
     setSearchPhraseToUse(searchPhrase)
   }
 
-  const getFilteredAuthors = () => {
+  const getFilteredAuthors = useCallback(() => {
     let searchPhrase = searchPhraseToUse.toLowerCase()
     let filtered = props.authors
     if (searchPhraseToUse.length > 0) {
@@ -93,9 +93,9 @@ function AuthorList(props) {
         a.fullName.toLowerCase().includes(searchPhrase) || a.fullNameReversed.includes(searchPhrase))
     }
     return filtered
-  }
+  }, [props.authors, searchPhraseToUse])
 
-  const getData = React.useMemo(() => getFilteredAuthors(), [props.authors])
+  const getData = React.useMemo(() => getFilteredAuthors(), [getFilteredAuthors])
 
   // sarakemäärittely (columns) tapahduttava React.useMemo() -kutsun kautta
   const columns = React.useMemo(
@@ -135,7 +135,8 @@ function AuthorList(props) {
         filterable: false,
         maxWidth: 80
       }
-    ]
+    ],
+    []
   )
 
   return (

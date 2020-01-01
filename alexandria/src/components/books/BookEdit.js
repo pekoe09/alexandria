@@ -5,7 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import moment from 'moment'
 import { StyledForm } from '../common/alexandriaComponents'
 import FormButtons from '../common/FormButtons'
-import { Modal, Row, Col } from 'react-bootstrap'
+import { Modal, Col } from 'react-bootstrap'
 import { Typeahead } from 'react-bootstrap-typeahead'
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import { connect } from 'react-redux'

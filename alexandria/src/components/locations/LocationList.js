@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import {
@@ -84,7 +84,7 @@ function LocationList(props) {
     setSearchPhraseToUse(searchPhrase)
   }
 
-  const getFilteredLocations = () => {
+  const getFilteredLocations = useCallback(() => {
     let searchPhrase = searchPhraseToUse.toLowerCase()
     let filtered = props.locations
     if (searchPhraseToUse.length > 0) {
@@ -93,9 +93,9 @@ function LocationList(props) {
       )
     }
     return filtered
-  }
+  },[props.locations, searchPhraseToUse])
 
-  const getData = React.useMemo(() => getFilteredLocations(), [props.locations])
+  const getData = React.useMemo(() => getFilteredLocations(), [getFilteredLocations])
 
   const columns = React.useMemo(
     () => [
@@ -138,7 +138,8 @@ function LocationList(props) {
         filterable: false,
         maxWidth: 80
       }
-    ]
+    ],
+    []
   )
 
   return (

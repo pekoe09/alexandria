@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import {
@@ -84,7 +84,7 @@ function CategoryList(props) {
     setSearchPhraseToUse(searchPhrase)
   }
 
-  const getFilteredCategories = () => {
+  const getFilteredCategories = useCallback(() => {
     let searchPhrase = searchPhraseToUse.toLowerCase()
     let filtered = props.categories
     if (searchPhraseToUse.length > 0) {
@@ -93,9 +93,9 @@ function CategoryList(props) {
       )
     }
     return filtered
-  }
+  }, [props.categories, searchPhraseToUse])
 
-  const getData = React.useMemo(() => getFilteredCategories(), [props.categories])
+  const getData = React.useMemo(() => getFilteredCategories(), [getFilteredCategories])
 
   const columns = React.useMemo(
     () => [
@@ -138,7 +138,8 @@ function CategoryList(props) {
         filterable: false,
         maxWidth: 80
       }
-    ]
+    ],
+    []
   )
 
   return (

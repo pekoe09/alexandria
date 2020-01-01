@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import {
-  ListTable,
   StyledButton,
   StyledTable
 } from '../common/alexandriaComponents'
@@ -85,7 +84,7 @@ function PublisherList(props) {
     setSearchPhraseToUse(searchPhrase)
   }
 
-  const getFilteredPublishers = () => {
+  const getFilteredPublishers = useCallback(() => {
     let searchPhrase = searchPhraseToUse.toLowerCase()
     let filtered = props.publishers
     if (searchPhraseToUse.length > 0) {
@@ -94,9 +93,9 @@ function PublisherList(props) {
       )
     }
     return filtered
-  }
+  }, [props.publishers, searchPhraseToUse])
 
-  const getData = React.useMemo(() => getFilteredPublishers(), [props.publishers])
+  const getData = React.useMemo(() => getFilteredPublishers(), [getFilteredPublishers])
 
   const columns = React.useMemo(
     () => [
@@ -125,7 +124,8 @@ function PublisherList(props) {
         filterable: false,
         maxWidth: 80
       }
-    ]
+    ],
+    []
   )
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import {
@@ -153,7 +153,7 @@ function BookList(props) {
     return criteriaStr
   }
 
-  const getFilteredBooks = () => {
+  const getFilteredBooks = useCallback(() => {
     let searchPhrase = searchPhraseToUse.toLowerCase()
     let filtered = props.books
     if (searchPhraseToUse.length > 0) {
@@ -224,9 +224,9 @@ function BookList(props) {
       }
     }
     return filtered
-  }
+  },[props.books, searchPhraseToUse, searchCriteria])
 
-  const getData = React.useMemo(() => getFilteredBooks(), [props.books, props.categories])
+  const getData = React.useMemo(() => getFilteredBooks(), [getFilteredBooks])
 
   const toggleStats = () => {
     setStats(statsIsVisible ? stats : bookStats(props.books, props.categories))
@@ -320,7 +320,8 @@ function BookList(props) {
         filterable: false,
         maxWidth: 80
       }
-    ]
+    ],
+    []
   )
 
   return (

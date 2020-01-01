@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { StyledForm } from '../common/alexandriaComponents'
-import { Modal, Row, Col, Button } from 'react-bootstrap'
+import { Modal, Col, Button } from 'react-bootstrap'
 import { Typeahead } from 'react-bootstrap-typeahead'
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import { connect } from 'react-redux'
