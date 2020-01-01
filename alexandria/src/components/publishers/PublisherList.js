@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import {
   ListTable,
-  StyledButton
+  StyledButton,
+  StyledTable
 } from '../common/alexandriaComponents'
 import '../common/alexandria-react-table.css'
 import {
@@ -16,162 +17,148 @@ import ViewBar from '../common/ViewBar'
 import PublisherEdit from './PublisherEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
 
-class PublisherList extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      editModalIsOpen: false,
-      rowToEdit: null,
-      modalError: '',
-      deletionTargetId: '',
-      deletionTargetName: '',
-      deletionConfirmationIsOpen: false,
-      searchPhrase: '',
-      searchPhraseToUse: ''
-    }
+function PublisherList(props) {
+  const [editModalIsOpen, setEditModalIsOpen] = useState(false)
+  const [rowToEdit, setRowToEdit] = useState(null)
+  const [modalError, setModalError] = useState('')
+  const [deletionTargetId, setDeletionTargetId] = useState('')
+  const [deletionTargetName, setDeletionTargetName] = useState('')
+  const [deletionConfirmationIsOpen, setDeletionConfirmationIsOpen] = useState(false)
+  const [searchPhrase, setSearchPhrase] = useState('')
+  const [searchPhraseToUse, setSearchPhraseToUse] = useState('')
+
+  useEffect(() => {
+    (async function getData() {
+      await props.getAllPublishers()
+    })()
+  }, [])
+
+  const toggleEditModalOpen = () => {
+    setModalError('')
+    setEditModalIsOpen(!editModalIsOpen)
+    setRowToEdit(null)
   }
 
-  componentDidMount = async () => {
-    await this.props.getAllPublishers()
-  }
-
-  toggleEditModalOpen = () => {
-    this.setState({
-      modalError: '',
-      editModalIsOpen: !this.state.editModalIsOpen,
-      rowToEdit: null
-    })
-  }
-
-  handleSave = async (publisher) => {
+  const handleSave = async (publisher) => {
     if (publisher._id) {
-      await this.props.updatePublisher(publisher)
+      await props.updatePublisher(publisher)
     } else {
-      await this.props.addPublisher(publisher)
+      await props.addPublisher(publisher)
     }
-    if (this.props.error) {
-      this.setState({ modalError: 'Could not save the publisher' })
-    }
-  }
-
-  handleRowClick = (state, rowInfo) => {
-    return {
-      onClick: (e) => {
-        this.setState({
-          editModalIsOpen: true,
-          rowToEdit: rowInfo.original,
-          modalError: ''
-        })
-      }
+    if (props.error) {
+      setModalError('Could not save the publisher')
     }
   }
 
-  handleDeleteRequest = (item, e) => {
+  const handleRowClick = (row) => {
+    setEditModalIsOpen(true)
+    setRowToEdit(row.original)
+    setModalError('')
+  }
+
+  const handleDeleteRequest = (item, e) => {
     e.stopPropagation()
-    this.setState({
-      deletionTargetId: item._id,
-      deletionTargetName: item.name,
-      deletionConfirmationIsOpen: true
-    })
+    setDeletionTargetId(item._id)
+    setDeletionTargetName(item.name)
+    setDeletionConfirmationIsOpen(true)
   }
 
-  handleDeleteConfirmation = async (isConfirmed) => {
+  const handleDeleteConfirmation = async (isConfirmed) => {
     if (isConfirmed) {
-      await this.props.deletePublisher(this.state.deletionTargetId)
+      await props.deletePublisher(deletionTargetId)
     }
-    this.setState({
-      deletionConfirmationIsOpen: false,
-      deletionTargetId: '',
-      deletionTargetName: ''
-    })
+    setDeletionConfirmationIsOpen(false)
+    setDeletionTargetId('')
+    setDeletionTargetName('')
   }
 
-  handlePhraseChange = searchPhraseEvent => {
+  const handlePhraseChange = searchPhraseEvent => {
     let searchPhrase = searchPhraseEvent.target.value
     if (searchPhrase.trim().length > 0) {
-      this.setState({ searchPhrase })
+      setSearchPhrase(searchPhrase)
     } else {
-      this.setState({ searchPhrase: '' })
+      setSearchPhrase('')
     }
   }
 
-  handleSearch = () => {
-    this.setState({ searchPhraseToUse: this.state.searchPhrase })
+  const handleSearch = () => {
+    setSearchPhraseToUse(searchPhrase)
   }
 
-  getFilteredPublishers = () => {
-    let searchPhrase = this.state.searchPhraseToUse.toLowerCase()
-    let filtered = this.props.publishers
-    if (this.state.searchPhraseToUse.length > 0) {
-      filtered = this.props.publishers.filter(p =>
+  const getFilteredPublishers = () => {
+    let searchPhrase = searchPhraseToUse.toLowerCase()
+    let filtered = props.publishers
+    if (searchPhraseToUse.length > 0) {
+      filtered = props.publishers.filter(p =>
         p.name.toLowerCase().includes(searchPhrase)
       )
     }
     return filtered
   }
 
-  columns = [
-    {
-      Header: 'Name',
-      accessor: 'name',
-      headerStyle: {
-        textAlign: 'left'
-      }
-    },
-    {
-      Header: '',
-      accessor: 'delete',
-      Cell: (row) => (
-        <StyledButton
-          onClick={(e) => this.handleDeleteRequest(row.original, e)}
-          bsstyle='rowdanger'
-        >
-          Delete
-        </StyledButton>
-      ),
-      style: {
-        textAlign: 'center'
-      },
-      sortable: false,
-      filterable: false,
-      maxWidth: 80
-    }
-  ]
+  const getData = React.useMemo(() => getFilteredPublishers(), [props.publishers])
 
-  render() {
-    return (
-      <React.Fragment>
-        <ViewBar
-          headerText='Publishers'
-          addBtnText='Add publisher'
-          handleOpenEdit={this.toggleEditModalOpen}
-          handlePhraseChange={this.handlePhraseChange}
-          handleSearch={this.handleSearch}
-          searchPhrase={this.state.searchPhrase}
-        />
-        <ListTable
-          data={this.getFilteredPublishers()}
-          columns={this.columns}
-          getTrProps={this.handleRowClick}
-          defaultPageSize={20}
-          minRows={1}
-        />
-        <PublisherEdit
-          publisher={this.state.rowToEdit}
-          modalIsOpen={this.state.editModalIsOpen}
-          closeModal={this.toggleEditModalOpen}
-          handleSave={this.handleSave}
-          modalError={this.state.modalError}
-        />
-        <DeletionConfirmation
-          headerText={`Deleting ${this.state.deletionTargetName}`}
-          bodyText='Are you sure you want to go ahead and delete this?'
-          modalIsOpen={this.state.deletionConfirmationIsOpen}
-          closeModal={this.handleDeleteConfirmation}
-        />
-      </React.Fragment>
-    )
-  }
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: 'Name',
+        accessor: 'name',
+        headerStyle: {
+          textAlign: 'left'
+        }
+      },
+      {
+        Header: '',
+        accessor: 'delete',
+        Cell: (item) => (
+          <StyledButton
+            onClick={(e) => handleDeleteRequest(item.row.original, e)}
+            bsstyle='rowdanger'
+          >
+            Delete
+          </StyledButton>
+        ),
+        style: {
+          textAlign: 'center'
+        },
+        disableSortBy: false,
+        filterable: false,
+        maxWidth: 80
+      }
+    ]
+  )
+
+  return (
+    <React.Fragment>
+      <ViewBar
+        headerText='Publishers'
+        addBtnText='Add publisher'
+        handleOpenEdit={toggleEditModalOpen}
+        handlePhraseChange={handlePhraseChange}
+        handleSearch={handleSearch}
+        searchPhrase={searchPhrase}
+      />
+      <StyledTable
+        columns={columns}
+        data={getData}
+        handleRowClick={handleRowClick}
+      />
+      <PublisherEdit
+        publisher={rowToEdit}
+        modalIsOpen={editModalIsOpen}
+        closeModal={toggleEditModalOpen}
+        handleSave={handleSave}
+        modalError={modalError}
+      />
+      <DeletionConfirmation
+        headerText={`Deleting ${deletionTargetName}`}
+        bodyText='Are you sure you want to go ahead and delete this?'
+        modalIsOpen={deletionConfirmationIsOpen}
+        closeModal={handleDeleteConfirmation}
+      />
+    </React.Fragment>
+  )
+
 }
 
 const mapStateToProps = store => ({
