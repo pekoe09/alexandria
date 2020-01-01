@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import {
-  ListTable,
   StyledButton,
-  StyledForm
+  StyledForm,
+  StyledTable
 } from '../common/alexandriaComponents'
 import { Button } from 'react-bootstrap'
 import '../common/alexandria-react-table.css'
@@ -23,113 +23,97 @@ import BookCountByCategoryPie from './BookCountByCategoryPie'
 import BookCountByStatusPie from './BookCountByStatusPie'
 import { bookStats } from './bookStats'
 
-class BookList extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      editModalIsOpen: false,
-      rowToEdit: null,
-      modalError: '',
-      deletionTargetId: '',
-      deletionTargetName: '',
-      deletionConfirmationIsOpen: false,
-      searchPhrase: '',
-      searchPhraseToUse: '',
-      advancedSearchIsVisible: false,
-      searchCriteria: null,
-      statsIsVisible: false,
-      stats: null
-    }
+function BookList(props) {
+  const [editModalIsOpen, setEditModalIsOpen] = useState(false)
+  const [rowToEdit, setRowToEdit] = useState(null)
+  const [modalError, setModalError] = useState('')
+  const [deletionTargetId, setDeletionTargetId] = useState('')
+  const [deletionTargetName, setDeletionTargetName] = useState('')
+  const [deletionConfirmationIsOpen, setDeletionConfirmationIsOpen] = useState(false)
+  const [searchPhrase, setSearchPhrase] = useState('')
+  const [searchPhraseToUse, setSearchPhraseToUse] = useState('')
+  const [advancedSearchIsVisible, setAdvancedSearchIsVisible] = useState(false)
+  const [searchCriteria, setSearchCriteria] = useState(null)
+  const [statsIsVisible, setStatsIsVisible] = useState(false)
+  const [stats, setStats] = useState(null)
+
+  useEffect(() => {
+    (async function getData() {
+      await props.getAllBooks()
+    })()
+    setStats(bookStats(props.books, props.categories))
+  }, [])
+
+  const toggleEditModalOpen = () => {
+    setModalError('')
+    setEditModalIsOpen(!editModalIsOpen)
+    setRowToEdit(null)
   }
 
-  componentDidMount = async () => {
-    await this.props.getAllBooks()
-    this.setState({ stats: bookStats(this.props.books, this.props.categories) })
-  }
-
-  toggleEditModalOpen = () => {
-    this.setState({
-      modalError: '',
-      editModalIsOpen: !this.state.editModalIsOpen,
-      rowToEdit: null
-    })
-  }
-
-  handleSave = async (book) => {
+  const handleSave = async (book) => {
     if (book._id) {
-      await this.props.updateBook(book)
+      await props.updateBook(book)
     } else {
-      await this.props.addBook(book)
+      await props.addBook(book)
     }
-    if (this.props.error) {
-      this.setState({ modalError: 'Could not save the book' })
-    }
-  }
-
-  handleRowClick = (state, rowInfo) => {
-    return {
-      onClick: (e) => {
-        this.setState({
-          editModalIsOpen: true,
-          rowToEdit: rowInfo.original,
-          modalError: ''
-        })
-      }
+    if (props.error) {
+      setModalError('Could not save the book')
     }
   }
 
-  handleDeleteRequest = (item, e) => {
+  const handleRowClick = (row) => {
+    setEditModalIsOpen(true)
+    setRowToEdit(row.original)
+    setModalError('')
+  }
+
+  const handleDeleteRequest = (item, e) => {
     e.stopPropagation()
-    this.setState({
-      deletionTargetId: item._id,
-      deletionTargetName: `${item.lastName}, ${item.firstNames}`,
-      deletionConfirmationIsOpen: true
-    })
+    setDeletionTargetId(item._id)
+    setDeletionTargetName(item.title)
+    setDeletionConfirmationIsOpen(true)
   }
 
-  handleDeleteConfirmation = async (isConfirmed) => {
+  const handleDeleteConfirmation = async (isConfirmed) => {
     if (isConfirmed) {
-      await this.props.deleteBook(this.state.deletionTargetId)
+      await props.deleteBook(deletionTargetId)
     }
-    this.setState({
-      deletionConfirmationIsOpen: false,
-      deletionTargetId: '',
-      deletionTargetName: ''
-    })
+    setDeletionConfirmationIsOpen(false)
+    setDeletionTargetId('')
+    setDeletionTargetName('')
   }
 
-  handlePhraseChange = searchPhraseEvent => {
+  const handlePhraseChange = searchPhraseEvent => {
     let searchPhrase = searchPhraseEvent.target.value
     if (searchPhrase.trim().length > 0) {
-      this.setState({ searchPhrase })
+      setSearchPhrase(searchPhrase)
     } else {
-      this.setState({ searchPhrase: '' })
+      setSearchPhrase('')
     }
   }
 
-  handleSearch = () => {
-    this.setState({ searchPhraseToUse: this.state.searchPhrase })
+  const handleSearch = () => {
+    setSearchPhraseToUse(searchPhrase)
   }
 
-  handleCriteriaSearch = criteria => {
-    console.log('criteria', criteria)
-    this.setState({ searchCriteria: criteria })
-    this.toggleAdvancedSearch()
+  const handleCriteriaSearch = criteria => {
+    setSearchCriteria(criteria)
+    toggleAdvancedSearch()
   }
 
-  toggleAdvancedSearch = () => {
-    this.setState({ advancedSearchIsVisible: !this.state.advancedSearchIsVisible })
+  const toggleAdvancedSearch = () => {
+    setAdvancedSearchIsVisible(!advancedSearchIsVisible)
   }
 
-  getSearchCriteriaString = () => {
+  const getSearchCriteriaString = () => {
     let criteriaStr = ''
-    if (this.state.searchCriteria) {
-      const criteria = this.state.searchCriteria
+    if (searchCriteria) {
+      const criteria = searchCriteria
       criteriaStr = 'Filtered by: '
       if (criteria.title) {
         criteriaStr = `${criteriaStr}Title: "${criteria.title}" `
       }
-      if (this.state.searchCriteria.author) {
+      if (searchCriteria.author) {
         criteriaStr = `${criteriaStr}Author: "${criteria.author}" `
       }
       if (criteria.categories.length > 0) {
@@ -169,18 +153,18 @@ class BookList extends React.Component {
     return criteriaStr
   }
 
-  getFilteredBooks = () => {
-    let searchPhrase = this.state.searchPhraseToUse.toLowerCase()
-    let filtered = this.props.books
-    if (this.state.searchPhraseToUse.length > 0) {
-      filtered = this.props.books.filter(b =>
+  const getFilteredBooks = () => {
+    let searchPhrase = searchPhraseToUse.toLowerCase()
+    let filtered = props.books
+    if (searchPhraseToUse.length > 0) {
+      filtered = props.books.filter(b =>
         b.title.toLowerCase().includes(searchPhrase)
         || b.authors.some(a =>
           a.fullName.toLowerCase().includes(searchPhrase) || a.fullNameReversed.toLowerCase().includes(searchPhrase))
         || b.categories.some(c => c.name.toLowerCase().includes(searchPhrase))
       )
-    } else if (this.state.searchCriteria) {
-      const criteria = this.state.searchCriteria
+    } else if (searchCriteria) {
+      const criteria = searchCriteria
       if (criteria.title) {
         filtered = filtered.filter(b => b.title.toLowerCase().includes(criteria.title.toLowerCase()))
       }
@@ -242,38 +226,38 @@ class BookList extends React.Component {
     return filtered
   }
 
-  toggleStats = () => {
-    this.setState({
-      stats: this.state.statsIsVisible ? this.state.stats : bookStats(this.props.books, this.props.categories),
-      statsIsVisible: !this.state.statsIsVisible
-    })
+  const getData = React.useMemo(() => getFilteredBooks(), [props.books, props.categories])
+
+  const toggleStats = () => {
+    setStats(statsIsVisible ? stats : bookStats(props.books, props.categories))
+    setStatsIsVisible(!statsIsVisible)
   }
 
-  getStatsCriteriaForm = () => {
+  const getStatsCriteriaForm = () => {
     return (
       <StyledForm></StyledForm>
     )
   }
 
-  getCategoryPie = () => {
+  const getCategoryPie = () => {
     return (
       <BookCountByCategoryPie
         key={1}
-        data={this.state.stats.categoryCounts}
+        data={stats.categoryCounts}
       />
     )
   }
 
-  getStatusPie = () => {
+  const getStatusPie = () => {
     const statuses = []
-    if (this.state.stats.unread) {
-      statuses.push({ name: 'Not read yet', count: this.state.stats.unread })
+    if (stats.unread) {
+      statuses.push({ name: 'Not read yet', count: stats.unread })
     }
-    if (this.state.stats.started) {
-      statuses.push({ name: 'Part way through', count: this.state.stats.started })
+    if (stats.started) {
+      statuses.push({ name: 'Part way through', count: stats.started })
     }
-    if (this.state.stats.finished) {
-      statuses.push({ name: 'Read', count: this.state.stats.finished })
+    if (stats.finished) {
+      statuses.push({ name: 'Read', count: stats.finished })
     }
 
     return (
@@ -284,144 +268,142 @@ class BookList extends React.Component {
     )
   }
 
-  columns = [
-    {
-      Header: 'Title',
-      accessor: 'title',
-      headerStyle: {
-        textAlign: 'left'
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: 'Title',
+        accessor: 'title',
+        headerStyle: {
+          textAlign: 'left'
+        },
       },
-    },
-    {
-      Header: 'Authors',
-      accessor: 'authorsString',
-      headerStyle: {
-        textAlign: 'left'
+      {
+        Header: 'Authors',
+        accessor: 'authorsString',
+        headerStyle: {
+          textAlign: 'left'
+        },
       },
-    },
-    {
-      Header: 'Categories',
-      accessor: 'categoriesString',
-      headerStyle: {
-        textAlign: 'left'
+      {
+        Header: 'Categories',
+        accessor: 'categoriesString',
+        headerStyle: {
+          textAlign: 'left'
+        },
       },
-    },
-    {
-      Header: 'Pages read',
-      accessor: '',
-      Cell: (row) => (
-        row.original.pages ? parseFloat(row.original.readPages / row.original.pages * 100).toFixed(0) + ' %' : '-'
-      ),
-      style: {
-        textAlign: 'center'
+      {
+        Header: 'Pages read',
+        accessor: '',
+        Cell: (item) => (
+          item.row.original.pages ? parseFloat(item.row.original.readPages / item.row.original.pages * 100).toFixed(0) + ' %' : '-'
+        ),
+        style: {
+          textAlign: 'center'
+        },
+        maxWidth: 120
       },
-      maxWidth: 120
-    },
-    {
-      Header: '',
-      accessor: 'delete',
-      Cell: (row) => (
-        <StyledButton
-          onClick={(e) => this.handleDeleteRequest(row.original, e)}
-          bsstyle='rowdanger'
-        >
-          Delete
-        </StyledButton>
-      ),
-      style: {
-        textAlign: 'center'
-      },
-      sortable: false,
-      filterable: false,
-      maxWidth: 80
-    }
-  ]
-
-  render() {
-    return (
-      <React.Fragment>
-        <ViewBar
-          headerText='Books'
-          addBtnText='Add book'
-          handleOpenEdit={this.toggleEditModalOpen}
-          handlePhraseChange={this.handlePhraseChange}
-          handleSearch={this.handleSearch}
-          searchPhrase={this.state.searchPhrase}
-          toggleAdvancedSearch={this.toggleAdvancedSearch}
-          showStats={this.toggleStats}
-        />
-        <div style={{ fontFamily: 'sans-serif', color: 'white', marginLeft: 10, marginRight: 10 }}>
-          {this.state.searchCriteria ? this.getSearchCriteriaString() : ''}
-        </div>
-        {this.state.searchCriteria
-          && <Button
-            variant='link'
-            style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '0.9em' }}
-            onClick={() => this.setState({ searchCriteria: null })}
+      {
+        Header: '',
+        accessor: 'delete',
+        Cell: (item) => (
+          <StyledButton
+            onClick={(e) => handleDeleteRequest(item.row.original, e)}
+            bsstyle='rowdanger'
           >
-            Clear search criteria
-          </Button>
-        }
-        <ListTable
-          data={this.getFilteredBooks()}
-          columns={this.columns}
-          getTrProps={this.handleRowClick}
-          defaultPageSize={20}
-          minRows={1}
-        />
+            Delete
+          </StyledButton>
+        ),
+        style: {
+          textAlign: 'center'
+        },
+        disableSortBy: true,
+        filterable: false,
+        maxWidth: 80
+      }
+    ]
+  )
 
-        <AdvancedBookSearch
-          modalIsOpen={this.state.advancedSearchIsVisible}
-          handleSearch={this.handleCriteriaSearch}
-          closeModal={this.toggleAdvancedSearch}
-        />
-        <BookEdit
-          book={this.state.rowToEdit}
-          modalIsOpen={this.state.editModalIsOpen}
-          closeModal={this.toggleEditModalOpen}
-          handleSave={this.handleSave}
-          modalError={this.state.modalError}
-        />
-        <DeletionConfirmation
-          headerText={`Deleting ${this.state.deletionTargetName}`}
-          bodyText='Are you sure you want to go ahead and delete this?'
-          modalIsOpen={this.state.deletionConfirmationIsOpen}
-          closeModal={this.handleDeleteConfirmation}
-        />
-        <GraphView
-          title='Book statistics'
-          getCriteriaForm={this.getStatsCriteriaForm}
-          getCharts={[
-            {
-              title: 'Books in main categories',
-              call: this.getCategoryPie
-            },
-            {
-              title: 'Books by reading status',
-              call: this.getStatusPie
-            }
-          ]}
-          kpis={[
-            {
-              name: 'Books in total',
-              value: this.state.stats ? this.state.stats.count : '-'
-            },
-            {
-              name: 'Pages in total',
-              value: this.state.stats ? this.state.stats.pages : '-'
-            },
-            {
-              name: 'of which read',
-              value: (this.state.stats && this.state.stats.pages) ?
-                parseFloat(this.state.stats.readPages / this.state.stats.pages * 100).toFixed(0) + '%' : '-'
-            }
-          ]}
-          modalIsOpen={this.state.statsIsVisible}
-          closeModal={this.toggleStats}
-        />
-      </React.Fragment>
-    )
-  }
+  return (
+    <React.Fragment>
+      <ViewBar
+        headerText='Books'
+        addBtnText='Add book'
+        handleOpenEdit={toggleEditModalOpen}
+        handlePhraseChange={handlePhraseChange}
+        handleSearch={handleSearch}
+        searchPhrase={searchPhrase}
+        toggleAdvancedSearch={toggleAdvancedSearch}
+        showStats={toggleStats}
+      />
+      <div style={{ fontFamily: 'sans-serif', color: 'white', marginLeft: 10, marginRight: 10 }}>
+        {searchCriteria ? getSearchCriteriaString() : ''}
+      </div>
+      {searchCriteria
+        && <Button
+          variant='link'
+          style={{ color: 'white', fontFamily: 'sans-serif', fontSize: '0.9em' }}
+          onClick={() => setSearchCriteria(null)}
+        >
+          Clear search criteria
+          </Button>
+      }
+      <StyledTable
+        columns={columns}
+        data={getData}
+        handleRowClick={handleRowClick}
+      />
+      <AdvancedBookSearch
+        modalIsOpen={advancedSearchIsVisible}
+        handleSearch={handleCriteriaSearch}
+        closeModal={toggleAdvancedSearch}
+      />
+      <BookEdit
+        book={rowToEdit}
+        modalIsOpen={editModalIsOpen}
+        closeModal={toggleEditModalOpen}
+        handleSave={handleSave}
+        modalError={modalError}
+      />
+      <DeletionConfirmation
+        headerText={`Deleting ${deletionTargetName}`}
+        bodyText='Are you sure you want to go ahead and delete this?'
+        modalIsOpen={deletionConfirmationIsOpen}
+        closeModal={handleDeleteConfirmation}
+      />
+      <GraphView
+        title='Book statistics'
+        getCriteriaForm={getStatsCriteriaForm}
+        getCharts={[
+          {
+            title: 'Books in main categories',
+            call: getCategoryPie
+          },
+          {
+            title: 'Books by reading status',
+            call: getStatusPie
+          }
+        ]}
+        kpis={[
+          {
+            name: 'Books in total',
+            value: stats ? stats.count : '-'
+          },
+          {
+            name: 'Pages in total',
+            value: stats ? stats.pages : '-'
+          },
+          {
+            name: 'of which read',
+            value: (stats && stats.pages) ?
+              parseFloat(stats.readPages / stats.pages * 100).toFixed(0) + '%' : '-'
+          }
+        ]}
+        modalIsOpen={statsIsVisible}
+        closeModal={toggleStats}
+      />
+    </React.Fragment>
+  )
+
 }
 
 const mapStateToProps = store => ({
