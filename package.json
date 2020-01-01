@@ -30,6 +30,6 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
-    "mongoose": "^5.5.2"
+    "mongoose": "^5.7.5"
   }
 }
