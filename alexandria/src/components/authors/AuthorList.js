@@ -117,6 +117,10 @@ function AuthorList(props) {
     return props.books.filter(b => b.authors.find(a => a._id === authorId))
   }
 
+  const getViewType = () => {
+    return rowToEdit ? 'View' : 'Create'
+  }
+
   const getFilteredAuthors = useCallback(() => {
     let searchPhrase = searchPhraseToUse.toLowerCase()
     let filtered = props.authors
@@ -187,6 +191,7 @@ function AuthorList(props) {
         handleRowClick={handleRowClick}
       />
       <AuthorEdit
+        viewType={getViewType()}
         author={rowToEdit}
         modalIsOpen={editModalIsOpen}
         closeModal={toggleEditModalOpen}
