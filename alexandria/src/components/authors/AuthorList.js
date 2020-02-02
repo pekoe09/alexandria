@@ -12,14 +12,20 @@ import {
   updateAuthor,
   deleteAuthor
 } from '../../actions/authorActions'
+import {
+  updateBook
+} from '../../actions/bookActions'
 import ViewBar from '../common/ViewBar'
 import AuthorEdit from './AuthorEdit'
+import BookEdit from '../books/BookEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
 
 function AuthorList(props) {
   const [editModalIsOpen, setEditModalIsOpen] = useState(false)
   const [rowToEdit, setRowToEdit] = useState(null)
   const [relatedBooks, setRelatedBooks] = useState([])
+  const [bookToEdit, setBookToEdit] = useState(null)
+  const [bookModalIsOpen, setBookModalIsOpen] = useState(false)
   const [modalError, setModalError] = useState('')
   const [deletionTargetId, setDeletionTargetId] = useState('')
   const [deletionTargetName, setDeletionTargetName] = useState('')
@@ -41,6 +47,12 @@ function AuthorList(props) {
     setRelatedBooks([])
   }
 
+  const toggleBookModalOpen = () => {
+    setModalError('')
+    setBookModalIsOpen(!bookModalIsOpen)
+    setBookToEdit(null)
+  }
+
   const handleSave = async (author) => {
     if (author._id) {
       await props.updateAuthor(author)
@@ -52,6 +64,13 @@ function AuthorList(props) {
     }
   }
 
+  const handleBookSave = async (book) => {
+    await props.updateBook(book)
+    if (props.error) {
+      setModalError('Could not save the book')
+    }
+  }
+
   const handleRowClick = (row) => {
     setEditModalIsOpen(true)
     setRowToEdit(row.original)
@@ -60,7 +79,9 @@ function AuthorList(props) {
   }
 
   const handleBookClick = (bookId) => {
-    console.log('book', bookId, 'clicked')
+    setBookToEdit(relatedBooks.find(b => b._id === bookId))
+    setBookModalIsOpen(true)
+    setModalError('')
   }
 
   const handleDeleteRequest = (item, e) => {
@@ -174,6 +195,13 @@ function AuthorList(props) {
         handleBookClick={handleBookClick}
         modalError={modalError}
       />
+      <BookEdit
+        book={bookToEdit}
+        modalIsOpen={bookModalIsOpen}
+        closeModal={toggleBookModalOpen}
+        handleSave={handleBookSave}
+        modalError={modalError}
+      />
       <DeletionConfirmation
         headerText={`Deleting ${deletionTargetName}`}
         bodyText='Are you sure you want to go ahead and delete this?'
@@ -199,6 +227,7 @@ export default withRouter(connect(
     getAllAuthors,
     addAuthor,
     updateAuthor,
-    deleteAuthor
+    deleteAuthor,
+    updateBook
   }
 )(AuthorList))
