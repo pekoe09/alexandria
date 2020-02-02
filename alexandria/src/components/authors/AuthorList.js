@@ -19,6 +19,7 @@ import DeletionConfirmation from '../common/DeletionConfirmation'
 function AuthorList(props) {
   const [editModalIsOpen, setEditModalIsOpen] = useState(false)
   const [rowToEdit, setRowToEdit] = useState(null)
+  const [relatedBooks, setRelatedBooks] = useState([])
   const [modalError, setModalError] = useState('')
   const [deletionTargetId, setDeletionTargetId] = useState('')
   const [deletionTargetName, setDeletionTargetName] = useState('')
@@ -37,6 +38,7 @@ function AuthorList(props) {
     setModalError('')
     setEditModalIsOpen(!editModalIsOpen)
     setRowToEdit(null)
+    setRelatedBooks([])
   }
 
   const handleSave = async (author) => {
@@ -53,7 +55,12 @@ function AuthorList(props) {
   const handleRowClick = (row) => {
     setEditModalIsOpen(true)
     setRowToEdit(row.original)
+    setRelatedBooks(getRelatedBooks(row.original._id))
     setModalError('')
+  }
+
+  const handleBookClick = (bookId) => {
+    console.log('book', bookId, 'clicked')
   }
 
   const handleDeleteRequest = (item, e) => {
@@ -83,6 +90,10 @@ function AuthorList(props) {
 
   const handleSearch = () => {
     setSearchPhraseToUse(searchPhrase)
+  }
+
+  const getRelatedBooks = (authorId) => {
+    return props.books.filter(b => b.authors.find(a => a._id === authorId))
   }
 
   const getFilteredAuthors = useCallback(() => {
@@ -159,6 +170,8 @@ function AuthorList(props) {
         modalIsOpen={editModalIsOpen}
         closeModal={toggleEditModalOpen}
         handleSave={handleSave}
+        relatedBooks={relatedBooks}
+        handleBookClick={handleBookClick}
         modalError={modalError}
       />
       <DeletionConfirmation
@@ -175,6 +188,7 @@ function AuthorList(props) {
 const mapStateToProps = store => ({
   authors: store.authors.items.sort((a, b) =>
     a.fullNameReversed > b.fullNameReversed ? 1 : (a.fullNameReversed < b.fullNameReversed ? -1 : 0)),
+  books: store.books.items,
   loading: store.authors.loading,
   error: store.authors.error
 })

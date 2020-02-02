@@ -6,6 +6,7 @@ import moment from 'moment'
 import { StyledForm } from '../common/alexandriaComponents'
 import FormButtons from '../common/FormButtons'
 import { Modal } from 'react-bootstrap'
+import RelatedBooks from '../books/relatedBooks'
 
 class AuthorEdit extends React.Component {
   constructor(props) {
@@ -21,7 +22,8 @@ class AuthorEdit extends React.Component {
         firstNames: false,
         DOB: false,
         DOD: false
-      }
+      },
+      books: []
     }
   }
 
@@ -37,7 +39,8 @@ class AuthorEdit extends React.Component {
         firstNames: false,
         DOB: false,
         DOD: false
-      }
+      },
+      books: []
     })
   }
 
@@ -50,7 +53,9 @@ class AuthorEdit extends React.Component {
         DOB: this.props.author.DOB ?
           moment(this.props.author.DOB).toDate() : null,
         DOD: this.props.author.DOD ?
-          moment(this.props.author.DOD).toDate() : null
+          moment(this.props.author.DOD).toDate() : null,
+        books: this.props.relatedBooks ?
+          this.props.relatedBooks : []
       })
     }
   }
@@ -104,6 +109,10 @@ class AuthorEdit extends React.Component {
   handleCancel = () => {
     this.clearState()
     this.props.closeModal()
+  }
+
+  handleBookClick = (bookId) => {
+    this.props.handleBookClick(bookId)
   }
 
   validate = () => {
@@ -181,6 +190,9 @@ class AuthorEdit extends React.Component {
               />
             </StyledForm.Group>
           </StyledForm>
+          {this.state.books &&
+            <RelatedBooks books={this.state.books} handleBookClick={this.handleBookClick} />
+          }
         </Modal.Body>
         <Modal.Footer>
           <FormButtons
@@ -204,8 +216,22 @@ AuthorEdit.propTypes = {
     DOB: PropTypes.string,
     DOD: PropTypes.string
   }),
+  relatedBooks: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      authorsString: PropTypes.string.isRequired,
+      location: PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        fullName: PropTypes.string.isRequired
+      }),
+      pages: PropTypes.number,
+      readPages: PropTypes.number
+    })
+  ),
   modalIsOpen: PropTypes.bool.isRequired,
   closeModal: PropTypes.func.isRequired,
   handleSave: PropTypes.func.isRequired,
+  handleBookClick: PropTypes.func.isRequired,
   modalError: PropTypes.string
 }
