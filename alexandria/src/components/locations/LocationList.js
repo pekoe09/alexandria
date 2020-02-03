@@ -12,13 +12,20 @@ import {
   updateLocation,
   deleteLocation
 } from '../../actions/locationActions'
+import {
+  updateBook
+} from '../../actions/bookActions'
 import ViewBar from '../common/ViewBar'
 import LocationEdit from './LocationEdit'
+import BookEdit from '../books/BookEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
 
 function LocationList(props) {
   const [editModalIsOpen, setEditModalIsOpen] = useState(false)
   const [rowToEdit, setRowToEdit] = useState(null)
+  const [relatedBooks, setRelatedBooks] = useState([])
+  const [bookToEdit, setBookToEdit] = useState(null)
+  const [bookModalIsOpen, setBookModalIsOpen] = useState(false)
   const [modalError, setModalError] = useState('')
   const [deletionTargetId, setDeletionTargetId] = useState('')
   const [deletionTargetName, setDeletionTargetName] = useState('')
@@ -38,6 +45,12 @@ function LocationList(props) {
     setRowToEdit(null)
   }
 
+  const toggleBookModalOpen = () => {
+    setModalError('')
+    setBookModalIsOpen(!bookModalIsOpen)
+    setBookToEdit(null)
+  }
+
   const handleSave = async (location) => {
     if (location._id) {
       await props.updateLocation(location)
@@ -49,9 +62,23 @@ function LocationList(props) {
     }
   }
 
+  const handleBookSave = async (book) => {
+    await props.updateBook(book)
+    if (props.error) {
+      setModalError('Could not save the book')
+    }
+  }
+
   const handleRowClick = (row) => {
     setEditModalIsOpen(true)
     setRowToEdit(row.original)
+    setRelatedBooks(getRelatedBooks(row.original._id))
+    setModalError('')
+  }
+
+  const handleBookClick = (bookId) => {
+    setBookToEdit(relatedBooks.find(b => b._id === bookId))
+    setBookModalIsOpen(true)
     setModalError('')
   }
 
@@ -84,6 +111,10 @@ function LocationList(props) {
     setSearchPhraseToUse(searchPhrase)
   }
 
+  const getRelatedBooks = (locationId) => {
+    return props.books.filter(b => b.location && b.location._id === locationId)
+  }
+
   const getFilteredLocations = useCallback(() => {
     let searchPhrase = searchPhraseToUse.toLowerCase()
     let filtered = props.locations
@@ -93,7 +124,7 @@ function LocationList(props) {
       )
     }
     return filtered
-  },[props.locations, searchPhraseToUse])
+  }, [props.locations, searchPhraseToUse])
 
   const getData = React.useMemo(() => getFilteredLocations(), [getFilteredLocations])
 
@@ -162,6 +193,15 @@ function LocationList(props) {
         modalIsOpen={editModalIsOpen}
         closeModal={toggleEditModalOpen}
         handleSave={handleSave}
+        relatedBooks={relatedBooks}
+        handleBookClick={handleBookClick}
+        modalError={modalError}
+      />
+      <BookEdit
+        book={bookToEdit}
+        modalIsOpen={bookModalIsOpen}
+        closeModal={toggleBookModalOpen}
+        handleSave={handleBookSave}
         modalError={modalError}
       />
       <DeletionConfirmation
@@ -177,6 +217,7 @@ function LocationList(props) {
 
 const mapStateToProps = store => ({
   locations: store.locations.items,
+  books: store.books.items,
   loading: store.locations.loading,
   error: store.locations.error
 })
@@ -187,6 +228,7 @@ export default withRouter(connect(
     getAllLocations,
     addLocation,
     updateLocation,
-    deleteLocation
+    deleteLocation,
+    updateBook
   }
 )(LocationList))

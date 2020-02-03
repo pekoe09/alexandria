@@ -231,8 +231,12 @@ class AuthorEdit extends React.Component {
               <div>{this.state.DOD ? moment(this.state.DOD).format('D.M.YYYY') : '-'}</div>
             </StyledForm.Group>
           </StyledForm>
-          {this.state.books &&
+          <StyledForm.Label>Books</StyledForm.Label>
+          {this.state.books && this.state.books.length > 0 &&
             <RelatedBooks books={this.state.books} handleBookClick={this.handleBookClick} />
+          }
+          {(!this.state.books || this.state.books.length === 0) &&
+            <p>No books found for this author</p>
           }
         </Modal.Body>
         <Modal.Footer>

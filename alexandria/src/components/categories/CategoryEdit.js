@@ -1,11 +1,12 @@
 import React from 'react'
-import propTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import { StyledForm } from '../common/alexandriaComponents'
 import FormButtons from '../common/FormButtons'
 import { Modal } from 'react-bootstrap'
 import { Typeahead } from 'react-bootstrap-typeahead'
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import { connect } from 'react-redux'
+import RelatedBooks from '../books/relatedBooks'
 
 class CategoryEdit extends React.Component {
   constructor(props) {
@@ -20,24 +21,25 @@ class CategoryEdit extends React.Component {
         name: false,
         level: false,
         number: false
-      }
+      },
+      books: []
     }
   }
 
   handleEnter = () => {
     if (this.props.category) {
       let parent = []
-      console.log('parent is ', this.props.category.parent)
       if (this.props.category.parent) {
         parent.push(this.props.category.parent)
-        console.log('parent', parent)
       }
       this.setState({
         _id: this.props.category._id,
         name: this.props.category.name,
         parent,
         level: this.props.category.level,
-        number: this.props.category.number
+        number: this.props.category.number,
+        books: this.props.relatedBooks ?
+          this.props.relatedBooks : []
       })
     }
   }
@@ -53,7 +55,8 @@ class CategoryEdit extends React.Component {
         name: false,
         level: false,
         number: false
-      }
+      },
+      books: []
     })
   }
 
@@ -62,7 +65,6 @@ class CategoryEdit extends React.Component {
   }
 
   handleParentChange = selected => {
-    console.log('Parent changed to ', selected)
     this.setState({ parent: selected })
   }
 
@@ -84,7 +86,6 @@ class CategoryEdit extends React.Component {
       parentId: this.state.parent.length > 0 ? this.state.parent[0]._id : ''
     }
     await this.props.handleSave(category)
-    console.log('Error', this.props.modalError)
     if (!this.props.modalError) {
       this.handleExit()
       this.props.closeModal()
@@ -97,9 +98,14 @@ class CategoryEdit extends React.Component {
       name: '',
       level: '',
       number: '',
-      parent: []
+      parent: [],
+      books: []
     })
     this.props.closeModal()
+  }
+
+  handleBookClick = (bookId) => {
+    this.props.handleBookClick(bookId)
   }
 
   validate = () => {
@@ -162,6 +168,13 @@ class CategoryEdit extends React.Component {
               {this.state.number && <StyledForm.Label>{`Number ${this.state.number}`}</StyledForm.Label>}
             </StyledForm.Group>
           </StyledForm>
+          <StyledForm.Label>Books</StyledForm.Label>
+          {this.state.books && this.state.books.length > 0 &&
+            <RelatedBooks books={this.state.books} handleBookClick={this.handleBookClick} />
+          }
+          {(!this.state.books || this.state.books.length === 0) &&
+            <p>No books found in this category</p>
+          }
         </Modal.Body>
         <Modal.Footer>
           <FormButtons
@@ -185,16 +198,30 @@ export default connect(
 )(CategoryEdit)
 
 CategoryEdit.propTypes = {
-  category: propTypes.shape({
-    _id: propTypes.string.isRequired,
-    name: propTypes.string.isRequired,
-    parentId: propTypes.string,
-    level: propTypes.number,
-    number: propTypes.number
+  category: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    parentId: PropTypes.string,
+    level: PropTypes.number,
+    number: PropTypes.number
   }),
-  modalIsOpen: propTypes.bool.isRequired,
-  closeModal: propTypes.func.isRequired,
-  handleSave: propTypes.func.isRequired,
-  modalError: propTypes.string.isRequired
+  relatedBooks: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      authorsString: PropTypes.string.isRequired,
+      location: PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        fullName: PropTypes.string.isRequired
+      }),
+      pages: PropTypes.number,
+      readPages: PropTypes.number
+    })
+  ),
+  modalIsOpen: PropTypes.bool.isRequired,
+  closeModal: PropTypes.func.isRequired,
+  handleSave: PropTypes.func.isRequired,
+  handleBookClick: PropTypes.func.isRequired,
+  modalError: PropTypes.string.isRequired
 }
 

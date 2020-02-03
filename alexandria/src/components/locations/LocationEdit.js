@@ -1,8 +1,9 @@
 import React from 'react'
-import propTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import { StyledForm } from '../common/alexandriaComponents'
 import FormButtons from '../common/FormButtons'
 import { Modal } from 'react-bootstrap'
+import RelatedBooks from '../books/relatedBooks'
 
 class LocationEdit extends React.Component {
   constructor(props) {
@@ -16,7 +17,8 @@ class LocationEdit extends React.Component {
         room: false,
         shelving: false,
         shelf: false
-      }
+      },
+      books: []
     }
   }
 
@@ -26,7 +28,9 @@ class LocationEdit extends React.Component {
         _id: this.props.location._id,
         room: this.props.location.room,
         shelving: this.props.location.shelving,
-        shelf: this.props.location.shelf
+        shelf: this.props.location.shelf,
+        books: this.props.relatedBooks ?
+          this.props.relatedBooks : []
       })
     }
   }
@@ -41,7 +45,8 @@ class LocationEdit extends React.Component {
         room: false,
         shelving: false,
         shelf: false
-      }
+      },
+      books: []
     })
   }
 
@@ -82,6 +87,10 @@ class LocationEdit extends React.Component {
       shelf: ''
     })
     this.props.closeModal()
+  }
+
+  handleBookClick = (bookId) => {
+    this.props.handleBookClick(bookId)
   }
 
   validate = () => {
@@ -150,6 +159,13 @@ class LocationEdit extends React.Component {
               />
             </StyledForm.Group>
           </StyledForm>
+          <StyledForm.Label>Books</StyledForm.Label>
+          {this.state.books && this.state.books.length > 0 &&
+            <RelatedBooks books={this.state.books} handleBookClick={this.handleBookClick} />
+          }
+          {(!this.state.books || this.state.books.length === 0) &&
+            <p>No books found in this location</p>
+          }
         </Modal.Body>
         <Modal.Footer>
           <FormButtons
@@ -166,15 +182,29 @@ class LocationEdit extends React.Component {
 export default LocationEdit
 
 LocationEdit.propTypes = {
-  location: propTypes.shape({
-    _id: propTypes.string.isRequired,
-    room: propTypes.string.isRequired,
-    shelving: propTypes.string,
-    shelf: propTypes.string
+  location: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    room: PropTypes.string.isRequired,
+    shelving: PropTypes.string,
+    shelf: PropTypes.string
   }),
-  modalIsOpen: propTypes.bool.isRequired,
-  closeModal: propTypes.func.isRequired,
-  handleSave: propTypes.func.isRequired,
-  modalError: propTypes.string.isRequired
+  relatedBooks: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      authorsString: PropTypes.string.isRequired,
+      location: PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        fullName: PropTypes.string.isRequired
+      }),
+      pages: PropTypes.number,
+      readPages: PropTypes.number
+    })
+  ),
+  modalIsOpen: PropTypes.bool.isRequired,
+  closeModal: PropTypes.func.isRequired,
+  handleSave: PropTypes.func.isRequired,
+  handleBookClick: PropTypes.func.isRequired,
+  modalError: PropTypes.string.isRequired
 }
 
