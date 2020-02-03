@@ -24,7 +24,7 @@ const ViewBar = ({
           <StyledButton
             bsstyle='primary'
             style={{ marginRight: 10, marginLeft: 10, float: 'right' }}
-            onClick={handleOpenEdit}
+            onClick={() => handleOpenEdit('Create')}
           >
             {addBtnText}
           </StyledButton>
@@ -55,7 +55,7 @@ const ViewBar = ({
           }
           <Form
             inline
-            style={{ 
+            style={{
               display: 'grid',
               width: 'auto',
               marginLeft: 25

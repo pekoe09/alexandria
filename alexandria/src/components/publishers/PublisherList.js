@@ -12,13 +12,20 @@ import {
   updatePublisher,
   deletePublisher
 } from '../../actions/publisherActions'
+import {
+  updateBook
+} from '../../actions/bookActions'
 import ViewBar from '../common/ViewBar'
 import PublisherEdit from './PublisherEdit'
+import BookEdit from '../books/BookEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
 
 function PublisherList(props) {
   const [editModalIsOpen, setEditModalIsOpen] = useState(false)
   const [rowToEdit, setRowToEdit] = useState(null)
+  const [relatedBooks, setRelatedBooks] = useState([])
+  const [bookToEdit, setBookToEdit] = useState(null)
+  const [bookModalIsOpen, setBookModalIsOpen] = useState(false)
   const [modalError, setModalError] = useState('')
   const [deletionTargetId, setDeletionTargetId] = useState('')
   const [deletionTargetName, setDeletionTargetName] = useState('')
@@ -38,6 +45,12 @@ function PublisherList(props) {
     setRowToEdit(null)
   }
 
+  const toggleBookModalOpen = () => {
+    setModalError('')
+    setBookModalIsOpen(!bookModalIsOpen)
+    setBookToEdit(null)
+  }
+
   const handleSave = async (publisher) => {
     if (publisher._id) {
       await props.updatePublisher(publisher)
@@ -49,9 +62,23 @@ function PublisherList(props) {
     }
   }
 
+  const handleBookSave = async (book) => {
+    await props.updateBook(book)
+    if (props.error) {
+      setModalError('Could not save the book')
+    }
+  }
+
   const handleRowClick = (row) => {
     setEditModalIsOpen(true)
     setRowToEdit(row.original)
+    setRelatedBooks(getRelatedBooks(row.original._id))
+    setModalError('')
+  }
+
+  const handleBookClick = (bookId) => {
+    setBookToEdit(relatedBooks.find(b => b._id === bookId))
+    setBookModalIsOpen(true)
     setModalError('')
   }
 
@@ -82,6 +109,10 @@ function PublisherList(props) {
 
   const handleSearch = () => {
     setSearchPhraseToUse(searchPhrase)
+  }
+
+  const getRelatedBooks = (publisherId) => {
+    return props.books.filter(b => b.publisher && b.publisher._id === publisherId)
   }
 
   const getFilteredPublishers = useCallback(() => {
@@ -148,6 +179,15 @@ function PublisherList(props) {
         modalIsOpen={editModalIsOpen}
         closeModal={toggleEditModalOpen}
         handleSave={handleSave}
+        relatedBooks={relatedBooks}
+        handleBookClick={handleBookClick}
+        modalError={modalError}
+      />
+      <BookEdit
+        book={bookToEdit}
+        modalIsOpen={bookModalIsOpen}
+        closeModal={toggleBookModalOpen}
+        handleSave={handleBookSave}
         modalError={modalError}
       />
       <DeletionConfirmation
@@ -163,6 +203,7 @@ function PublisherList(props) {
 
 const mapStateToProps = store => ({
   publishers: store.publishers.items.sort((a, b) => a.name > b.name ? 1 : (a.name < b.name ? -1 : 0)),
+  books: store.books.items,
   loading: store.publishers.loading,
   error: store.publishers.error
 })
@@ -173,6 +214,7 @@ export default withRouter(connect(
     getAllPublishers,
     addPublisher,
     updatePublisher,
-    deletePublisher
+    deletePublisher,
+    updateBook
   }
 )(PublisherList))

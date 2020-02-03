@@ -5,7 +5,8 @@ import 'react-datepicker/dist/react-datepicker.css'
 import moment from 'moment'
 import { StyledForm } from '../common/alexandriaComponents'
 import FormButtons from '../common/FormButtons'
-import { Modal } from 'react-bootstrap'
+import { Modal, Button } from 'react-bootstrap'
+import RelatedBooks from '../books/relatedBooks'
 
 class AuthorEdit extends React.Component {
   constructor(props) {
@@ -21,7 +22,9 @@ class AuthorEdit extends React.Component {
         firstNames: false,
         DOB: false,
         DOD: false
-      }
+      },
+      books: [],
+      viewType: 'Create'
     }
   }
 
@@ -37,7 +40,9 @@ class AuthorEdit extends React.Component {
         firstNames: false,
         DOB: false,
         DOD: false
-      }
+      },
+      books: [],
+      viewType: 'Create'
     })
   }
 
@@ -50,7 +55,10 @@ class AuthorEdit extends React.Component {
         DOB: this.props.author.DOB ?
           moment(this.props.author.DOB).toDate() : null,
         DOD: this.props.author.DOD ?
-          moment(this.props.author.DOD).toDate() : null
+          moment(this.props.author.DOD).toDate() : null,
+        books: this.props.relatedBooks ?
+          this.props.relatedBooks : [],
+        viewType: this.props.viewType === 'Update' ? 'Update' : 'View'
       })
     }
   }
@@ -74,6 +82,14 @@ class AuthorEdit extends React.Component {
     this.setState({
       DOD: date
     })
+  }
+
+  toggleViewType = () => {
+    if (this.state.viewType === 'View') {
+      this.setState({ viewType: 'Update' })
+    } else {
+      this.setState({ viewType: 'View' })
+    }
   }
 
   handleBlur = field => () => {
@@ -106,6 +122,10 @@ class AuthorEdit extends React.Component {
     this.props.closeModal()
   }
 
+  handleBookClick = (bookId) => {
+    this.props.handleBookClick(bookId)
+  }
+
   validate = () => {
     return {
       lastName: !this.state.lastName
@@ -120,22 +140,18 @@ class AuthorEdit extends React.Component {
     }
   }
 
-  render() {
+  getTitle = () => {
+    const viewType = this.props.viewType
+    const author = this.props.author
+    return viewType === 'Create' ? 'Create author' :
+      viewType === 'Update' ? `Update ${author.fullName}` : author.fullName
+  }
+
+  getEditBody = () => {
     const errors = this.validate()
     const saveIsDisabled = Object.keys(errors).some(x => errors[x])
-
     return (
-      <Modal
-        show={this.props.modalIsOpen}
-        onEnter={this.handleEnter}
-        onShow={this.handleEnter}
-        onExit={this.handleExit}
-        onHide={this.props.closeModal}
-        animation={false}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Add/edit author</Modal.Title>
-        </Modal.Header>
+      <>
         <Modal.Body>
           <StyledForm>
             <StyledForm.Group controlId='lastName'>
@@ -189,6 +205,77 @@ class AuthorEdit extends React.Component {
             saveIsDisabled={saveIsDisabled}
           />
         </Modal.Footer>
+      </>
+    )
+  }
+
+  getViewBody = () => {
+    return (
+      <>
+        <Modal.Body>
+          <StyledForm>
+            <StyledForm.Group controlId='lastName'>
+              <StyledForm.Label>Last name</StyledForm.Label>
+              <div>{this.state.lastName}</div>
+            </StyledForm.Group>
+            <StyledForm.Group controlId='firstNames'>
+              <StyledForm.Label>First names</StyledForm.Label>
+              <div>{this.state.firstNames}</div>
+            </StyledForm.Group>
+            <StyledForm.Group controlId='DOB'>
+              <StyledForm.Label>Date of birth</StyledForm.Label>
+              <div>{this.state.DOB ? moment(this.state.DOD).format('D.M.YYYY') : '-'}</div>
+            </StyledForm.Group>
+            <StyledForm.Group controlId='DOD'>
+              <StyledForm.Label>Date of death</StyledForm.Label>
+              <div>{this.state.DOD ? moment(this.state.DOD).format('D.M.YYYY') : '-'}</div>
+            </StyledForm.Group>
+          </StyledForm>
+          <StyledForm.Label>Books</StyledForm.Label>
+          {this.state.books && this.state.books.length > 0 &&
+            <RelatedBooks books={this.state.books} handleBookClick={this.handleBookClick} />
+          }
+          {(!this.state.books || this.state.books.length === 0) &&
+            <p>No books found for this author</p>
+          }
+        </Modal.Body>
+        <Modal.Footer>
+          <FormButtons
+            handleSave={this.handleSubmit}
+            handleCancel={this.handleCancel}
+            saveIsDisabled={false}
+          />
+        </Modal.Footer>
+      </>
+    )
+  }
+
+  render() {
+    return (
+      <Modal
+        show={this.props.modalIsOpen}
+        onEnter={this.handleEnter}
+        onShow={this.handleEnter}
+        onExit={this.handleExit}
+        onHide={this.props.closeModal}
+        animation={false}
+      >
+        <Modal.Header>
+          <Modal.Title style={{ width: '100%' }}>
+            {this.getTitle()}
+            {
+              this.state.viewType !== 'Create' &&
+              <Button
+                style={{ float: 'right' }}
+                onClick={this.toggleViewType}
+              >
+                {this.state.viewType === 'View' ? 'Edit' : 'View'}
+              </Button>
+            }
+          </Modal.Title>
+        </Modal.Header>
+        {this.state.viewType !== 'View' && this.getEditBody()}
+        {this.state.viewType === 'View' && this.getViewBody()}
       </Modal>
     )
   }
@@ -197,6 +284,7 @@ class AuthorEdit extends React.Component {
 export default AuthorEdit
 
 AuthorEdit.propTypes = {
+  viewType: PropTypes.oneOf(['Create', 'Update', 'View']).isRequired,
   author: PropTypes.shape({
     _id: PropTypes.string.isRequired,
     lastName: PropTypes.string.isRequired,
@@ -204,8 +292,22 @@ AuthorEdit.propTypes = {
     DOB: PropTypes.string,
     DOD: PropTypes.string
   }),
+  relatedBooks: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      authorsString: PropTypes.string.isRequired,
+      location: PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        fullName: PropTypes.string.isRequired
+      }),
+      pages: PropTypes.number,
+      readPages: PropTypes.number
+    })
+  ),
   modalIsOpen: PropTypes.bool.isRequired,
   closeModal: PropTypes.func.isRequired,
   handleSave: PropTypes.func.isRequired,
+  handleBookClick: PropTypes.func.isRequired,
   modalError: PropTypes.string
 }

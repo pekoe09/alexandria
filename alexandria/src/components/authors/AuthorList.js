@@ -12,13 +12,21 @@ import {
   updateAuthor,
   deleteAuthor
 } from '../../actions/authorActions'
+import {
+  updateBook
+} from '../../actions/bookActions'
 import ViewBar from '../common/ViewBar'
 import AuthorEdit from './AuthorEdit'
+import BookEdit from '../books/BookEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
 
 function AuthorList(props) {
   const [editModalIsOpen, setEditModalIsOpen] = useState(false)
+  const [modalViewType, setModalViewType] = useState('Create')
   const [rowToEdit, setRowToEdit] = useState(null)
+  const [relatedBooks, setRelatedBooks] = useState([])
+  const [bookToEdit, setBookToEdit] = useState(null)
+  const [bookModalIsOpen, setBookModalIsOpen] = useState(false)
   const [modalError, setModalError] = useState('')
   const [deletionTargetId, setDeletionTargetId] = useState('')
   const [deletionTargetName, setDeletionTargetName] = useState('')
@@ -33,10 +41,22 @@ function AuthorList(props) {
     })()
   }, [])
 
-  const toggleEditModalOpen = () => {
+  const toggleEditModalOpen = (viewType) => {
     setModalError('')
+    if (viewType) {
+      setModalViewType(viewType)
+    } else {
+      setModalViewType('Create')
+    }
     setEditModalIsOpen(!editModalIsOpen)
     setRowToEdit(null)
+    setRelatedBooks([])
+  }
+
+  const toggleBookModalOpen = () => {
+    setModalError('')
+    setBookModalIsOpen(!bookModalIsOpen)
+    setBookToEdit(null)
   }
 
   const handleSave = async (author) => {
@@ -50,9 +70,24 @@ function AuthorList(props) {
     }
   }
 
+  const handleBookSave = async (book) => {
+    await props.updateBook(book)
+    if (props.error) {
+      setModalError('Could not save the book')
+    }
+  }
+
   const handleRowClick = (row) => {
+    setModalViewType('View')
     setEditModalIsOpen(true)
     setRowToEdit(row.original)
+    setRelatedBooks(getRelatedBooks(row.original._id))
+    setModalError('')
+  }
+
+  const handleBookClick = (bookId) => {
+    setBookToEdit(relatedBooks.find(b => b._id === bookId))
+    setBookModalIsOpen(true)
     setModalError('')
   }
 
@@ -83,6 +118,10 @@ function AuthorList(props) {
 
   const handleSearch = () => {
     setSearchPhraseToUse(searchPhrase)
+  }
+
+  const getRelatedBooks = (authorId) => {
+    return props.books.filter(b => b.authors.find(a => a._id === authorId))
   }
 
   const getFilteredAuthors = useCallback(() => {
@@ -155,10 +194,20 @@ function AuthorList(props) {
         handleRowClick={handleRowClick}
       />
       <AuthorEdit
+        viewType={modalViewType}
         author={rowToEdit}
         modalIsOpen={editModalIsOpen}
         closeModal={toggleEditModalOpen}
         handleSave={handleSave}
+        relatedBooks={relatedBooks}
+        handleBookClick={handleBookClick}
+        modalError={modalError}
+      />
+      <BookEdit
+        book={bookToEdit}
+        modalIsOpen={bookModalIsOpen}
+        closeModal={toggleBookModalOpen}
+        handleSave={handleBookSave}
         modalError={modalError}
       />
       <DeletionConfirmation
@@ -175,6 +224,7 @@ function AuthorList(props) {
 const mapStateToProps = store => ({
   authors: store.authors.items.sort((a, b) =>
     a.fullNameReversed > b.fullNameReversed ? 1 : (a.fullNameReversed < b.fullNameReversed ? -1 : 0)),
+  books: store.books.items,
   loading: store.authors.loading,
   error: store.authors.error
 })
@@ -185,6 +235,7 @@ export default withRouter(connect(
     getAllAuthors,
     addAuthor,
     updateAuthor,
-    deleteAuthor
+    deleteAuthor,
+    updateBook
   }
 )(AuthorList))
