@@ -259,15 +259,18 @@ class AuthorEdit extends React.Component {
         <Modal.Header>
           <Modal.Title style={{ width: '100%' }}>
             {this.getTitle()}
-            <Button
-              style={{ float: 'right' }}
-              onClick={this.toggleViewType}
-            >
-              {this.state.viewType === 'View' ? 'Edit' : 'View'}
-            </Button>
+            {
+              this.state.viewType !== 'Create' &&
+              <Button
+                style={{ float: 'right' }}
+                onClick={this.toggleViewType}
+              >
+                {this.state.viewType === 'View' ? 'Edit' : 'View'}
+              </Button>
+            }
           </Modal.Title>
         </Modal.Header>
-        {this.state.viewType === 'Update' && this.getEditBody()}
+        {this.state.viewType !== 'View' && this.getEditBody()}
         {this.state.viewType === 'View' && this.getViewBody()}
       </Modal>
     )

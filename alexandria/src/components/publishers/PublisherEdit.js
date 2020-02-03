@@ -1,8 +1,9 @@
 import React from 'react'
-import propTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import { StyledForm } from '../common/alexandriaComponents'
 import FormButtons from '../common/FormButtons'
 import { Modal } from 'react-bootstrap'
+import RelatedBooks from '../books/relatedBooks'
 
 class PublisherEdit extends React.Component {
   constructor(props) {
@@ -16,7 +17,8 @@ class PublisherEdit extends React.Component {
         name: false,
         city: false,
         country: false
-      }
+      },
+      books: []
     }
   }
 
@@ -26,7 +28,9 @@ class PublisherEdit extends React.Component {
         _id: this.props.publisher._id,
         name: this.props.publisher.name,
         city: this.props.publisher.city,
-        country: this.props.publisher.country
+        country: this.props.publisher.country,
+        books: this.props.relatedBooks ?
+          this.props.relatedBooks : [],
       })
     }
   }
@@ -41,7 +45,8 @@ class PublisherEdit extends React.Component {
         name: false,
         city: false,
         country: false
-      }
+      },
+      books: []
     })
   }
 
@@ -82,6 +87,10 @@ class PublisherEdit extends React.Component {
       country: ''
     })
     this.props.closeModal()
+  }
+
+  handleBookClick = (bookId) => {
+    this.props.handleBookClick(bookId)
   }
 
   validate = () => {
@@ -150,6 +159,13 @@ class PublisherEdit extends React.Component {
               />
             </StyledForm.Group>
           </StyledForm>
+          <StyledForm.Label>Books</StyledForm.Label>
+          {this.state.books && this.state.books.length > 0 &&
+            <RelatedBooks books={this.state.books} handleBookClick={this.handleBookClick} />
+          }
+          {(!this.state.books || this.state.books.length === 0) &&
+            <p>No books found for this publisher</p>
+          }
         </Modal.Body>
         <Modal.Footer>
           <FormButtons
@@ -166,13 +182,27 @@ class PublisherEdit extends React.Component {
 export default PublisherEdit
 
 PublisherEdit.propTypes = {
-  publisher: propTypes.shape({
-    _id: propTypes.string.isRequired,
-    name: propTypes.string.isRequired
+  publisher: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired
   }),
-  modalIsOpen: propTypes.bool.isRequired,
-  closeModal: propTypes.func.isRequired,
-  handleSave: propTypes.func.isRequired,
-  modalError: propTypes.string.isRequired
+  relatedBooks: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      authorsString: PropTypes.string.isRequired,
+      location: PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        fullName: PropTypes.string.isRequired
+      }),
+      pages: PropTypes.number,
+      readPages: PropTypes.number
+    })
+  ),
+  modalIsOpen: PropTypes.bool.isRequired,
+  closeModal: PropTypes.func.isRequired,
+  handleSave: PropTypes.func.isRequired,
+  handleBookClick: PropTypes.func.isRequired,
+  modalError: PropTypes.string.isRequired
 }
 

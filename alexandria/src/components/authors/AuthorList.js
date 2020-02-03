@@ -22,6 +22,7 @@ import DeletionConfirmation from '../common/DeletionConfirmation'
 
 function AuthorList(props) {
   const [editModalIsOpen, setEditModalIsOpen] = useState(false)
+  const [modalViewType, setModalViewType] = useState('Create')
   const [rowToEdit, setRowToEdit] = useState(null)
   const [relatedBooks, setRelatedBooks] = useState([])
   const [bookToEdit, setBookToEdit] = useState(null)
@@ -40,8 +41,13 @@ function AuthorList(props) {
     })()
   }, [])
 
-  const toggleEditModalOpen = () => {
+  const toggleEditModalOpen = (viewType) => {
     setModalError('')
+    if (viewType) {
+      setModalViewType(viewType)
+    } else {
+      setModalViewType('Create')
+    }
     setEditModalIsOpen(!editModalIsOpen)
     setRowToEdit(null)
     setRelatedBooks([])
@@ -72,6 +78,7 @@ function AuthorList(props) {
   }
 
   const handleRowClick = (row) => {
+    setModalViewType('View')
     setEditModalIsOpen(true)
     setRowToEdit(row.original)
     setRelatedBooks(getRelatedBooks(row.original._id))
@@ -115,10 +122,6 @@ function AuthorList(props) {
 
   const getRelatedBooks = (authorId) => {
     return props.books.filter(b => b.authors.find(a => a._id === authorId))
-  }
-
-  const getViewType = () => {
-    return rowToEdit ? 'View' : 'Create'
   }
 
   const getFilteredAuthors = useCallback(() => {
@@ -191,7 +194,7 @@ function AuthorList(props) {
         handleRowClick={handleRowClick}
       />
       <AuthorEdit
-        viewType={getViewType()}
+        viewType={modalViewType}
         author={rowToEdit}
         modalIsOpen={editModalIsOpen}
         closeModal={toggleEditModalOpen}
