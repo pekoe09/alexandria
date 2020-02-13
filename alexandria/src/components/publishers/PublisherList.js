@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import {
@@ -6,12 +6,6 @@ import {
   StyledTable
 } from '../common/alexandriaComponents'
 import '../common/alexandria-react-table.css'
-import {
-  getAllPublishers,
-  addPublisher,
-  updatePublisher,
-  deletePublisher
-} from '../../actions/publisherActions'
 import {
   updateBook
 } from '../../actions/bookActions'
@@ -26,46 +20,28 @@ function PublisherList(props) {
   const [relatedBooks, setRelatedBooks] = useState([])
   const [bookToEdit, setBookToEdit] = useState(null)
   const [bookModalIsOpen, setBookModalIsOpen] = useState(false)
-  const [modalError, setModalError] = useState('')
   const [deletionTargetId, setDeletionTargetId] = useState('')
   const [deletionTargetName, setDeletionTargetName] = useState('')
   const [deletionConfirmationIsOpen, setDeletionConfirmationIsOpen] = useState(false)
   const [searchPhrase, setSearchPhrase] = useState('')
   const [searchPhraseToUse, setSearchPhraseToUse] = useState('')
 
-  useEffect(() => {
-    (async function getData() {
-      await props.getAllPublishers()
-    })()
-  }, [])
-
   const toggleEditModalOpen = () => {
-    setModalError('')
+    props.showError('')
     setEditModalIsOpen(!editModalIsOpen)
     setRowToEdit(null)
   }
 
   const toggleBookModalOpen = () => {
-    setModalError('')
+    props.showError('')
     setBookModalIsOpen(!bookModalIsOpen)
     setBookToEdit(null)
-  }
-
-  const handleSave = async (publisher) => {
-    if (publisher._id) {
-      await props.updatePublisher(publisher)
-    } else {
-      await props.addPublisher(publisher)
-    }
-    if (props.error) {
-      setModalError('Could not save the publisher')
-    }
   }
 
   const handleBookSave = async (book) => {
     await props.updateBook(book)
     if (props.error) {
-      setModalError('Could not save the book')
+      props.showError('Could not save the book')
     }
   }
 
@@ -73,13 +49,13 @@ function PublisherList(props) {
     setEditModalIsOpen(true)
     setRowToEdit(row.original)
     setRelatedBooks(getRelatedBooks(row.original._id))
-    setModalError('')
+    props.showError('')
   }
 
   const handleBookClick = (bookId) => {
     setBookToEdit(relatedBooks.find(b => b._id === bookId))
     setBookModalIsOpen(true)
-    setModalError('')
+    props.showError('')
   }
 
   const handleDeleteRequest = (item, e) => {
@@ -91,7 +67,7 @@ function PublisherList(props) {
 
   const handleDeleteConfirmation = async (isConfirmed) => {
     if (isConfirmed) {
-      await props.deletePublisher(deletionTargetId)
+      await props.handleDelete(deletionTargetId)
     }
     setDeletionConfirmationIsOpen(false)
     setDeletionTargetId('')
@@ -117,14 +93,14 @@ function PublisherList(props) {
 
   const getFilteredPublishers = useCallback(() => {
     let searchPhrase = searchPhraseToUse.toLowerCase()
-    let filtered = props.publishers
+    let filtered = props.items
     if (searchPhraseToUse.length > 0) {
-      filtered = props.publishers.filter(p =>
+      filtered = props.items.filter(p =>
         p.name.toLowerCase().includes(searchPhrase)
       )
     }
     return filtered
-  }, [props.publishers, searchPhraseToUse])
+  }, [props.items, searchPhraseToUse])
 
   const getData = React.useMemo(() => getFilteredPublishers(), [getFilteredPublishers])
 
@@ -178,17 +154,17 @@ function PublisherList(props) {
         publisher={rowToEdit}
         modalIsOpen={editModalIsOpen}
         closeModal={toggleEditModalOpen}
-        handleSave={handleSave}
+        handleSave={props.handleSave}
         relatedBooks={relatedBooks}
         handleBookClick={handleBookClick}
-        modalError={modalError}
+        modalError={props.modalError}
       />
       <BookEdit
         book={bookToEdit}
         modalIsOpen={bookModalIsOpen}
         closeModal={toggleBookModalOpen}
         handleSave={handleBookSave}
-        modalError={modalError}
+        modalError={props.modalError}
       />
       <DeletionConfirmation
         headerText={`Deleting ${deletionTargetName}`}
@@ -202,7 +178,6 @@ function PublisherList(props) {
 }
 
 const mapStateToProps = store => ({
-  publishers: store.publishers.items.sort((a, b) => a.name > b.name ? 1 : (a.name < b.name ? -1 : 0)),
   books: store.books.items,
   loading: store.publishers.loading,
   error: store.publishers.error
@@ -211,10 +186,6 @@ const mapStateToProps = store => ({
 export default withRouter(connect(
   mapStateToProps,
   {
-    getAllPublishers,
-    addPublisher,
-    updatePublisher,
-    deletePublisher,
     updateBook
   }
 )(PublisherList))

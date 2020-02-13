@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
-const getCRUDs = (WrappedComponent) => props => {
+const addCRUDs = (WrappedComponent) => props => {
   const {
     items,
     addItem,
@@ -19,21 +20,21 @@ const getCRUDs = (WrappedComponent) => props => {
 
   const [modalError, setModalError] = useState('')
 
-  const handleSave = async (author) => {
-    if (author._id) {
-      await updateItem(author)
+  const handleSave = async (item) => {
+    if (item._id) {
+      await updateItem(item)
     } else {
-      await addItem(author)
+      await addItem(item)
     }
     if (props.error) {
-      setModalError('Could not save the author')
+      setModalError('Could not save the item')
     }
   }
 
   const handleDelete = async (itemId) => {
     await deleteItem(itemId)
     if (props.error) {
-      setModalError('Could not delete the author')
+      setModalError('Could not delete the item')
     }
   }
 
@@ -58,7 +59,16 @@ const mapStateToProps = (store, ownProps) => {
 
 const withCRUD = compose(
   connect(mapStateToProps, null),
-  getCRUDs
+  addCRUDs
 )
 
 export default withCRUD
+
+withCRUD.propTypes = {
+  repository: PropTypes.string.isRequired,
+  defaultSort: PropTypes.func.isRequired,
+  addItem: PropTypes.func.isRequired,
+  getAllItems: PropTypes.func.isRequired,
+  updateItem: PropTypes.func.isRequired,
+  deleteItem: PropTypes.func.isRequired
+}

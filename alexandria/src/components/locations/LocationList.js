@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useCallback } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import {
@@ -6,12 +6,6 @@ import {
   StyledTable
 } from '../common/alexandriaComponents'
 import '../common/alexandria-react-table.css'
-import {
-  getAllLocations,
-  addLocation,
-  updateLocation,
-  deleteLocation
-} from '../../actions/locationActions'
 import {
   updateBook
 } from '../../actions/bookActions'
@@ -26,46 +20,28 @@ function LocationList(props) {
   const [relatedBooks, setRelatedBooks] = useState([])
   const [bookToEdit, setBookToEdit] = useState(null)
   const [bookModalIsOpen, setBookModalIsOpen] = useState(false)
-  const [modalError, setModalError] = useState('')
   const [deletionTargetId, setDeletionTargetId] = useState('')
   const [deletionTargetName, setDeletionTargetName] = useState('')
   const [deletionConfirmationIsOpen, setDeletionConfirmationIsOpen] = useState(false)
   const [searchPhrase, setSearchPhrase] = useState('')
   const [searchPhraseToUse, setSearchPhraseToUse] = useState('')
 
-  useEffect(() => {
-    (async function getData() {
-      await props.getAllLocations()
-    })()
-  }, [])
-
   const toggleEditModalOpen = () => {
-    setModalError('')
+    props.showError('')
     setEditModalIsOpen(!editModalIsOpen)
     setRowToEdit(null)
   }
 
   const toggleBookModalOpen = () => {
-    setModalError('')
+    props.showError('')
     setBookModalIsOpen(!bookModalIsOpen)
     setBookToEdit(null)
-  }
-
-  const handleSave = async (location) => {
-    if (location._id) {
-      await props.updateLocation(location)
-    } else {
-      await props.addLocation(location)
-    }
-    if (props.error) {
-      setModalError('Could not save the location')
-    }
   }
 
   const handleBookSave = async (book) => {
     await props.updateBook(book)
     if (props.error) {
-      setModalError('Could not save the book')
+      props.showError('Could not save the book')
     }
   }
 
@@ -73,13 +49,13 @@ function LocationList(props) {
     setEditModalIsOpen(true)
     setRowToEdit(row.original)
     setRelatedBooks(getRelatedBooks(row.original._id))
-    setModalError('')
+    props.showError('')
   }
 
   const handleBookClick = (bookId) => {
     setBookToEdit(relatedBooks.find(b => b._id === bookId))
     setBookModalIsOpen(true)
-    setModalError('')
+    props.showError('')
   }
 
   const handleDeleteRequest = (item, e) => {
@@ -91,7 +67,7 @@ function LocationList(props) {
 
   const handleDeleteConfirmation = async (isConfirmed) => {
     if (isConfirmed) {
-      await props.deleteLocation(deletionTargetId)
+      await props.handleDelete(deletionTargetId)
     }
     setDeletionConfirmationIsOpen(false)
     setDeletionTargetId('')
@@ -117,14 +93,14 @@ function LocationList(props) {
 
   const getFilteredLocations = useCallback(() => {
     let searchPhrase = searchPhraseToUse.toLowerCase()
-    let filtered = props.locations
+    let filtered = props.items
     if (searchPhraseToUse.length > 0) {
-      filtered = props.locations.filter(l =>
+      filtered = props.items.filter(l =>
         l.fullName.toLowerCase().includes(searchPhrase)
       )
     }
     return filtered
-  }, [props.locations, searchPhraseToUse])
+  }, [props.items, searchPhraseToUse])
 
   const getData = React.useMemo(() => getFilteredLocations(), [getFilteredLocations])
 
@@ -192,17 +168,17 @@ function LocationList(props) {
         location={rowToEdit}
         modalIsOpen={editModalIsOpen}
         closeModal={toggleEditModalOpen}
-        handleSave={handleSave}
+        handleSave={props.handleSave}
         relatedBooks={relatedBooks}
         handleBookClick={handleBookClick}
-        modalError={modalError}
+        modalError={props.modalError}
       />
       <BookEdit
         book={bookToEdit}
         modalIsOpen={bookModalIsOpen}
         closeModal={toggleBookModalOpen}
         handleSave={handleBookSave}
-        modalError={modalError}
+        modalError={props.modalError}
       />
       <DeletionConfirmation
         headerText={`Deleting ${deletionTargetName}`}
@@ -216,7 +192,6 @@ function LocationList(props) {
 }
 
 const mapStateToProps = store => ({
-  locations: store.locations.items,
   books: store.books.items,
   loading: store.locations.loading,
   error: store.locations.error
@@ -225,10 +200,6 @@ const mapStateToProps = store => ({
 export default withRouter(connect(
   mapStateToProps,
   {
-    getAllLocations,
-    addLocation,
-    updateLocation,
-    deleteLocation,
     updateBook
   }
 )(LocationList))

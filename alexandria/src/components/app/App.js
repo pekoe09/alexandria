@@ -6,10 +6,10 @@ import ColorTest from '../common/ColorTest'
 import FrontPageContainer from '../layout/FrontPageContainer'
 import Layout from '../layout/Layout'
 import { Authors } from '../authors'
-import BookList from '../books/BookList'
-import CategoryList from '../categories/CategoryList'
-import LocationList from '../locations/LocationList'
-import PublisherList from '../publishers/PublisherList'
+import { Books } from '../books'
+import { Categories } from '../categories'
+import { Locations } from '../locations'
+import { Publishers } from '../publishers'
 import ReadingsView from '../readings/ReadingsView'
 
 class App extends React.Component {
@@ -18,10 +18,10 @@ class App extends React.Component {
       <Layout>
         <Route exact path='/' render={() => <FrontPageContainer />} />
         <Route exact path='/authors' render={() => <Authors />} />
-        <Route exact path='/books' render={() => <BookList />} />
-        <Route exact path='/categories' render={() => <CategoryList />} />
-        <Route exact path='/locations' render={() => <LocationList />} />
-        <Route exact path='/publishers' render={() => <PublisherList />} />
+        <Route exact path='/books' render={() => <Books />} />
+        <Route exact path='/categories' render={() => <Categories />} />
+        <Route exact path='/locations' render={() => <Locations />} />
+        <Route exact path='/publishers' render={() => <Publishers />} />
         <Route exact path='/readings' render={() => <ReadingsView />} />
         <Route exact path='/colortest' render={() => <ColorTest />} />
       </Layout>

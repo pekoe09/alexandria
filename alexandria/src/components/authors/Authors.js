@@ -17,7 +17,6 @@ const defaultSort = (a, b) =>
       : 0)
 
 const Authors = props => {
-  console.log('touch Authors')
   const Auths = withCRUD(AuthorList)
   return (
     <Auths

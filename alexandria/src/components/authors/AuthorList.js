@@ -15,7 +15,6 @@ import BookEdit from '../books/BookEdit'
 import DeletionConfirmation from '../common/DeletionConfirmation'
 
 function AuthorList(props) {
-  console.log('props', props)
   const [editModalIsOpen, setEditModalIsOpen] = useState(false)
   const [modalViewType, setModalViewType] = useState('Create')
   const [rowToEdit, setRowToEdit] = useState(null)
