@@ -5,7 +5,7 @@ import './App.css'
 import ColorTest from '../common/ColorTest'
 import FrontPageContainer from '../layout/FrontPageContainer'
 import Layout from '../layout/Layout'
-import AuthorsList from '../authors/AuthorList'
+import { Authors } from '../authors'
 import BookList from '../books/BookList'
 import CategoryList from '../categories/CategoryList'
 import LocationList from '../locations/LocationList'
@@ -17,7 +17,7 @@ class App extends React.Component {
     return (
       <Layout>
         <Route exact path='/' render={() => <FrontPageContainer />} />
-        <Route exact path='/authors' render={() => <AuthorsList />} />
+        <Route exact path='/authors' render={() => <Authors />} />
         <Route exact path='/books' render={() => <BookList />} />
         <Route exact path='/categories' render={() => <CategoryList />} />
         <Route exact path='/locations' render={() => <LocationList />} />
