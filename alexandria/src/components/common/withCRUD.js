@@ -9,7 +9,8 @@ const addCRUDs = (WrappedComponent) => props => {
     addItem,
     getAllItems,
     updateItem,
-    deleteItem
+    deleteItem,
+    ...rest
   } = props
 
   useEffect(() => {
@@ -47,6 +48,7 @@ const addCRUDs = (WrappedComponent) => props => {
       handleDelete={handleDelete}
       showError={showError}
       modalError={modalError}
+      {...rest}
     />
   )
 }

@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
+import PropTypes from 'prop-types'
 import {
   StyledButton,
   StyledTable
@@ -12,7 +13,7 @@ import {
 import ViewBar from '../common/ViewBar'
 import PublisherEdit from './PublisherEdit'
 import BookEdit from '../books/BookEdit'
-import DeletionConfirmation from '../common/DeletionConfirmation'
+// import DeletionConfirmation from '../common/DeletionConfirmation'
 
 function PublisherList(props) {
   const [editModalIsOpen, setEditModalIsOpen] = useState(false)
@@ -20,9 +21,9 @@ function PublisherList(props) {
   const [relatedBooks, setRelatedBooks] = useState([])
   const [bookToEdit, setBookToEdit] = useState(null)
   const [bookModalIsOpen, setBookModalIsOpen] = useState(false)
-  const [deletionTargetId, setDeletionTargetId] = useState('')
-  const [deletionTargetName, setDeletionTargetName] = useState('')
-  const [deletionConfirmationIsOpen, setDeletionConfirmationIsOpen] = useState(false)
+  // const [deletionTargetId, setDeletionTargetId] = useState('')
+  // const [deletionTargetName, setDeletionTargetName] = useState('')
+  // const [deletionConfirmationIsOpen, setDeletionConfirmationIsOpen] = useState(false)
   const [searchPhrase, setSearchPhrase] = useState('')
   const [searchPhraseToUse, setSearchPhraseToUse] = useState('')
 
@@ -38,6 +39,7 @@ function PublisherList(props) {
     setBookToEdit(null)
   }
 
+  // withBookLinks
   const handleBookSave = async (book) => {
     await props.updateBook(book)
     if (props.error) {
@@ -45,6 +47,7 @@ function PublisherList(props) {
     }
   }
 
+  // withListTable
   const handleRowClick = (row) => {
     setEditModalIsOpen(true)
     setRowToEdit(row.original)
@@ -52,27 +55,30 @@ function PublisherList(props) {
     props.showError('')
   }
 
+  // withBookLinks
   const handleBookClick = (bookId) => {
     setBookToEdit(relatedBooks.find(b => b._id === bookId))
     setBookModalIsOpen(true)
     props.showError('')
   }
 
-  const handleDeleteRequest = (item, e) => {
-    e.stopPropagation()
-    setDeletionTargetId(item._id)
-    setDeletionTargetName(item.name)
-    setDeletionConfirmationIsOpen(true)
-  }
+  // withListTable
+  /*   const handleDeleteRequest = (item, e) => {
+      e.stopPropagation()
+      setDeletionTargetId(item._id)
+      setDeletionTargetName(item.name)
+      setDeletionConfirmationIsOpen(true)
+    } */
 
-  const handleDeleteConfirmation = async (isConfirmed) => {
-    if (isConfirmed) {
-      await props.handleDelete(deletionTargetId)
-    }
-    setDeletionConfirmationIsOpen(false)
-    setDeletionTargetId('')
-    setDeletionTargetName('')
-  }
+  // withListTable
+  /*   const handleDeleteConfirmation = async (isConfirmed) => {
+      if (isConfirmed) {
+        await props.handleDelete(deletionTargetId)
+      }
+      setDeletionConfirmationIsOpen(false)
+      setDeletionTargetId('')
+      setDeletionTargetName('')
+    } */
 
   const handlePhraseChange = searchPhraseEvent => {
     let searchPhrase = searchPhraseEvent.target.value
@@ -118,7 +124,7 @@ function PublisherList(props) {
         accessor: 'delete',
         Cell: (item) => (
           <StyledButton
-            onClick={(e) => handleDeleteRequest(item.row.original, e)}
+            onClick={(e) => props.handleDeleteRequest(item.row.original, e)}
             bsstyle='rowdanger'
           >
             Delete
@@ -166,12 +172,6 @@ function PublisherList(props) {
         handleSave={handleBookSave}
         modalError={props.modalError}
       />
-      <DeletionConfirmation
-        headerText={`Deleting ${deletionTargetName}`}
-        bodyText='Are you sure you want to go ahead and delete this?'
-        modalIsOpen={deletionConfirmationIsOpen}
-        closeModal={handleDeleteConfirmation}
-      />
     </React.Fragment>
   )
 
@@ -189,3 +189,7 @@ export default withRouter(connect(
     updateBook
   }
 )(PublisherList))
+
+PublisherList.propTypes = {
+  handleDeleteRequest: PropTypes.func.isRequired
+}

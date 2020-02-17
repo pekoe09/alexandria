@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import PublisherList from './PublisherList'
 import withCRUD from '../common/withCRUD'
+import withDeletion from '../common/withListTable'
 import {
   addPublisher,
   getAllPublishers,
@@ -13,7 +14,7 @@ const defaultSort = (a, b) =>
   a.name > b.name ? 1 : (a.name < b.name ? -1 : 0)
 
 const Publishers = props => {
-  const PublishersWrapped = withCRUD(PublisherList)
+  const PublishersWrapped = withCRUD(withDeletion(PublisherList))
   return (
     <PublishersWrapped
       repository={'publishers'}
