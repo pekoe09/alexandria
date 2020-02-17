@@ -8,12 +8,6 @@ import {
 } from '../common/alexandriaComponents'
 import { Button } from 'react-bootstrap'
 import '../common/alexandria-react-table.css'
-import {
-  getAllBooks,
-  addBook,
-  updateBook,
-  deleteBook
-} from '../../actions/bookActions'
 import ViewBar from '../common/ViewBar'
 import AdvancedBookSearch from './AdvancedBookSearch'
 import BookEdit from './BookEdit'
@@ -26,7 +20,6 @@ import { bookStats } from './bookStats'
 function BookList(props) {
   const [editModalIsOpen, setEditModalIsOpen] = useState(false)
   const [rowToEdit, setRowToEdit] = useState(null)
-  const [modalError, setModalError] = useState('')
   const [deletionTargetId, setDeletionTargetId] = useState('')
   const [deletionTargetName, setDeletionTargetName] = useState('')
   const [deletionConfirmationIsOpen, setDeletionConfirmationIsOpen] = useState(false)
@@ -38,33 +31,19 @@ function BookList(props) {
   const [stats, setStats] = useState(null)
 
   useEffect(() => {
-    (async function getData() {
-      await props.getAllBooks()
-    })()
-    setStats(bookStats(props.books, props.categories))
+    setStats(bookStats(props.items, props.categories))
   }, [])
 
   const toggleEditModalOpen = () => {
-    setModalError('')
+    props.showError('')
     setEditModalIsOpen(!editModalIsOpen)
     setRowToEdit(null)
-  }
-
-  const handleSave = async (book) => {
-    if (book._id) {
-      await props.updateBook(book)
-    } else {
-      await props.addBook(book)
-    }
-    if (props.error) {
-      setModalError('Could not save the book')
-    }
   }
 
   const handleRowClick = (row) => {
     setEditModalIsOpen(true)
     setRowToEdit(row.original)
-    setModalError('')
+    props.showError('')
   }
 
   const handleDeleteRequest = (item, e) => {
@@ -76,7 +55,7 @@ function BookList(props) {
 
   const handleDeleteConfirmation = async (isConfirmed) => {
     if (isConfirmed) {
-      await props.deleteBook(deletionTargetId)
+      await props.handleDelete(deletionTargetId)
     }
     setDeletionConfirmationIsOpen(false)
     setDeletionTargetId('')
@@ -155,9 +134,9 @@ function BookList(props) {
 
   const getFilteredBooks = useCallback(() => {
     let searchPhrase = searchPhraseToUse.toLowerCase()
-    let filtered = props.books
+    let filtered = props.items
     if (searchPhraseToUse.length > 0) {
-      filtered = props.books.filter(b =>
+      filtered = props.items.filter(b =>
         b.title.toLowerCase().includes(searchPhrase)
         || b.authors.some(a =>
           a.fullName.toLowerCase().includes(searchPhrase) || a.fullNameReversed.toLowerCase().includes(searchPhrase))
@@ -224,12 +203,12 @@ function BookList(props) {
       }
     }
     return filtered
-  },[props.books, searchPhraseToUse, searchCriteria])
+  }, [props.items, searchPhraseToUse, searchCriteria])
 
   const getData = React.useMemo(() => getFilteredBooks(), [getFilteredBooks])
 
   const toggleStats = () => {
-    setStats(statsIsVisible ? stats : bookStats(props.books, props.categories))
+    setStats(statsIsVisible ? stats : bookStats(props.items, props.categories))
     setStatsIsVisible(!statsIsVisible)
   }
 
@@ -362,8 +341,8 @@ function BookList(props) {
         book={rowToEdit}
         modalIsOpen={editModalIsOpen}
         closeModal={toggleEditModalOpen}
-        handleSave={handleSave}
-        modalError={modalError}
+        handleSave={props.handleSave}
+        modalError={props.modalError}
       />
       <DeletionConfirmation
         headerText={`Deleting ${deletionTargetName}`}
@@ -408,7 +387,6 @@ function BookList(props) {
 }
 
 const mapStateToProps = store => ({
-  books: store.books.items.sort((a, b) => a.title > b.title ? 1 : (a.title < b.title ? -1 : 0)),
   categories: store.categories.items,
   loading: store.books.loading,
   error: store.books.error
@@ -416,10 +394,5 @@ const mapStateToProps = store => ({
 
 export default withRouter(connect(
   mapStateToProps,
-  {
-    getAllBooks,
-    addBook,
-    updateBook,
-    deleteBook
-  }
+  {}
 )(BookList))
