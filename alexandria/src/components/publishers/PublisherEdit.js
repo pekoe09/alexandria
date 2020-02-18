@@ -23,12 +23,13 @@ class PublisherEdit extends React.Component {
   }
 
   handleEnter = () => {
-    if (this.props.publisher) {
+    const publisher = this.props.itemToEdit
+    if (publisher) {
       this.setState({
-        _id: this.props.publisher._id,
-        name: this.props.publisher.name,
-        city: this.props.publisher.city,
-        country: this.props.publisher.country,
+        _id: publisher._id,
+        name: publisher.name,
+        city: publisher.city,
+        country: publisher.country,
         books: this.props.relatedBooks ?
           this.props.relatedBooks : [],
       })
@@ -182,7 +183,7 @@ class PublisherEdit extends React.Component {
 export default PublisherEdit
 
 PublisherEdit.propTypes = {
-  publisher: PropTypes.shape({
+  itemToEdit: PropTypes.shape({
     _id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired
   }),

@@ -10,6 +10,8 @@ const addCRUDs = (WrappedComponent) => props => {
     getAllItems,
     updateItem,
     deleteItem,
+    loading,
+    error,
     ...rest
   } = props
 
@@ -27,19 +29,19 @@ const addCRUDs = (WrappedComponent) => props => {
     } else {
       await addItem(item)
     }
-    if (props.error) {
+    if (error) {
       setModalError('Could not save the item')
     }
   }
 
   const handleDelete = async (itemId) => {
     await deleteItem(itemId)
-    if (props.error) {
+    if (error) {
       setModalError('Could not delete the item')
     }
   }
 
-  const showError = error => setModalError(error)
+  const showError = errorMsg => setModalError(errorMsg)
 
   return (
     <WrappedComponent
@@ -48,14 +50,19 @@ const addCRUDs = (WrappedComponent) => props => {
       handleDelete={handleDelete}
       showError={showError}
       modalError={modalError}
+      error={error}
+      loading={loading}
       {...rest}
     />
   )
 }
 
 const mapStateToProps = (store, ownProps) => {
+  const { repository } = ownProps
   return {
-    items: store[ownProps.repository].items.sort(ownProps.defaultSort)
+    items: store[repository].items.sort(ownProps.defaultSort),
+    loading: store[repository].loading,
+    error: store[repository].error
   }
 }
 

@@ -1,84 +1,15 @@
 import React, { useState, useCallback } from 'react'
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import {
   StyledButton,
   StyledTable
 } from '../common/alexandriaComponents'
 import '../common/alexandria-react-table.css'
-import {
-  updateBook
-} from '../../actions/bookActions'
 import ViewBar from '../common/ViewBar'
-import PublisherEdit from './PublisherEdit'
-import BookEdit from '../books/BookEdit'
-// import DeletionConfirmation from '../common/DeletionConfirmation'
 
 function PublisherList(props) {
-  const [editModalIsOpen, setEditModalIsOpen] = useState(false)
-  const [rowToEdit, setRowToEdit] = useState(null)
-  const [relatedBooks, setRelatedBooks] = useState([])
-  const [bookToEdit, setBookToEdit] = useState(null)
-  const [bookModalIsOpen, setBookModalIsOpen] = useState(false)
-  // const [deletionTargetId, setDeletionTargetId] = useState('')
-  // const [deletionTargetName, setDeletionTargetName] = useState('')
-  // const [deletionConfirmationIsOpen, setDeletionConfirmationIsOpen] = useState(false)
   const [searchPhrase, setSearchPhrase] = useState('')
   const [searchPhraseToUse, setSearchPhraseToUse] = useState('')
-
-  const toggleEditModalOpen = () => {
-    props.showError('')
-    setEditModalIsOpen(!editModalIsOpen)
-    setRowToEdit(null)
-  }
-
-  const toggleBookModalOpen = () => {
-    props.showError('')
-    setBookModalIsOpen(!bookModalIsOpen)
-    setBookToEdit(null)
-  }
-
-  // withBookLinks
-  const handleBookSave = async (book) => {
-    await props.updateBook(book)
-    if (props.error) {
-      props.showError('Could not save the book')
-    }
-  }
-
-  // withListTable
-  const handleRowClick = (row) => {
-    setEditModalIsOpen(true)
-    setRowToEdit(row.original)
-    setRelatedBooks(getRelatedBooks(row.original._id))
-    props.showError('')
-  }
-
-  // withBookLinks
-  const handleBookClick = (bookId) => {
-    setBookToEdit(relatedBooks.find(b => b._id === bookId))
-    setBookModalIsOpen(true)
-    props.showError('')
-  }
-
-  // withListTable
-  /*   const handleDeleteRequest = (item, e) => {
-      e.stopPropagation()
-      setDeletionTargetId(item._id)
-      setDeletionTargetName(item.name)
-      setDeletionConfirmationIsOpen(true)
-    } */
-
-  // withListTable
-  /*   const handleDeleteConfirmation = async (isConfirmed) => {
-      if (isConfirmed) {
-        await props.handleDelete(deletionTargetId)
-      }
-      setDeletionConfirmationIsOpen(false)
-      setDeletionTargetId('')
-      setDeletionTargetName('')
-    } */
 
   const handlePhraseChange = searchPhraseEvent => {
     let searchPhrase = searchPhraseEvent.target.value
@@ -91,10 +22,6 @@ function PublisherList(props) {
 
   const handleSearch = () => {
     setSearchPhraseToUse(searchPhrase)
-  }
-
-  const getRelatedBooks = (publisherId) => {
-    return props.books.filter(b => b.publisher && b.publisher._id === publisherId)
   }
 
   const getFilteredPublishers = useCallback(() => {
@@ -146,7 +73,7 @@ function PublisherList(props) {
       <ViewBar
         headerText='Publishers'
         addBtnText='Add publisher'
-        handleOpenEdit={toggleEditModalOpen}
+        handleOpenEdit={props.toggleEditModalOpen}
         handlePhraseChange={handlePhraseChange}
         handleSearch={handleSearch}
         searchPhrase={searchPhrase}
@@ -154,42 +81,19 @@ function PublisherList(props) {
       <StyledTable
         columns={columns}
         data={getData}
-        handleRowClick={handleRowClick}
-      />
-      <PublisherEdit
-        publisher={rowToEdit}
-        modalIsOpen={editModalIsOpen}
-        closeModal={toggleEditModalOpen}
-        handleSave={props.handleSave}
-        relatedBooks={relatedBooks}
-        handleBookClick={handleBookClick}
-        modalError={props.modalError}
-      />
-      <BookEdit
-        book={bookToEdit}
-        modalIsOpen={bookModalIsOpen}
-        closeModal={toggleBookModalOpen}
-        handleSave={handleBookSave}
-        modalError={props.modalError}
+        handleRowClick={props.handleRowClick}
       />
     </React.Fragment>
   )
 
 }
 
-const mapStateToProps = store => ({
-  books: store.books.items,
-  loading: store.publishers.loading,
-  error: store.publishers.error
-})
-
-export default withRouter(connect(
-  mapStateToProps,
-  {
-    updateBook
-  }
-)(PublisherList))
+export default PublisherList
 
 PublisherList.propTypes = {
-  handleDeleteRequest: PropTypes.func.isRequired
+  handleDeleteRequest: PropTypes.func.isRequired,
+  toggleEditModalOpen: PropTypes.func.isRequired,
+  handleRowClick: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  error: PropTypes.string
 }
