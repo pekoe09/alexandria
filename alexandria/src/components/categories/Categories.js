@@ -1,7 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import CategoryList from './CategoryList'
+import CategoryEdit from './CategoryEdit'
 import withCRUD from '../common/withCRUD'
+import withDeletion from '../common/withDeletion'
+import withEditRows from '../common/withEditRows'
+import withRelatedBooks from '../common/withRelatedBooks'
 import {
   addCategory,
   getAllCategories,
@@ -16,8 +20,12 @@ const defaultSort = (a, b) =>
       ? -1
       : 0)
 
+const filterBooks = (book, categoryId) => {
+
+}
+
 const Categories = props => {
-  const CategoriesWrapped = withCRUD(CategoryList)
+  const CategoriesWrapped = withCRUD(withDeletion(withRelatedBooks(withEditRows(CategoryList, CategoryEdit))))
   return (
     <CategoriesWrapped
       repository={'categories'}
@@ -26,6 +34,7 @@ const Categories = props => {
       getAllItems={props.getAllCategories}
       updateItem={props.updateCategory}
       deleteItem={props.deleteCategory}
+      filterBooks={filterBooks}
     />
   )
 }

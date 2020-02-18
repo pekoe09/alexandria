@@ -27,17 +27,18 @@ class CategoryEdit extends React.Component {
   }
 
   handleEnter = () => {
-    if (this.props.category) {
+    const category = this.props.itemToEdit
+    if (category) {
       let parent = []
-      if (this.props.category.parent) {
-        parent.push(this.props.category.parent)
+      if (category.parent) {
+        parent.push(category.parent)
       }
       this.setState({
-        _id: this.props.category._id,
-        name: this.props.category.name,
+        _id: category._id,
+        name: category.name,
         parent,
-        level: this.props.category.level,
-        number: this.props.category.number,
+        level: category.level,
+        number: category.number,
         books: this.props.relatedBooks ?
           this.props.relatedBooks : []
       })
@@ -198,7 +199,7 @@ export default connect(
 )(CategoryEdit)
 
 CategoryEdit.propTypes = {
-  category: PropTypes.shape({
+  itemToEdit: PropTypes.shape({
     _id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     parentId: PropTypes.string,

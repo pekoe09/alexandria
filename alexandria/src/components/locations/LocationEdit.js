@@ -23,12 +23,13 @@ class LocationEdit extends React.Component {
   }
 
   handleEnter = () => {
-    if (this.props.location) {
+    const location = this.props.itemToEdit
+    if (location) {
       this.setState({
-        _id: this.props.location._id,
-        room: this.props.location.room,
-        shelving: this.props.location.shelving,
-        shelf: this.props.location.shelf,
+        _id: location._id,
+        room: location.room,
+        shelving: location.shelving,
+        shelf: location.shelf,
         books: this.props.relatedBooks ?
           this.props.relatedBooks : []
       })
@@ -182,7 +183,7 @@ class LocationEdit extends React.Component {
 export default LocationEdit
 
 LocationEdit.propTypes = {
-  location: PropTypes.shape({
+  itemToEdit: PropTypes.shape({
     _id: PropTypes.string.isRequired,
     room: PropTypes.string.isRequired,
     shelving: PropTypes.string,

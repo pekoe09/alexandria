@@ -47,15 +47,16 @@ class AuthorEdit extends React.Component {
   }
 
   handleEnter = () => {
-    if (this.props.author) {
+    const author = this.props.itemToEdit
+    if (author) {
       this.setState({
-        _id: this.props.author._id,
-        lastName: this.props.author.lastName,
-        firstNames: this.props.author.firstNames,
-        DOB: this.props.author.DOB ?
-          moment(this.props.author.DOB).toDate() : null,
-        DOD: this.props.author.DOD ?
-          moment(this.props.author.DOD).toDate() : null,
+        _id: author._id,
+        lastName: author.lastName,
+        firstNames: author.firstNames,
+        DOB: author.DOB ?
+          moment(author.DOB).toDate() : null,
+        DOD: author.DOD ?
+          moment(author.DOD).toDate() : null,
         books: this.props.relatedBooks ?
           this.props.relatedBooks : [],
         viewType: this.props.viewType === 'Update' ? 'Update' : 'View'
@@ -142,9 +143,10 @@ class AuthorEdit extends React.Component {
 
   getTitle = () => {
     const viewType = this.props.viewType
-    const author = this.props.author
-    return viewType === 'Create' ? 'Create author' :
-      viewType === 'Update' ? `Update ${author.fullName}` : author.fullName
+    const author = this.props.itemToEdit
+    return author
+      ? (viewType === 'Update' ? `Update ${author.fullName}` : author.fullName)
+      : 'Create author'
   }
 
   getEditBody = () => {
@@ -285,7 +287,7 @@ export default AuthorEdit
 
 AuthorEdit.propTypes = {
   viewType: PropTypes.oneOf(['Create', 'Update', 'View']).isRequired,
-  author: PropTypes.shape({
+  itemToEdit: PropTypes.shape({
     _id: PropTypes.string.isRequired,
     lastName: PropTypes.string.isRequired,
     firstNames: PropTypes.string,

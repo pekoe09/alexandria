@@ -1,7 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import AuthorList from './AuthorList'
+import AuthorEdit from './AuthorEdit'
 import withCRUD from '../common/withCRUD'
+import withDeletion from '../common/withDeletion'
+import withEditRows from '../common/withEditRows'
+import withRelatedBooks from '../common/withRelatedBooks'
 import {
   addAuthor,
   getAllAuthors,
@@ -16,16 +20,20 @@ const defaultSort = (a, b) =>
       ? -1
       : 0)
 
+const filterBooks = (book, authorId) =>
+  book.authors.find(a => a._id === authorId)
+
 const Authors = props => {
-  const Auths = withCRUD(AuthorList)
+  const AuthorsWrapped = withCRUD(withDeletion(withRelatedBooks(withEditRows(AuthorList, AuthorEdit))))
   return (
-    <Auths
+    <AuthorsWrapped
       repository={'authors'}
       defaultSort={defaultSort}
       addItem={props.addAuthor}
       getAllItems={props.getAllAuthors}
       updateItem={props.updateAuthor}
       deleteItem={props.deleteAuthor}
+      filterBooks={filterBooks}
     />
   )
 }

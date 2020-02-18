@@ -20,6 +20,7 @@ const withEditRows = (WrappedComponent, EditViewComponent) => props => {
   }
 
   const handleRowClick = (row) => {
+    console.log('opening row', row)
     setEditModalIsOpen(true)
     setRowToEdit(row.original)
     if (setRelatedBooks) {
@@ -37,6 +38,7 @@ const withEditRows = (WrappedComponent, EditViewComponent) => props => {
       />
       <EditViewComponent
         itemToEdit={rowToEdit}
+        viewType={'Update'}
         modalIsOpen={editModalIsOpen}
         closeModal={toggleEditModalOpen}
         handleSave={props.handleSave}
