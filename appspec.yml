@@ -3,3 +3,8 @@ os: linux
 files:
   - source: /
     destination: /var/nodejs/alexandria
+hooks:
+  AfterInstall
+    - location: scripts/InstallModules.sh
+      timeout: 300
+      runas: root
