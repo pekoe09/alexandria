@@ -6,5 +6,5 @@ files:
 hooks:
   AfterInstall:
     - location: scripts/InstallModules.sh
-      timeout: 3600
+      timeout: 600
       runas: root

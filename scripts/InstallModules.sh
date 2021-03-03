@@ -1,5 +1,4 @@
 cd /var/nodejs/alexandria
-npm install --only=production
-
-cd /var/nodejs/alexandria/alexandria
-npm install --only=production
+sudo rm package-lock.json
+sudo rm -r node_modules
+sudo npm install --only=production
