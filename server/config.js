@@ -1,6 +1,6 @@
-if (process.env.NODE_ENV !== 'production') {
+//if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
-}
+//}
 
 let port = process.env.PORT
 let mongoConnStr = process.env.MONGO_CONN_STR
